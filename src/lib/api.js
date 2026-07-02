@@ -1,4 +1,23 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5007/api";
+const LOCAL_API_URL = "http://127.0.0.1:5007/api";
+const PRODUCTION_API_URL = "https://influnexa-backend-igoz.onrender.com/api";
+
+function isLocalHost(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function resolveApiBaseUrl() {
+  const configuredUrl = import.meta.env.VITE_API_URL;
+
+  if (typeof window !== "undefined" && !isLocalHost(window.location.hostname)) {
+    if (!configuredUrl || configuredUrl.includes("127.0.0.1") || configuredUrl.includes("localhost")) {
+      return PRODUCTION_API_URL;
+    }
+  }
+
+  return configuredUrl || LOCAL_API_URL;
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 const ADMIN_TOKEN_STORAGE_KEY = "influnexa_admin_token";
 
 function adminHeaders() {
