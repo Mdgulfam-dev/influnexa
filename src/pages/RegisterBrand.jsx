@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { submitRegistration } from "../lib/api";
+import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 
 const campaignTypes = [
   "Influencer Marketing",
@@ -45,6 +46,33 @@ const initialForm = {
   productShippingReady: "",
   notes: "",
 };
+
+const brandDescription =
+  "Register your brand with Influnexa to plan an agency-managed influencer marketing, UGC, product review, product seeding, or creator campaign.";
+
+const brandBreadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: "Brand Registration", path: "/register/brand" },
+];
+
+const brandJsonLd = [
+  pageSchema({
+    path: "/register/brand",
+    title: "Brand Registration",
+    description: brandDescription,
+    breadcrumbs: brandBreadcrumbs,
+  }),
+  breadcrumbSchema("/register/brand", brandBreadcrumbs),
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Agency-managed influencer marketing campaign planning",
+    description: brandDescription,
+    provider: { "@id": `${SITE_URL}/#organization` },
+    areaServed: "Worldwide",
+    serviceType: campaignTypes,
+  },
+];
 
 function toggleValue(values, value) {
   return values.includes(value)
@@ -93,6 +121,12 @@ export default function RegisterBrand() {
 
   return (
     <div className={`site min-h-screen ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
+      <SEO
+        title="Brand Registration | Influnexa"
+        description={brandDescription}
+        path="/register/brand"
+        jsonLd={brandJsonLd}
+      />
       <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
       <main className="registration-page px-4 pb-20 pt-32 lg:px-6">
         <div className="mx-auto max-w-5xl">

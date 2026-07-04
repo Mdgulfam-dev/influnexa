@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { submitRegistration } from "../lib/api";
+import SEO, { breadcrumbSchema, pageSchema } from "../lib/seo";
 
 const categories = ["Beauty", "Fashion", "Fitness", "Technology", "Gaming", "Food", "Travel", "Finance", "Education", "Lifestyle", "Healthcare", "Automotive"];
 const contentTypes = ["Product Review", "UGC Video", "Reels/Shorts", "Stories", "Unboxing", "Tutorial", "Static Post", "Blog Review"];
@@ -30,6 +31,31 @@ const initialForm = {
   notes: "",
   consentToContact: false,
 };
+
+const influencerDescription =
+  "Join the Influnexa creator database for product reviews, UGC content, influencer marketing opportunities, unboxings, tutorials, and brand collaborations.";
+
+const influencerBreadcrumbs = [
+  { name: "Home", path: "/" },
+  { name: "Influencer Registration", path: "/register/influencer" },
+];
+
+const influencerJsonLd = [
+  pageSchema({
+    path: "/register/influencer",
+    title: "Influencer Registration",
+    description: influencerDescription,
+    breadcrumbs: influencerBreadcrumbs,
+  }),
+  breadcrumbSchema("/register/influencer", influencerBreadcrumbs),
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Influnexa creator applicant",
+    description: "Creator profile submitted for product review, UGC, and influencer marketing campaign consideration.",
+    knowsAbout: categories,
+  },
+];
 
 function toggleValue(values, value) {
   return values.includes(value)
@@ -73,6 +99,12 @@ export default function RegisterInfluencer() {
 
   return (
     <div className={`site min-h-screen ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
+      <SEO
+        title="Influencer Registration | Influnexa"
+        description={influencerDescription}
+        path="/register/influencer"
+        jsonLd={influencerJsonLd}
+      />
       <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
       <main className="registration-page px-4 pb-20 pt-32 lg:px-6">
         <div className="mx-auto max-w-5xl">

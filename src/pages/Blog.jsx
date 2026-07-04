@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { getBlogPost, getBlogPosts } from "../lib/api";
+import SEO, { absoluteUrl, breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 
 const fallbackBlogPosts = [
   {
@@ -53,11 +54,39 @@ function articlePath(post) {
   return `/blog/${post.slug || post._id}`;
 }
 
+function textSummary(value = "") {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function blogPostSchema(post) {
+  const path = articlePath(post);
+  const publishedAt = post.publishedAt || post.createdAt || new Date().toISOString();
+  const modifiedAt = post.updatedAt || publishedAt;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.coverImage ? [post.coverImage] : [`${SITE_URL}/favicon.svg`],
+    datePublished: publishedAt,
+    dateModified: modifiedAt,
+    author: {
+      "@type": "Person",
+      name: post.author || "Influnexa Team",
+    },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    mainEntityOfPage: absoluteUrl(path),
+    articleSection: post.category || "Influencer Marketing",
+    keywords: [post.category, "influencer marketing", "UGC", "product reviews"].filter(Boolean),
+  };
+}
+
 function BlogCard({ post, featured = false }) {
   return (
     <article className={`blog-page-card ${featured ? "featured" : ""}`}>
       {post.coverImage ? (
-        <img loading="lazy" src={post.coverImage} alt="" />
+        <img loading="lazy" decoding="async" width="640" height="420" src={post.coverImage} alt={`${post.title} cover`} />
       ) : (
         <div className="blog-card-art" aria-hidden="true">
           <span>{post.category || "Insight"}</span>
@@ -70,7 +99,7 @@ function BlogCard({ post, featured = false }) {
         </div>
         <h2>{post.title}</h2>
         <p>{post.excerpt}</p>
-        <a href={articlePath(post)}>Read article</a>
+        <a href={articlePath(post)} aria-label={`Read article: ${post.title}`}>Read article</a>
       </div>
     </article>
   );
@@ -96,7 +125,7 @@ function BlogArticle({ post }) {
           </div>
         </div>
         {post.coverImage ? (
-          <img loading="lazy" src={post.coverImage} alt="" />
+          <img loading="eager" decoding="async" width="760" height="520" src={post.coverImage} alt={`${post.title} cover`} />
         ) : (
           <div className="blog-article-art" aria-hidden="true">
             <span>{post.category || "Insight"}</span>
@@ -170,9 +199,57 @@ export default function Blog() {
 
   const featuredPost = useMemo(() => posts[0], [posts]);
   const remainingPosts = useMemo(() => posts.slice(1), [posts]);
+  const currentDescription = slug
+    ? textSummary(post?.excerpt || post?.content || "Influnexa blog article on influencer marketing, UGC, product reviews, and creator campaign strategy.")
+    : "Read Influnexa insights on influencer marketing, creator sourcing, product review campaigns, UGC production, campaign management, and reporting.";
+  const currentTitle = slug && post ? post.title : "Influencer Marketing Blog";
+  const currentPath = slug && post ? articlePath(post) : "/blog";
+  const breadcrumbs = slug && post
+    ? [
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+        { name: post.title, path: articlePath(post) },
+      ]
+    : [
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+      ];
+  const jsonLd = [
+    pageSchema({
+      path: currentPath,
+      title: currentTitle,
+      description: currentDescription,
+      type: slug && post ? "Article" : "CollectionPage",
+      breadcrumbs,
+    }),
+    breadcrumbSchema(currentPath, breadcrumbs),
+    slug && post ? blogPostSchema(post) : {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      name: "Influnexa Blog",
+      url: absoluteUrl("/blog"),
+      description: currentDescription,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      blogPost: posts.map((item) => ({
+        "@type": "BlogPosting",
+        headline: item.title,
+        url: absoluteUrl(articlePath(item)),
+        description: item.excerpt,
+      })),
+    },
+  ];
 
   return (
     <div className={`site blog-page ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
+      <SEO
+        title={currentTitle}
+        description={currentDescription}
+        path={currentPath}
+        type={slug && post ? "article" : "website"}
+        noindex={Boolean(slug && !post && status.type === "error")}
+        image={post?.coverImage || undefined}
+        jsonLd={jsonLd}
+      />
       <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
 
       <main className="blog-page-main">

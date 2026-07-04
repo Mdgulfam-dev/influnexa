@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { getBlogPosts } from "../lib/api";
+import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 
 const logos = ["NOVA", "LUMEN", "KIN", "APEX", "VERDANT", "ORBIT", "MONO", "RIFT"];
 
@@ -184,6 +185,64 @@ const faqs = [
   ["What support do we receive?", "Brands get strategy, market research, creator sourcing, brief support, negotiation, review coordination, posting checks, and final campaign analysis."],
 ];
 
+const homeDescription =
+  "Influnexa is a global influencer marketing agency for brands that need creator research, product review campaigns, UGC production, product seeding, campaign management, and clear reporting.";
+
+const homeBreadcrumbs = [
+  { name: "Home", path: "/" },
+];
+
+const homeJsonLd = [
+  pageSchema({
+    path: "/",
+    title: "Influnexa Global Influencer Marketing Agency",
+    description: homeDescription,
+    breadcrumbs: homeBreadcrumbs,
+  }),
+  breadcrumbSchema("/", homeBreadcrumbs),
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Influnexa influencer marketing services",
+    itemListElement: services.map((service, index) => ({
+      "@type": "Service",
+      position: index + 1,
+      name: service.title,
+      description: service.copy,
+      provider: { "@id": `${SITE_URL}/#organization` },
+      areaServed: "Worldwide",
+      serviceType: service.title,
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: { "@id": `${SITE_URL}/#organization` },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: "5",
+      bestRating: "5",
+    },
+    author: {
+      "@type": "Person",
+      name: testimonials[0][0],
+    },
+    reviewBody: testimonials[0][2],
+  },
+];
+
 const fallbackBlogPosts = [
   {
     title: "How Product Reviews Build Buyer Trust Before Paid Ads Scale",
@@ -351,6 +410,12 @@ export default function Home() {
 
   return (
     <div className={`site ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
+      <SEO
+        title="Influnexa | Global Influencer Marketing Agency"
+        description={homeDescription}
+        path="/"
+        jsonLd={homeJsonLd}
+      />
       <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
 
       <main>
@@ -402,14 +467,14 @@ export default function Home() {
                 </div>
               </div>
               <div className="creator-card creator-one">
-                <img loading="lazy" src={influencers[0].image} alt="Creator profile" />
+                <img loading="lazy" decoding="async" width="96" height="96" src={influencers[0].image} alt="Creator profile for a product review campaign" />
                 <div>
                   <strong>Review campaign</strong>
                   <span>86 products seeded</span>
                 </div>
               </div>
               <div className="creator-card creator-two">
-                <img loading="lazy" src={influencers[1].image} alt="Creator profile" />
+                <img loading="lazy" decoding="async" width="96" height="96" src={influencers[1].image} alt="Creator profile for a UGC production campaign" />
                 <div>
                   <strong>UGC production</strong>
                   <span>42 creators shortlisted</span>
@@ -542,7 +607,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {influencers.map((creator) => (
               <article key={creator.name} className="influencer-card influencer-card-modern">
-                <img loading="lazy" src={creator.image} alt={`${creator.name} profile`} />
+                <img loading="lazy" decoding="async" width="480" height="480" src={creator.image} alt={`${creator.name}, ${creator.category} creator profile`} />
                 <div className="p-6">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-700 dark:bg-cyan-300/10 dark:text-cyan-200">{creator.category}</span>
@@ -621,7 +686,7 @@ export default function Home() {
                 <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">5.0 rated partner</div>
                 <p>"{quote}"</p>
                 <div className="mt-6 flex items-center gap-4">
-                  <img loading="lazy" src={influencers[index % influencers.length].image} alt={`${name} profile`} />
+                  <img loading="lazy" decoding="async" width="96" height="96" src={influencers[index % influencers.length].image} alt={`${name} profile`} />
                   <div>
                     <strong>{name}</strong>
                     <span>{role}</span>
@@ -698,7 +763,7 @@ export default function Home() {
             <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
               Premium global influencer marketing for brands, agencies, startups, e-commerce teams, and creators.
             </p>
-            <form className="mt-6 flex max-w-sm gap-2">
+            <form className="mt-6 flex max-w-sm gap-2" aria-label="Join Influnexa email updates">
               <input className="min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm outline-none" placeholder="Email address" type="email" aria-label="Email address" />
               <button className="rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950" type="submit">Join</button>
             </form>
