@@ -501,76 +501,72 @@ export default function Home() {
       <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
 
       <main>
-        <section id="home" className="hero-shell relative overflow-hidden px-4 pb-20 pt-32 lg:px-6 lg:pb-28 lg:pt-40">
-          <div className="hero-layout mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+        <section id="home" className="hero-shell production-hero relative overflow-hidden px-4 pb-20 pt-32 lg:px-6 lg:pb-28 lg:pt-40">
+          <div className="hero-layout mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="hero-copy relative z-10">
-              <div className="mb-6 inline-flex rounded-full border border-white/50 bg-white/70 px-4 py-2 text-sm font-bold text-primary shadow-lg shadow-indigo-100 backdrop-blur dark:border-white/15 dark:bg-white/10 dark:text-cyan-200">
-                Global creator campaigns for serious brands
-              </div>
-              <h1 className="max-w-5xl text-5xl font-black leading-[1.02] tracking-tight text-slate-950 md:text-7xl dark:text-white">
-                Premium Influencer Campaigns Built to Create{" "}
-                <span className="animated-gradient-text">Measurable Trust</span>
+              <div className="hero-kicker">Influencer marketing operations</div>
+              <h1>
+                Creator campaigns managed with the discipline of a production company.
               </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl dark:text-slate-300">
-                Influnexa operates as your external creator growth team: strategy, sourcing, briefing, product logistics, approvals, publishing checks, and board-ready reporting.
+              <p>
+                Influnexa plans, sources, briefs, approves, coordinates, and reports creator campaigns for brands that need serious execution instead of marketplace noise.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <div className="hero-actions">
                 <Button className="hero-start-campaign-button" href="/register/brand">Start a Campaign</Button>
                 <Button href="/register/influencer" variant="secondary">
                   Join as Creator
                 </Button>
               </div>
-              <div className="hero-signal-row mt-10 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-                {heroSignals.map((item) => (
-                  <div key={item} className="rounded-3xl border border-white/70 bg-white/70 p-4 text-sm font-bold text-slate-700 shadow-lg shadow-indigo-100/50 backdrop-blur dark:border-white/10 dark:bg-white/8 dark:text-slate-100">
-                    {item}
-                  </div>
+              <div className="hero-proof-row">
+                {[
+                  ["50+", "Campaigns delivered"],
+                  ["8+", "Markets covered"],
+                  ["98%", "Client satisfaction"],
+                ].map(([value, label]) => (
+                  <span key={label}>
+                    <strong>{value}</strong>
+                    {label}
+                  </span>
                 ))}
               </div>
             </div>
 
-            <div className="hero-visual relative z-10 min-h-[520px]">
-              <Globe />
-              <div className="hero-dashboard">
-                <div className="dashboard-top">
-                  <span>Campaign studio</span>
-                  <strong>Review + UGC launch plan</strong>
+            <div className="hero-visual production-hero-visual relative z-10">
+              <div className="production-panel">
+                <div className="production-panel-head">
+                  <div>
+                    <span>Live campaign desk</span>
+                    <strong>Product Review Launch</strong>
+                  </div>
+                  <small>Q3 / Global</small>
                 </div>
-                <div className="hero-flow-list">
-                  {heroCampaignFlow.map(([title, copy]) => (
+                <div className="production-status-grid">
+                  {heroCampaignFlow.map(([title, copy], index) => (
                     <div key={title}>
+                      <small>{String(index + 1).padStart(2, "0")}</small>
                       <strong>{title}</strong>
                       <span>{copy}</span>
                     </div>
                   ))}
                 </div>
-                <div className="hero-approval-strip">
-                  <span>Curated creator fit</span>
-                  <span>Brand approval first</span>
-                  <span>Proof-led reporting</span>
+                <div className="production-review-band">
+                  <div>
+                    <span>Creator shortlist</span>
+                    <strong>42</strong>
+                  </div>
+                  <div>
+                    <span>Approval stage</span>
+                    <strong>Brand review</strong>
+                  </div>
+                  <div>
+                    <span>Reporting</span>
+                    <strong>Proof-led</strong>
+                  </div>
                 </div>
               </div>
-              <div className="creator-card creator-one">
-                <img loading="lazy" decoding="async" width="96" height="96" src={influencers[0].image} alt="Creator profile for a product review campaign" />
-                <div>
-                  <strong>Review campaign</strong>
-                  <span>Creator matched to product story</span>
-                </div>
-              </div>
-              <div className="creator-card creator-two">
-                <img loading="lazy" decoding="async" width="96" height="96" src={influencers[1].image} alt="Creator profile for a UGC production campaign" />
-                <div>
-                  <strong>UGC production</strong>
-                  <span>Content brief ready for approval</span>
-                </div>
-              </div>
-              <div className="floating-stat stat-one hero-note-card">
-                <strong>Audience fit</strong>
-                <span>Creators reviewed for niche, tone, and market relevance.</span>
-              </div>
-              <div className="floating-stat stat-two hero-note-card">
-                <strong>Premium control</strong>
-                <span>Briefs, approvals, logistics, and reporting stay managed.</span>
+              <div className="production-side-note">
+                <span>Agency team</span>
+                <strong>Strategy, sourcing, logistics, creator communication, content checks, and final campaign reporting.</strong>
               </div>
             </div>
           </div>
