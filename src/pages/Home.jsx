@@ -360,6 +360,32 @@ function WorkflowIcon({ type }) {
   );
 }
 
+function ContactIcon({ type }) {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    strokeWidth: 2,
+  };
+
+  return (
+    <span className="footer-contact-icon" aria-hidden="true">
+      {type === "email" ? (
+        <svg viewBox="0 0 24 24">
+          <rect {...common} x="3" y="5" width="18" height="14" rx="3" />
+          <path {...common} d="m4 7 8 6 8-6" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24">
+          <path {...common} d="M7.4 19.5 3.8 20.6l1.1-3.5A8.5 8.5 0 1 1 7.4 19.5Z" />
+          <path {...common} d="M9.2 8.8c.2-.5.4-.5.7-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.3 0 .5-.2.7l-.5.6c.8 1.4 1.9 2.4 3.4 3.1l.6-.7c.2-.2.4-.3.7-.2l1.5.7c.3.1.4.3.4.6v.5c0 .3-.1.6-.5.8-.5.3-1.1.4-1.8.3-3-.4-6.5-3.7-7-6.7-.1-.5.1-1 .4-1.2Z" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
 function Globe() {
   const points = [
     ["18%", "34%"],
@@ -815,15 +841,25 @@ export default function Home() {
             </form>
           </div>
           {[
-            ["Services", "Influencer Marketing", "UGC Content", "Reviews", "Analytics"],
-            ["Resources", "Blog", "Case Studies", "Creator Guide", "Brand Guide"],
-            ["Legal", "Privacy", "Terms", "Compliance", "Security"],
-            ["Contact", "info.influnexa@mail.com", "New York", "London", "Singapore"],
+            ["Services", ["Influencer Marketing", "#services"], ["UGC Content", "#services"], ["Reviews", "#services"], ["Analytics", "#services"]],
+            ["Resources", ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
+            ["Legal", ["Privacy", "#home"], ["Terms", "#home"], ["Compliance", "#home"], ["Security", "#home"]],
+            [
+              "Contact",
+              ["info.influnexa@mail.com", "mailto:info.influnexa@mail.com", "email"],
+              ["+91 90014 02531", "https://wa.me/919001402531", "whatsapp"],
+              ["+91 94053 65870", "https://wa.me/919405365870", "whatsapp"],
+            ],
           ].map(([heading, ...links]) => (
             <div key={heading}>
               <h3 className="font-bold">{heading}</h3>
               <div className="mt-4 grid gap-3 text-sm text-slate-400">
-                {links.map((link) => <a key={link} href="#home">{link}</a>)}
+                {links.map(([label, href, icon]) => (
+                  <a className={icon ? "footer-contact-link" : undefined} key={label} href={href}>
+                    {icon && <ContactIcon type={icon} />}
+                    {label}
+                  </a>
+                ))}
               </div>
             </div>
           ))}

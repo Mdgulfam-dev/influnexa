@@ -4107,17 +4107,48 @@ body {
 }
 
 .footer-brand-copy strong {
-  color: #0f172a;
+  color: #f8fafc;
   font-size: 28px;
   font-weight: 950;
 }
 
 .footer-brand-copy small {
-  color: #0f766e;
+  color: #67e8f9;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.footer-panel a {
+  transition: color 180ms ease;
+}
+
+.footer-panel a:hover {
+  color: #ffffff;
+}
+
+.footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-contact-icon {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  border-radius: 999px;
+  background: rgba(103, 232, 249, 0.09);
+  color: #67e8f9;
+}
+
+.footer-contact-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 @media (max-width: 768px) {
