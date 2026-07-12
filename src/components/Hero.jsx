@@ -2,25 +2,18 @@ import Button from "./Button";
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center text-center relative overflow-hidden">
-      {/* Gradient Blob */}
-      <div className="absolute w-[500px] h-[500px] bg-gradient-to-r from-primary to-accent blur-3xl opacity-30 rounded-full"></div>
-
-      <div className="z-10 max-w-3xl">
-        <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-          Find Creators That Actually{" "}
-          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Convert 🚀
-          </span>
+    <section className="hero-shell production-hero relative flex min-h-screen items-center overflow-hidden px-4 py-32">
+      <div className="hero-copy mx-auto max-w-5xl text-center">
+        <div className="hero-kicker mx-auto">Influencer marketing agency</div>
+        <h1>
+          Premium creator campaigns built for brand trust.
         </h1>
-
-        <p className="text-gray-400 mt-4">
-          Connect with top influencers and grow your brand faster.
+        <p className="mx-auto">
+          Influnexa helps brands plan, source, manage, and report influencer marketing, UGC, product review, and creator campaigns with production grade care.
         </p>
-
-        <div className="flex gap-4 justify-center mt-6">
-          <Button>Get Influencers</Button>
-          <Button variant="secondary">Join as Creator</Button>
+        <div className="hero-actions justify-center">
+          <Button href="/register/brand">Start a Campaign</Button>
+          <Button href="/register/influencer" variant="secondary">Join as Creator</Button>
         </div>
       </div>
     </section>

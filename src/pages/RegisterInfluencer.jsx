@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { submitRegistration } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema } from "../lib/seo";
+import { applyTheme, getInitialTheme } from "../lib/theme";
 
 const categories = ["Beauty", "Fashion", "Fitness", "Technology", "Gaming", "Food", "Travel", "Finance", "Education", "Lifestyle", "Healthcare", "Automotive"];
 const contentTypes = ["Product Review", "UGC Video", "Reels/Shorts", "Stories", "Unboxing", "Tutorial", "Static Post", "Blog Review"];
@@ -64,12 +65,12 @@ function toggleValue(values, value) {
 }
 
 export default function RegisterInfluencer() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyTheme(theme);
   }, [theme]);
 
   const updateField = (event) => {
@@ -188,7 +189,7 @@ export default function RegisterInfluencer() {
           </form>
 
           <div className="mt-8 text-center">
-            <Button href="/register/brand" variant="secondary">Register as Brand Instead</Button>
+            <Button className="registration-switch-button" href="/register/brand" variant="secondary">Register as Brand Instead</Button>
           </div>
         </div>
       </main>

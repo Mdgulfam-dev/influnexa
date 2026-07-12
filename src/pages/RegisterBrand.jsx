@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { submitRegistration } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
+import { applyTheme, getInitialTheme } from "../lib/theme";
 
 const campaignTypes = [
   "Influencer Marketing",
@@ -81,13 +82,13 @@ function toggleValue(values, value) {
 }
 
 export default function RegisterBrand() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
   const budgetOptions = budgetOptionsByCurrency[form.budgetCurrency] || budgetOptionsByCurrency.USD;
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyTheme(theme);
   }, [theme]);
 
   const updateField = (event) => {
@@ -219,7 +220,7 @@ export default function RegisterBrand() {
           </form>
 
           <div className="mt-8 text-center">
-            <Button href="/register/influencer" variant="secondary">Register as Influencer Instead</Button>
+            <Button className="registration-switch-button" href="/register/influencer" variant="secondary">Register as Influencer Instead</Button>
           </div>
         </div>
       </main>

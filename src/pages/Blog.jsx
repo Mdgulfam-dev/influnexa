@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { getBlogPost, getBlogPosts } from "../lib/api";
 import SEO, { absoluteUrl, breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
+import { applyTheme, getInitialTheme } from "../lib/theme";
 
 const fallbackBlogPosts = [
   {
@@ -142,14 +143,14 @@ function BlogArticle({ post }) {
 }
 
 export default function Blog() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [posts, setPosts] = useState(fallbackBlogPosts);
   const [post, setPost] = useState(null);
   const [status, setStatus] = useState({ type: "loading", message: "" });
   const slug = window.location.pathname.replace(/^\/blog\/?/, "").replace(/\/$/, "");
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyTheme(theme);
   }, [theme]);
 
   useEffect(() => {

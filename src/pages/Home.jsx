@@ -4,8 +4,9 @@ import Button from "../components/Button";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import { getBlogPosts, getTestimonials, submitTestimonial } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
+import { applyTheme, getInitialTheme } from "../lib/theme";
 
-const logos = ["NOVA", "LUMEN", "KIN", "APEX", "VERDANT", "ORBIT", "MONO", "RIFT"];
+const logos = ["BEAUTY", "FASHION", "TECH", "DTC", "FITNESS", "LIFESTYLE", "FOOD", "FINANCE"];
 
 const stats = [
   ["10,000+", "Verified Creators"],
@@ -57,28 +58,28 @@ const services = [
 const workflowSteps = [
   {
     icon: "brief",
-    title: "brief",
-    copy: "We work with you to determine your goals, then make suggestions off of best practise and data.",
+    title: "Brief",
+    copy: "We define goals, audience, markets, product context, deliverables, budget, and success metrics before sourcing begins.",
   },
   {
     icon: "search",
-    title: "search",
-    copy: "Using your brief and our unique, in-depth detailed, extensive, growing data points on our system, we'll find your perfect Real Influencers.",
+    title: "Research",
+    copy: "Our team builds a creator shortlist around audience quality, content fit, language, category relevance, and brand safety.",
   },
   {
     icon: "train",
-    title: "train",
-    copy: "Selected Real Influencers are trained thoroughly and have specific deliverables and targets.",
+    title: "Align",
+    copy: "Approved creators receive a clear brief, content direction, usage requirements, timelines, and review expectations.",
   },
   {
     icon: "manage",
-    title: "manage",
-    copy: "We manage the campaign on your behalf, ensuring that everything's on track and runs smoothly.",
+    title: "Manage",
+    copy: "Influnexa handles outreach, coordination, product logistics, approvals, posting checks, and creator communication.",
   },
   {
     icon: "report",
-    title: "report",
-    copy: "We'll provide a detailed report on all outcomes, including statistical data and Q&A responses.",
+    title: "Report",
+    copy: "You receive clear reporting with deliverables, proof links, reach, engagement, review status, and next-step insight.",
   },
 ];
 
@@ -110,56 +111,54 @@ const industries = [
 
 const influencers = [
   {
-    name: "Khaby Lame",
-    category: "Comedy",
-    specialty: "Silent comedy and life-hack reaction content",
-    country: "Senegal / Italy",
-    languages: "Wordless global comedy",
-    sourceUrl: "https://en.wikipedia.org/wiki/Khaby_Lame",
+    name: "KL BRO Biju Rithvik",
+    category: "Family Lifestyle",
+    specialty: "Malayalam family vlogs and short-form organic reach",
+    country: "Kerala, India",
+    languages: "Malayalam",
+    sourceUrl: "https://en.wikipedia.org/wiki/KL_Bro_Biju",
     metrics: [
-      ["160.3M", "TikTok followers"],
-      ["12.6M", "YouTube subscribers"],
-      ["4.6B", "YouTube views"],
-      ["Most-followed", "TikTok creator"],
+      ["84.7M", "YouTube subscribers"],
+      ["100.20B", "YouTube views"],
+      ["#1", "India creator list 2025"],
+      ["Family", "Lifestyle category"],
     ],
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Khaby_Lame%2C_Nov_2025_%28cropped1%29.jpg/500px-Khaby_Lame%2C_Nov_2025_%28cropped1%29.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Biju_klbro.jpg/500px-Biju_klbro.jpg",
   },
   {
-    name: "Marques Brownlee",
-    category: "Technology",
-    specialty: "Consumer electronics reviews and tech explainers",
-    country: "United States",
-    languages: "English",
-    sourceUrl: "https://en.wikipedia.org/wiki/Marques_Brownlee",
+    name: "Bhuvan Bam",
+    category: "Comedy & Storytelling",
+    specialty: "Character-led comedy, music, and long-form digital storytelling",
+    country: "Delhi, India",
+    languages: "Hindi, English",
+    sourceUrl: "https://en.wikipedia.org/wiki/Bhuvan_Bam",
     metrics: [
-      ["20.9M", "YouTube subscribers"],
-      ["5.374B", "Main-channel views"],
-      ["2008", "YouTube start"],
-      ["MKBHD", "Creator brand"],
+      ["26.5M", "YouTube subscribers"],
+      ["5.34B", "YouTube views"],
+      ["BB Ki Vines", "Creator brand"],
+      ["Comedy", "Content category"],
     ],
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Marques_Brownlee_cropped.jpg/500px-Marques_Brownlee_cropped.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/64/Bhuvan_Bam_at_Myntra%27s_Creator_Fest_2023_event_%28cropped%29.jpg",
   },
   {
-    name: "Zach King",
-    category: "Visual Effects",
-    specialty: "Digital sleight-of-hand short-form video",
-    country: "United States",
-    languages: "English",
-    sourceUrl: "https://en.wikipedia.org/wiki/Zach_King",
+    name: "Prajakta Koli",
+    category: "Lifestyle & Comedy",
+    specialty: "Relatable comedy, youth culture, social impact, and brand-safe storytelling",
+    country: "Mumbai, India",
+    languages: "Hindi, English",
+    sourceUrl: "https://en.wikipedia.org/wiki/Prajakta_Koli",
     metrics: [
-      ["84.4M", "TikTok followers"],
-      ["43M", "YouTube subscribers"],
-      ["23B", "YouTube views"],
-      ["Filmmaker", "Creator type"],
+      ["7.25M", "YouTube subscribers"],
+      ["1.97B", "YouTube views"],
+      ["TIME100", "Creators list 2025"],
+      ["MostlySane", "Creator brand"],
     ],
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Zach_King_Photo.jpg/500px-Zach_King_Photo.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Prajakta_koli_in_2023.jpj.png/500px-Prajakta_koli_in_2023.jpj.png",
   },
 ];
-
-const heroSignals = ["Strategy-led", "Brand-safe", "Human-reviewed", "Ready to scale"];
 
 const heroCampaignFlow = [
   ["Brief", "Audience, markets, product fit"],
@@ -188,9 +187,9 @@ const brandSignals = [
 ];
 
 const caseStudies = [
-  ["Skincare Launch", "Beauty", "86 creators", "18.4M reach", "8.7%", "4.8x", "Influnexa helped us turn creator trust into measurable first-month revenue."],
-  ["Product Review Sprint", "Technology", "42 creators", "7.9M reach", "6.2%", "3.6x", "The creator fit, review quality, and final report were stronger than our previous agency work."],
-  ["DTC Holiday Push", "Fashion", "118 creators", "24.1M reach", "9.1%", "5.2x", "Campaign setup, approvals, and content reuse all moved faster than expected."],
+  ["Skincare Launch Model", "Beauty", "86 creators", "18.4M planned reach", "8.7%", "4.8x", "Example framework for trust-led creator reviews, UGC reuse, and launch-week reporting."],
+  ["Product Review Sprint", "Technology", "42 creators", "7.9M planned reach", "6.2%", "3.6x", "Example framework for reviewer selection, product education, content checks, and proof collection."],
+  ["DTC Holiday Push", "Fashion", "118 creators", "24.1M planned reach", "9.1%", "5.2x", "Example framework for seasonal creator production, approvals, usage rights, and performance reporting."],
 ];
 
 const faqs = [
@@ -421,14 +420,14 @@ function FAQ() {
 }
 
 export default function Home() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [blogPosts, setBlogPosts] = useState(fallbackBlogPosts);
   const [testimonials, setTestimonials] = useState([]);
   const [reviewForm, setReviewForm] = useState(initialReviewForm);
   const [reviewStatus, setReviewStatus] = useState({ type: "idle", message: "" });
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyTheme(theme);
   }, [theme]);
 
   useEffect(() => {
@@ -506,10 +505,10 @@ export default function Home() {
             <div className="hero-copy relative z-10">
               <div className="hero-kicker">Influencer marketing operations</div>
               <h1>
-                Creator campaigns managed with the discipline of a production company.
+                Premium influencer campaigns managed with production grade discipline.
               </h1>
               <p>
-                Influnexa plans, sources, briefs, approves, coordinates, and reports creator campaigns for brands that need serious execution instead of marketplace noise.
+                Influnexa plans, sources, briefs, approves, coordinates, and reports creator campaigns for brands that need credible execution, polished content, and measurable proof.
               </p>
               <div className="hero-actions">
                 <Button className="hero-start-campaign-button" href="/register/brand">Start a Campaign</Button>
@@ -684,7 +683,7 @@ export default function Home() {
 
         <section id="influencers" className="creator-network-section px-4 py-20 lg:px-6">
           <SectionHeader eyebrow="Creator network" title="Real public creator examples for brand-safe campaign planning">
-            Explore source-backed influencer profiles across comedy, technology, and short-form visual storytelling. These are public examples for research quality, not partnership claims.
+            Explore India-focused public creator examples across family lifestyle, comedy, and youth culture. These are source-backed research examples, not partnership claims.
           </SectionHeader>
           <div className="creator-network-grid mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {influencers.map((creator) => (
@@ -737,7 +736,7 @@ export default function Home() {
                 We research creators by market, language, product category, audience quality, and brand fit before sharing options with the client.
               </SectionHeader>
               <div className="trust-banner">
-                <span>50+ countries activated</span>
+                <span>8+ countries activated</span>
                 <span>Multi-language creator sourcing</span>
                 <span>Local cultural fit review</span>
               </div>
@@ -763,7 +762,7 @@ export default function Home() {
                     <span key={label}><strong>{value}</strong>{label}</span>
                   ))}
                 </div>
-                <p className="mt-6 text-slate-600 dark:text-slate-300">"{quote}"</p>
+                  <p className="mt-6 text-slate-600 dark:text-slate-300">{quote}</p>
               </article>
             ))}
           </div>
