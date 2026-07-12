@@ -9,10 +9,10 @@ const logos = ["NOVA", "LUMEN", "KIN", "APEX", "VERDANT", "ORBIT", "MONO", "RIFT
 
 const stats = [
   ["10,000+", "Verified Creators"],
-  ["500+", "Campaigns Delivered"],
-  ["50+", "Countries Reached"],
+  ["50+", "Campaigns Delivered"],
+  ["8+", "Countries Reached"],
   ["98%", "Client Satisfaction"],
-  ["120M+", "Audience Reach"],
+  ["1.3M+", "Audience Reach"],
 ];
 
 const services = [
@@ -502,8 +502,8 @@ export default function Home() {
 
       <main>
         <section id="home" className="hero-shell relative overflow-hidden px-4 pb-20 pt-32 lg:px-6 lg:pb-28 lg:pt-40">
-          <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="relative z-10">
+          <div className="hero-layout mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="hero-copy relative z-10">
               <div className="mb-6 inline-flex rounded-full border border-white/50 bg-white/70 px-4 py-2 text-sm font-bold text-primary shadow-lg shadow-indigo-100 backdrop-blur dark:border-white/15 dark:bg-white/10 dark:text-cyan-200">
                 Global creator campaigns for serious brands
               </div>
@@ -529,7 +529,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative z-10 min-h-[520px]">
+            <div className="hero-visual relative z-10 min-h-[520px]">
               <Globe />
               <div className="hero-dashboard">
                 <div className="dashboard-top">
