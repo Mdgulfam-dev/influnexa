@@ -4,16 +4,19 @@ import {
   createAdminUser,
   deleteAdminUser,
   deleteBlogPost,
+  deleteTestimonial,
   getAdminDashboard,
   loginAdmin,
   logoutAdmin,
   updateAdminUser,
   updateRegistrationStatus,
+  updateTestimonialStatus,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 
 const brandStatuses = ["new", "contacted", "qualified", "closed"];
 const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
+const testimonialStatuses = ["pending", "approved", "rejected"];
 
 const initialBlogForm = {
   title: "",
@@ -39,6 +42,7 @@ const emptyDashboardData = {
   brands: [],
   influencers: [],
   blogs: [],
+  testimonials: [],
   users: [],
   currentUser: null,
 };
@@ -49,6 +53,7 @@ function normalizeDashboardData(dashboard = {}) {
     brands: Array.isArray(dashboard.brands) ? dashboard.brands : [],
     influencers: Array.isArray(dashboard.influencers) ? dashboard.influencers : [],
     blogs: Array.isArray(dashboard.blogs) ? dashboard.blogs : [],
+    testimonials: Array.isArray(dashboard.testimonials) ? dashboard.testimonials : [],
     users: Array.isArray(dashboard.users) ? dashboard.users : [],
     currentUser: dashboard.currentUser || null,
   };
@@ -70,7 +75,7 @@ function Pill({ children, tone = "default" }) {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["brands", "influencers", "blogs", "users"].includes(requestedTab) ? requestedTab : "brands";
+    return ["brands", "influencers", "blogs", "testimonials", "users"].includes(requestedTab) ? requestedTab : "brands";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -86,6 +91,7 @@ export default function AdminDashboard() {
       ["brands", `Brands (${data.brands.length})`],
       ["influencers", `Influencers (${data.influencers.length})`],
       ["blogs", `Blogs (${data.blogs.length})`],
+      ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["users", `Users (${data.users.length})`],
     ],
     [data]
@@ -145,6 +151,16 @@ export default function AdminDashboard() {
     try {
       await updateRegistrationStatus(type, id, nextStatus);
       await loadDashboard();
+    } catch (error) {
+      setStatus({ type: "error", message: error.message });
+    }
+  };
+
+  const updateReviewStatus = async (id, nextStatus) => {
+    try {
+      await updateTestimonialStatus(id, nextStatus);
+      await loadDashboard();
+      setActiveTab("testimonials");
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
@@ -266,6 +282,17 @@ export default function AdminDashboard() {
     }
   };
 
+  const removeTestimonial = async (id) => {
+    try {
+      await deleteTestimonial(id);
+      await loadDashboard();
+      setActiveTab("testimonials");
+      setStatus({ type: "success", message: "Testimonial removed." });
+    } catch (error) {
+      setStatus({ type: "error", message: error.message });
+    }
+  };
+
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
 
@@ -371,6 +398,7 @@ export default function AdminDashboard() {
           <article><span>Brands</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new</small></article>
           <article><span>Influencers</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new</small></article>
           <article><span>Blogs</span><strong>{data.stats.blogs || 0}</strong><small>{data.stats.publishedBlogs || 0} published</small></article>
+          <article><span>Testimonials</span><strong>{data.stats.testimonials || 0}</strong><small>{data.stats.pendingTestimonials || 0} pending</small></article>
           <article><span>Users</span><strong>{data.stats.users || 0}</strong><small>{data.currentUser?.role || "admin"} access</small></article>
         </div>
 
@@ -512,6 +540,45 @@ export default function AdminDashboard() {
                   </article>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "testimonials" && (
+          <div className="admin-panel">
+            <h2>Testimonial approvals</h2>
+            <div className="admin-blog-list">
+              {data.testimonials.map((testimonial) => (
+                <article key={testimonial._id}>
+                  <div>
+                    <Pill tone={testimonial.status === "approved" ? "success" : testimonial.status === "rejected" ? "error" : "default"}>
+                      {testimonial.status}
+                    </Pill>
+                    <h3>{testimonial.name}</h3>
+                    <p>"{testimonial.quote}"</p>
+                    <span>
+                      {testimonial.role} - {testimonial.email || "No email"} - {testimonial.rating || 5}.0 rating - {formatDate(testimonial.createdAt)}
+                    </span>
+                  </div>
+                  <div className="admin-row-actions">
+                    <select
+                      value={testimonial.status}
+                      onChange={(event) => updateReviewStatus(testimonial._id, event.target.value)}
+                    >
+                      {testimonialStatuses.map((item) => <option key={item}>{item}</option>)}
+                    </select>
+                    <button type="button" onClick={() => removeTestimonial(testimonial._id)}>Delete</button>
+                  </div>
+                </article>
+              ))}
+              {data.testimonials.length === 0 && (
+                <article>
+                  <div>
+                    <h3>No testimonials yet</h3>
+                    <p>Submitted reviews will appear here for approval.</p>
+                  </div>
+                </article>
+              )}
             </div>
           </div>
         )}

@@ -135,6 +135,34 @@ export async function getBlogPost(slug) {
   return data.post;
 }
 
+export async function getTestimonials() {
+  const response = await fetch(`${API_BASE_URL}/testimonials`);
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to load testimonials.");
+  }
+
+  return data.testimonials || [];
+}
+
+export async function submitTestimonial(payload) {
+  const response = await fetch(`${API_BASE_URL}/testimonials`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to submit review.");
+  }
+
+  return data;
+}
+
 export async function createBlogPost(payload) {
   const response = await fetch(`${API_BASE_URL}/blogs`, {
     method: "POST",
@@ -168,6 +196,44 @@ export async function deleteBlogPost(id) {
       clearAdminToken();
     }
     throw new Error(data.message || "Unable to delete blog post.");
+  }
+
+  return data;
+}
+
+export async function updateTestimonialStatus(id, status) {
+  const response = await fetch(`${API_BASE_URL}/admin/testimonials/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...adminHeaders(),
+    },
+    body: JSON.stringify({ status }),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+    throw new Error(data.message || "Unable to update testimonial status.");
+  }
+
+  return data;
+}
+
+export async function deleteTestimonial(id) {
+  const response = await fetch(`${API_BASE_URL}/admin/testimonials/${id}`, {
+    method: "DELETE",
+    headers: adminHeaders(),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+    throw new Error(data.message || "Unable to delete testimonial.");
   }
 
   return data;

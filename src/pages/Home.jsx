@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import influnexaLogo from "../assets/influnexa-logo.png";
-import { getBlogPosts } from "../lib/api";
+import { getBlogPosts, getTestimonials, submitTestimonial } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 
 const logos = ["NOVA", "LUMEN", "KIN", "APEX", "VERDANT", "ORBIT", "MONO", "RIFT"];
@@ -193,12 +193,6 @@ const caseStudies = [
   ["DTC Holiday Push", "Fashion", "118 creators", "24.1M reach", "9.1%", "5.2x", "Campaign setup, approvals, and content reuse all moved faster than expected."],
 ];
 
-const testimonials = [
-  ["Elena Brooks", "CMO, Lumen Beauty", "A premium campaign partner with the operational discipline of an enterprise agency team."],
-  ["Jordan Lee", "Creator, Tech Reviews", "The briefs are clear, product expectations are realistic, and communication stays professional."],
-  ["Priya Menon", "Founder, Orbit Home", "We launched in three countries without building a creator team from scratch."],
-];
-
 const faqs = [
   ["How does the campaign process work?", "You share your product, target audience, countries, budget, and goals. Influnexa researches creator options, shares a shortlist for approval, manages contracts and content, then reports results."],
   ["How is pricing structured?", "Pricing depends on creator volume, markets, deliverables, licensing, and management level. Fixed campaign packages and custom retainers are both supported."],
@@ -251,21 +245,6 @@ const homeJsonLd = [
       },
     })),
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "Review",
-    itemReviewed: { "@id": `${SITE_URL}/#organization` },
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: "5",
-      bestRating: "5",
-    },
-    author: {
-      "@type": "Person",
-      name: testimonials[0][0],
-    },
-    reviewBody: testimonials[0][2],
-  },
 ];
 
 const fallbackBlogPosts = [
@@ -291,6 +270,14 @@ const fallbackBlogPosts = [
     excerpt: "The audience, content, and trust signals that matter before creator selection.",
   },
 ];
+
+const initialReviewForm = {
+  name: "",
+  role: "",
+  email: "",
+  quote: "",
+  rating: "5",
+};
 
 function SectionHeader({ eyebrow, title, children, light = false }) {
   return (
@@ -436,6 +423,9 @@ function FAQ() {
 export default function Home() {
   const [theme, setTheme] = useState("light");
   const [blogPosts, setBlogPosts] = useState(fallbackBlogPosts);
+  const [testimonials, setTestimonials] = useState([]);
+  const [reviewForm, setReviewForm] = useState(initialReviewForm);
+  const [reviewStatus, setReviewStatus] = useState({ type: "idle", message: "" });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -458,6 +448,47 @@ export default function Home() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    getTestimonials()
+      .then((items) => {
+        if (active) {
+          setTestimonials(items);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setTestimonials([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const updateReviewField = (event) => {
+    const { name, value } = event.target;
+    setReviewForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const submitReview = async (event) => {
+    event.preventDefault();
+    setReviewStatus({ type: "loading", message: "Submitting your review..." });
+
+    try {
+      await submitTestimonial({
+        ...reviewForm,
+        rating: Number(reviewForm.rating) || 5,
+      });
+      setReviewForm(initialReviewForm);
+      setReviewStatus({ type: "success", message: "Thanks! Your review will appear after admin approval." });
+    } catch (error) {
+      setReviewStatus({ type: "error", message: error.message });
+    }
+  };
 
   return (
     <div className={`site ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
@@ -745,20 +776,44 @@ export default function Home() {
         <section className="px-4 py-20 lg:px-6">
           <SectionHeader eyebrow="Testimonials" title="Loved by brands and creators" />
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
-            {testimonials.map(([name, role, quote], index) => (
-              <article key={name} className="testimonial-card testimonial-card-modern">
-                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">5.0 rated partner</div>
-                <p>"{quote}"</p>
-                <div className="mt-6 flex items-center gap-4">
-                  <img loading="lazy" decoding="async" width="96" height="96" src={influencers[index % influencers.length].image} alt={`${name} profile`} />
-                  <div>
-                    <strong>{name}</strong>
-                    <span>{role}</span>
-                  </div>
+            {testimonials.map((testimonial) => (
+              <article key={testimonial._id || testimonial.name} className="testimonial-card testimonial-card-modern">
+                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">{testimonial.rating || 5}.0 rated partner</div>
+                <p>"{testimonial.quote}"</p>
+                <div className="testimonial-author">
+                  <strong>{testimonial.name}</strong>
+                  <span>{testimonial.role}</span>
                 </div>
               </article>
             ))}
+            {testimonials.length === 0 && (
+              <article className="testimonial-card testimonial-card-modern testimonial-empty">
+                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">Reviews pending</div>
+                <p>Approved client and creator reviews will appear here after moderation.</p>
+              </article>
+            )}
           </div>
+          <form className="testimonial-form" onSubmit={submitReview}>
+            <div>
+              <h3>Share your Influnexa experience</h3>
+              <p>Submitted reviews are reviewed by the admin team before publishing.</p>
+            </div>
+            <div className="testimonial-form-grid">
+              <label>Name<input name="name" value={reviewForm.name} onChange={updateReviewField} required /></label>
+              <label>Role or company<input name="role" value={reviewForm.role} onChange={updateReviewField} required /></label>
+              <label>Email<input name="email" type="email" value={reviewForm.email} onChange={updateReviewField} /></label>
+              <label>Rating<select name="rating" value={reviewForm.rating} onChange={updateReviewField}>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+              </select></label>
+              <label className="wide">Review<textarea name="quote" value={reviewForm.quote} onChange={updateReviewField} rows="4" required /></label>
+            </div>
+            {reviewStatus.message && <div className={`testimonial-status ${reviewStatus.type}`}>{reviewStatus.message}</div>}
+            <button type="submit">Submit Review</button>
+          </form>
         </section>
 
         <section className="px-4 py-20 lg:px-6">
