@@ -4022,3 +4022,161 @@ body {
     height: 138px;
   }
 }
+
+/* Text-based brand lockup for the square logo mark */
+.brand-lockup {
+  gap: 12px;
+  min-width: 230px;
+}
+
+.brand-logo-frame,
+.site.dark .brand-logo-frame {
+  width: 54px;
+  height: 54px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: #111827;
+  box-shadow:
+    0 14px 30px rgba(2, 6, 23, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.brand-logo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: none;
+  filter: none;
+}
+
+.brand-copy {
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+}
+
+.brand-copy strong {
+  color: #f8fafc;
+  font-size: 21px;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.brand-copy small {
+  color: #99f6e4;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footer-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: inherit;
+}
+
+.footer-logo-frame,
+.site.dark .footer-logo-frame {
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: #111827;
+  box-shadow: 0 16px 34px rgba(2, 6, 23, 0.22);
+}
+
+.footer-logo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: none;
+}
+
+.footer-brand-copy {
+  display: grid;
+  gap: 4px;
+  line-height: 1;
+}
+
+.footer-brand-copy strong {
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.footer-brand-copy small {
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .brand-lockup {
+    min-width: 0;
+  }
+
+  .brand-logo-frame,
+  .site.dark .brand-logo-frame {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .brand-copy strong {
+    font-size: 18px;
+  }
+
+  .brand-copy small {
+    font-size: 8px;
+  }
+
+  .footer-logo-frame,
+  .site.dark .footer-logo-frame {
+    width: 58px;
+    height: 58px;
+  }
+}
+
+.fixed.inset-x-0.top-0 > div:first-child {
+  min-height: 82px;
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(circle at 12% 50%, rgba(20, 184, 166, 0.12), transparent 24%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.9));
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.24);
+}
+
+.nav-menu {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.nav-menu a {
+  color: #e5e7eb;
+}
+
+.nav-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.fixed.inset-x-0.top-0 .premium-button {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.fixed.inset-x-0.top-0 .premium-button span,
+.fixed.inset-x-0.top-0 .premium-button .button-arrow {
+  color: #ffffff;
+}

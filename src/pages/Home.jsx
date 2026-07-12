@@ -797,8 +797,14 @@ export default function Home() {
       <footer className="bg-slate-950 px-4 py-14 text-white lg:px-6">
         <div className="footer-panel mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
-            <a className="footer-logo-frame" href="/#home" aria-label="Influnexa home">
-              <img src={influnexaLogo} alt="Influnexa" />
+            <a className="footer-brand-lockup" href="/#home" aria-label="Influnexa home">
+              <span className="footer-logo-frame">
+                <img src={influnexaLogo} alt="Influnexa" />
+              </span>
+              <span className="footer-brand-copy">
+                <strong>Influnexa</strong>
+                <small>Influence, connect, grow</small>
+              </span>
             </a>
             <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
               Premium global influencer marketing for brands, agencies, startups, e-commerce teams, and creators.
@@ -812,7 +818,7 @@ export default function Home() {
             ["Services", "Influencer Marketing", "UGC Content", "Reviews", "Analytics"],
             ["Resources", "Blog", "Case Studies", "Creator Guide", "Brand Guide"],
             ["Legal", "Privacy", "Terms", "Compliance", "Security"],
-            ["Contact", "hello@influnexa.com", "New York", "London", "Singapore"],
+            ["Contact", "info.influnexa@mail.com", "New York", "London", "Singapore"],
           ].map(([heading, ...links]) => (
             <div key={heading}>
               <h3 className="font-bold">{heading}</h3>

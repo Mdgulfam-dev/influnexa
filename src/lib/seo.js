@@ -11,10 +11,17 @@ export const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/favicon.svg`,
-  email: "hello@influnexa.com",
+  email: "info.influnexa@mail.com",
   description:
     "Influnexa is a global influencer marketing agency for creator sourcing, product review campaigns, UGC production, product seeding, campaign management, and reporting.",
-  areaServed: ["United States", "United Kingdom", "Europe", "Middle East", "Asia-Pacific", "Worldwide"],
+  areaServed: [
+    "United States",
+    "United Kingdom",
+    "Europe",
+    "Middle East",
+    "Asia-Pacific",
+    "Worldwide",
+  ],
   serviceType: [
     "Influencer Marketing",
     "Product Rating and Review Campaigns",

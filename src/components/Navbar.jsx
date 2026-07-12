@@ -37,6 +37,10 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
           <span className="brand-logo-frame">
             <img src={influnexaLogo} alt="Influnexa" />
           </span>
+          <span className="brand-copy">
+            <strong>Influnexa</strong>
+            <small>Influence, connect, grow</small>
+          </span>
         </a>
 
         <div className="nav-menu hidden items-center gap-1 text-[13px] font-bold text-slate-200 lg:flex">
