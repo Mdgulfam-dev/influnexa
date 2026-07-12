@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "./Button";
+import influnexaLogo from "../assets/influnexa-logo.png";
 
 const navItems = [
   ["Home", "/#home"],
@@ -32,11 +33,10 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
       aria-label="Primary navigation"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-6">
-        <a href="/#home" className="brand-lockup flex items-center gap-3" aria-label="Influnexa home">
-          <span className="brand-mark grid h-11 w-11 place-items-center rounded-2xl text-sm font-black text-white">
-            IN
+        <a href="/#home" className="brand-lockup flex items-center" aria-label="Influnexa home">
+          <span className="brand-logo-frame">
+            <img src={influnexaLogo} alt="Influnexa" />
           </span>
-          <span className="text-lg font-black tracking-tight text-white">Influnexa</span>
         </a>
 
         <div className="nav-menu hidden items-center gap-1 text-[13px] font-bold text-slate-200 lg:flex">

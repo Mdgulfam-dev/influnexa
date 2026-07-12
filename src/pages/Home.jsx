@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
+import influnexaLogo from "../assets/influnexa-logo.png";
 import { getBlogPosts } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 
@@ -109,38 +110,62 @@ const industries = [
 
 const influencers = [
   {
-    name: "Amara Vale",
-    category: "Beauty",
-    followers: "1.2M",
-    engagement: "6.8%",
-    country: "United Kingdom",
-    languages: "English, French",
-    views: "420K",
+    name: "Khaby Lame",
+    category: "Comedy",
+    specialty: "Silent comedy and life-hack reaction content",
+    country: "Senegal / Italy",
+    languages: "Wordless global comedy",
+    sourceUrl: "https://en.wikipedia.org/wiki/Khaby_Lame",
+    metrics: [
+      ["160.3M", "TikTok followers"],
+      ["12.6M", "YouTube subscribers"],
+      ["4.6B", "YouTube views"],
+      ["Most-followed", "TikTok creator"],
+    ],
     image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=480&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Khaby_Lame%2C_Nov_2025_%28cropped1%29.jpg/500px-Khaby_Lame%2C_Nov_2025_%28cropped1%29.jpg",
   },
   {
-    name: "Kai Moreno",
+    name: "Marques Brownlee",
     category: "Technology",
-    followers: "840K",
-    engagement: "5.4%",
+    specialty: "Consumer electronics reviews and tech explainers",
     country: "United States",
-    languages: "English, Spanish",
-    views: "310K",
+    languages: "English",
+    sourceUrl: "https://en.wikipedia.org/wiki/Marques_Brownlee",
+    metrics: [
+      ["20.9M", "YouTube subscribers"],
+      ["5.374B", "Main-channel views"],
+      ["2008", "YouTube start"],
+      ["MKBHD", "Creator brand"],
+    ],
     image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=480&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Marques_Brownlee_cropped.jpg/500px-Marques_Brownlee_cropped.jpg",
   },
   {
-    name: "Mina Sato",
-    category: "Lifestyle",
-    followers: "690K",
-    engagement: "7.1%",
-    country: "Japan",
-    languages: "Japanese, English",
-    views: "280K",
+    name: "Zach King",
+    category: "Visual Effects",
+    specialty: "Digital sleight-of-hand short-form video",
+    country: "United States",
+    languages: "English",
+    sourceUrl: "https://en.wikipedia.org/wiki/Zach_King",
+    metrics: [
+      ["84.4M", "TikTok followers"],
+      ["43M", "YouTube subscribers"],
+      ["23B", "YouTube views"],
+      ["Filmmaker", "Creator type"],
+    ],
     image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=480&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Zach_King_Photo.jpg/500px-Zach_King_Photo.jpg",
   },
+];
+
+const heroSignals = ["Strategy-led", "Brand-safe", "Human-reviewed", "Ready to scale"];
+
+const heroCampaignFlow = [
+  ["Brief", "Audience, markets, product fit"],
+  ["Match", "Creator style and trust signals"],
+  ["Approve", "Brand review before outreach"],
+  ["Launch", "Managed content and reporting"],
 ];
 
 const reasons = [
@@ -361,21 +386,21 @@ function FAQ() {
   const [open, setOpen] = useState(0);
 
   return (
-    <div className="mx-auto max-w-4xl divide-y divide-slate-200 overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-xl shadow-slate-200/60 dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
+    <div className="faq-panel mx-auto max-w-4xl divide-y divide-slate-200 overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-xl shadow-slate-200/60 dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
       {faqs.map(([question, answer], index) => (
-        <div key={question}>
+        <div className="faq-item" key={question}>
           <button
-            className="flex w-full items-center justify-between gap-5 px-6 py-5 text-left text-base font-bold text-slate-950 dark:text-white"
+            className="faq-question-button flex w-full items-center justify-between gap-5 px-6 py-5 text-left text-base font-bold text-slate-950 dark:text-white"
             type="button"
             onClick={() => setOpen(open === index ? -1 : index)}
             aria-expanded={open === index}
           >
-            {question}
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-primary dark:bg-white/10">
+            <span className="faq-question-text">{question}</span>
+            <span className="faq-icon grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-primary dark:bg-white/10">
               {open === index ? "-" : "+"}
             </span>
           </button>
-          {open === index && <p className="px-6 pb-6 leading-7 text-slate-600 dark:text-slate-300">{answer}</p>}
+          {open === index && <p className="faq-answer px-6 pb-6 leading-7 text-slate-600 dark:text-slate-300">{answer}</p>}
         </div>
       ))}
     </div>
@@ -433,13 +458,13 @@ export default function Home() {
                 Influnexa operates as your external creator growth team: strategy, sourcing, briefing, product logistics, approvals, publishing checks, and board-ready reporting.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Button href="/register/brand">Start a Campaign</Button>
+                <Button className="hero-start-campaign-button" href="/register/brand">Start a Campaign</Button>
                 <Button href="/register/influencer" variant="secondary">
                   Join as Creator
                 </Button>
               </div>
-              <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-                {["Strategy Desk", "Verified Creators", "Live Reporting", "Managed Delivery"].map((item) => (
+              <div className="hero-signal-row mt-10 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
+                {heroSignals.map((item) => (
                   <div key={item} className="rounded-3xl border border-white/70 bg-white/70 p-4 text-sm font-bold text-slate-700 shadow-lg shadow-indigo-100/50 backdrop-blur dark:border-white/10 dark:bg-white/8 dark:text-slate-100">
                     {item}
                   </div>
@@ -451,42 +476,44 @@ export default function Home() {
               <Globe />
               <div className="hero-dashboard">
                 <div className="dashboard-top">
-                  <span>Live agency desk</span>
-                  <strong>Review + UGC Campaign</strong>
+                  <span>Campaign studio</span>
+                  <strong>Review + UGC launch plan</strong>
                 </div>
-                <div className="dashboard-bars">
-                  <span style={{ width: "84%" }} />
-                  <span style={{ width: "68%" }} />
-                  <span style={{ width: "92%" }} />
+                <div className="hero-flow-list">
+                  {heroCampaignFlow.map(([title, copy]) => (
+                    <div key={title}>
+                      <strong>{title}</strong>
+                      <span>{copy}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="dashboard-grid">
-                  <div><strong>42</strong><span>Creators shortlisted</span></div>
-                  <div><strong>18</strong><span>Products dispatched</span></div>
-                  <div><strong>31</strong><span>Content proofs</span></div>
-                  <div><strong>7.4%</strong><span>Engagement</span></div>
+                <div className="hero-approval-strip">
+                  <span>Curated creator fit</span>
+                  <span>Brand approval first</span>
+                  <span>Proof-led reporting</span>
                 </div>
               </div>
               <div className="creator-card creator-one">
                 <img loading="lazy" decoding="async" width="96" height="96" src={influencers[0].image} alt="Creator profile for a product review campaign" />
                 <div>
                   <strong>Review campaign</strong>
-                  <span>86 products seeded</span>
+                  <span>Creator matched to product story</span>
                 </div>
               </div>
               <div className="creator-card creator-two">
                 <img loading="lazy" decoding="async" width="96" height="96" src={influencers[1].image} alt="Creator profile for a UGC production campaign" />
                 <div>
                   <strong>UGC production</strong>
-                  <span>42 creators shortlisted</span>
+                  <span>Content brief ready for approval</span>
                 </div>
               </div>
-              <div className="floating-stat stat-one">
-                <strong>98%</strong>
-                <span>Client satisfaction</span>
+              <div className="floating-stat stat-one hero-note-card">
+                <strong>Audience fit</strong>
+                <span>Creators reviewed for niche, tone, and market relevance.</span>
               </div>
-              <div className="floating-stat stat-two">
-                <strong>50+</strong>
-                <span>Countries reached</span>
+              <div className="floating-stat stat-two hero-note-card">
+                <strong>Premium control</strong>
+                <span>Briefs, approvals, logistics, and reporting stay managed.</span>
               </div>
             </div>
           </div>
@@ -602,25 +629,36 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="influencers" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Creator network" title="Creator profiles displayed like a premium talent network" />
-          <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
+        <section id="influencers" className="creator-network-section px-4 py-20 lg:px-6">
+          <SectionHeader eyebrow="Creator network" title="Real public creator examples for brand-safe campaign planning">
+            Explore source-backed influencer profiles across comedy, technology, and short-form visual storytelling. These are public examples for research quality, not partnership claims.
+          </SectionHeader>
+          <div className="creator-network-grid mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {influencers.map((creator) => (
               <article key={creator.name} className="influencer-card influencer-card-modern">
-                <img loading="lazy" decoding="async" width="480" height="480" src={creator.image} alt={`${creator.name}, ${creator.category} creator profile`} />
-                <div className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-700 dark:bg-cyan-300/10 dark:text-cyan-200">{creator.category}</span>
-                    <span className="text-sm font-bold text-primary">{creator.country}</span>
+                <div className="creator-photo-wrap">
+                  <img loading="lazy" decoding="async" width="480" height="480" src={creator.image} alt={`${creator.name}, ${creator.category} creator profile`} />
+                  <div className="creator-photo-overlay">
+                    <span>{creator.category}</span>
+                    <strong>{creator.specialty}</strong>
+                  </div>
+                </div>
+                <div className="p-6 creator-profile-body">
+                  <div className="creator-profile-top">
+                    <span>{creator.country}</span>
+                    <small>{creator.languages}</small>
                   </div>
                   <h3 className="text-2xl font-black">{creator.name}</h3>
                   <div className="creator-metrics">
-                    <span><strong>{creator.followers}</strong><small>Followers</small></span>
-                    <span><strong>{creator.engagement}</strong><small>Engagement</small></span>
-                    <span><strong>{creator.views}</strong><small>Avg views</small></span>
-                    <span><strong>{creator.languages}</strong><small>Languages</small></span>
+                    {creator.metrics.map(([value, label]) => (
+                      <span key={label}><strong>{value}</strong><small>{label}</small></span>
+                    ))}
                   </div>
-                  <Button className="mt-6 w-full" href="#contact">Request Similar Creators</Button>
+                  <a className="creator-source-link" href={creator.sourceUrl} target="_blank" rel="noreferrer">
+                    View public source
+                  </a>
+                  <p className="creator-disclaimer">Public data example</p>
+                  <Button className="mt-4 w-full" href="#contact">Request Similar Creators</Button>
                 </div>
               </article>
             ))}
@@ -716,7 +754,7 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-10 text-center">
-            <Button href="/blog" variant="secondary">View All Blog Posts</Button>
+            <Button className="blog-view-all-button" href="/blog" variant="secondary">View All Blog Posts</Button>
           </div>
         </section>
 
@@ -759,13 +797,15 @@ export default function Home() {
       <footer className="bg-slate-950 px-4 py-14 text-white lg:px-6">
         <div className="footer-panel mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
-            <h2 className="text-2xl font-black">Influnexa</h2>
+            <a className="footer-logo-frame" href="/#home" aria-label="Influnexa home">
+              <img src={influnexaLogo} alt="Influnexa" />
+            </a>
             <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
               Premium global influencer marketing for brands, agencies, startups, e-commerce teams, and creators.
             </p>
             <form className="mt-6 flex max-w-sm gap-2" aria-label="Join Influnexa email updates">
               <input className="min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm outline-none" placeholder="Email address" type="email" aria-label="Email address" />
-              <button className="rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950" type="submit">Join</button>
+              <button className="footer-join-button rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950" type="submit">Join</button>
             </form>
           </div>
           {[
