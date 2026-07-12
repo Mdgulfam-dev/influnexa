@@ -10,6 +10,7 @@ import {
   updateAdminUser,
   updateRegistrationStatus,
 } from "../lib/api";
+import influnexaLogo from "../assets/influnexa-logo.png";
 
 const brandStatuses = ["new", "contacted", "qualified", "closed"];
 const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
@@ -265,13 +266,21 @@ export default function AdminDashboard() {
     }
   };
 
+  const editingUser = data.users.find((user) => user._id === editingUserId);
+  const isEditingOwner = editingUser?.role === "owner";
+
   if (!isAuthenticated) {
     return (
       <main className="admin-login-shell">
         <section className="admin-login-card">
           <a className="admin-logo" href="/">
-            <span>IN</span>
-            Influnexa Admin
+            <span className="admin-logo-frame">
+              <img src={influnexaLogo} alt="Influnexa" />
+            </span>
+            <span className="admin-logo-copy">
+              <strong>Influnexa</strong>
+              <small>Admin</small>
+            </span>
           </a>
           <div className="admin-login-copy">
             <p>Secure access</p>
@@ -317,8 +326,13 @@ export default function AdminDashboard() {
     <main className="admin-shell">
       <aside className="admin-sidebar">
         <a className="admin-logo" href="/">
-          <span>IN</span>
-          Influnexa Admin
+          <span className="admin-logo-frame">
+            <img src={influnexaLogo} alt="Influnexa" />
+          </span>
+          <span className="admin-logo-copy">
+            <strong>Influnexa</strong>
+            <small>Admin</small>
+          </span>
         </a>
         <nav>
           {tabs.map(([id, label]) => (
@@ -342,8 +356,12 @@ export default function AdminDashboard() {
             <h1>Registrations and blog control center</h1>
           </div>
           <div className="admin-actions">
-            <button type="button" onClick={loadDashboard}>Refresh</button>
-            <button type="button" onClick={logout}>Logout</button>
+            <button className="admin-action-button refresh" type="button" onClick={loadDashboard}>
+              Refresh
+            </button>
+            <button className="admin-action-button logout" type="button" onClick={logout}>
+              Logout
+            </button>
           </div>
         </div>
 
@@ -516,16 +534,17 @@ export default function AdminDashboard() {
                 />
               </label>
               <div className="admin-form-row">
-                <label>Role<select name="role" value={userForm.role} onChange={updateUserField}>
+                <label>Role<select name="role" value={userForm.role} onChange={updateUserField} disabled={isEditingOwner}>
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
                   <option value="owner">Owner</option>
                 </select></label>
-                <label>Status<select name="status" value={userForm.status} onChange={updateUserField}>
+                <label>Status<select name="status" value={userForm.status} onChange={updateUserField} disabled={isEditingOwner}>
                   <option value="active">Active</option>
                   <option value="disabled">Disabled</option>
                 </select></label>
               </div>
+              {isEditingOwner && <p className="admin-owner-help">Owner role and active access are protected.</p>}
               <div className="admin-login-actions">
                 <button type="submit">{editingUserId ? "Update User" : "Add User"}</button>
                 {editingUserId && <button type="button" onClick={cancelUserEdit}>Cancel</button>}
@@ -545,7 +564,11 @@ export default function AdminDashboard() {
                     </div>
                     <div className="admin-row-actions">
                       <button type="button" onClick={() => editUser(user)}>Edit</button>
-                      <button type="button" onClick={() => removeUser(user._id)}>Delete</button>
+                      {user.role === "owner" ? (
+                        <span className="admin-protected-note">Protected owner</span>
+                      ) : (
+                        <button type="button" onClick={() => removeUser(user._id)}>Delete</button>
+                      )}
                     </div>
                   </article>
                 ))}

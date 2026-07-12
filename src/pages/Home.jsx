@@ -846,7 +846,7 @@ export default function Home() {
             ["Legal", ["Privacy", "#home"], ["Terms", "#home"], ["Compliance", "#home"], ["Security", "#home"]],
             [
               "Contact",
-              ["info.influnexa@mail.com", "mailto:info.influnexa@mail.com", "email"],
+              ["info.influnexa@gmail.com", "mailto:info.influnexa@gmail.com", "email"],
               ["+91 90014 02531", "https://wa.me/919001402531", "whatsapp"],
               ["+91 94053 65870", "https://wa.me/919405365870", "whatsapp"],
             ],
