@@ -34,6 +34,7 @@ const brandStatuses = [
 ];
 const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
 const testimonialStatuses = ["pending", "approved", "rejected"];
+const registrationPageSize = 25;
 
 const legacyBrandStatusLabels = {
   new: "New",
@@ -117,6 +118,10 @@ const initialUserForm = {
 
 const emptyDashboardData = {
   stats: {},
+  pagination: {
+    brands: { page: 1, limit: registrationPageSize, total: 0, totalPages: 1 },
+    influencers: { page: 1, limit: registrationPageSize, total: 0, totalPages: 1 },
+  },
   brands: [],
   influencers: [],
   blogs: [],
@@ -128,6 +133,10 @@ const emptyDashboardData = {
 function normalizeDashboardData(dashboard = {}) {
   return {
     stats: dashboard.stats || {},
+    pagination: {
+      brands: dashboard.pagination?.brands || emptyDashboardData.pagination.brands,
+      influencers: dashboard.pagination?.influencers || emptyDashboardData.pagination.influencers,
+    },
     brands: Array.isArray(dashboard.brands) ? dashboard.brands : [],
     influencers: Array.isArray(dashboard.influencers) ? dashboard.influencers : [],
     blogs: Array.isArray(dashboard.blogs) ? dashboard.blogs : [],
@@ -238,6 +247,54 @@ function RegistrationDetails({ emptyMessage, fields, record, title }) {
   );
 }
 
+function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, searchPlaceholder, statusOptions }) {
+  return (
+    <form className="admin-registration-toolbar" onSubmit={onSearch}>
+      <label>
+        Search
+        <input
+          name="search"
+          placeholder={searchPlaceholder}
+          type="search"
+          value={filters.search}
+          onChange={(event) => onFilterChange("search", event.target.value)}
+        />
+      </label>
+      <label>
+        Status
+        <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)}>
+          <option value="">All statuses</option>
+          {statusOptions.map((item) => (
+            <option key={item} value={item}>{formatStatus(item)}</option>
+          ))}
+        </select>
+      </label>
+      <button type="submit">Apply</button>
+      <span>{countLabel}</span>
+    </form>
+  );
+}
+
+function RegistrationPager({ meta, onPageChange }) {
+  const page = meta?.page || 1;
+  const totalPages = meta?.totalPages || 1;
+  const total = meta?.total || 0;
+  const limit = meta?.limit || registrationPageSize;
+  const start = total === 0 ? 0 : (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
+
+  return (
+    <div className="admin-registration-pager">
+      <span>{start}-{end} of {total}</span>
+      <div>
+        <button type="button" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Previous</button>
+        <strong>Page {page} / {totalPages}</strong>
+        <button type="button" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>Next</button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
@@ -249,6 +306,8 @@ export default function AdminDashboard() {
   const [editingUserId, setEditingUserId] = useState("");
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [selectedInfluencerId, setSelectedInfluencerId] = useState("");
+  const [brandFilters, setBrandFilters] = useState({ search: "", status: "", page: 1 });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", page: 1 });
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -256,13 +315,27 @@ export default function AdminDashboard() {
 
   const tabs = useMemo(
     () => [
-      ["brands", `Brands (${data.brands.length})`],
-      ["influencers", `Influencers (${data.influencers.length})`],
+      ["brands", `Brands (${data.stats.brands || 0})`],
+      ["influencers", `Influencers (${data.stats.influencers || 0})`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["users", `Users (${data.users.length})`],
     ],
     [data]
+  );
+
+  const dashboardParams = useMemo(
+    () => ({
+      brandSearch: brandFilters.search.trim(),
+      brandStatus: brandFilters.status,
+      brandPage: brandFilters.page,
+      brandLimit: registrationPageSize,
+      influencerSearch: influencerFilters.search.trim(),
+      influencerStatus: influencerFilters.status,
+      influencerPage: influencerFilters.page,
+      influencerLimit: registrationPageSize,
+    }),
+    [brandFilters, influencerFilters]
   );
 
   useEffect(() => {
@@ -275,7 +348,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const dashboard = await getAdminDashboard();
+      const dashboard = await getAdminDashboard(dashboardParams);
       setData(normalizeDashboardData(dashboard));
       setIsAuthenticated(true);
       setStatus({ type: "success", message: "" });
@@ -293,27 +366,29 @@ export default function AdminDashboard() {
     }
 
     let active = true;
-
-    getAdminDashboard()
-      .then((dashboard) => {
-        if (active) {
-          setData(normalizeDashboardData(dashboard));
-          setStatus({ type: "success", message: "" });
-        }
-      })
-      .catch((error) => {
-        if (active) {
-          if (error.message === "Admin token is required.") {
-            setIsAuthenticated(false);
+    const timer = window.setTimeout(() => {
+      getAdminDashboard(dashboardParams)
+        .then((dashboard) => {
+          if (active) {
+            setData(normalizeDashboardData(dashboard));
+            setStatus({ type: "success", message: "" });
           }
-          setStatus({ type: "error", message: error.message });
-        }
-      });
+        })
+        .catch((error) => {
+          if (active) {
+            if (error.message === "Admin token is required.") {
+              setIsAuthenticated(false);
+            }
+            setStatus({ type: "error", message: error.message });
+          }
+        });
+    }, 300);
 
     return () => {
       active = false;
+      window.clearTimeout(timer);
     };
-  }, [isAuthenticated]);
+  }, [dashboardParams, isAuthenticated]);
 
   const updateStatus = async (type, id, nextStatus) => {
     try {
@@ -385,6 +460,27 @@ export default function AdminDashboard() {
   const selectTab = (id) => {
     setActiveTab(id);
     window.history.replaceState(null, "", `#${id}`);
+  };
+
+  const updateBrandFilter = (field, value) => {
+    setBrandFilters((current) => ({ ...current, [field]: value, page: 1 }));
+  };
+
+  const updateInfluencerFilter = (field, value) => {
+    setInfluencerFilters((current) => ({ ...current, [field]: value, page: 1 }));
+  };
+
+  const applyRegistrationSearch = (event) => {
+    event.preventDefault();
+    loadDashboard();
+  };
+
+  const changeBrandPage = (page) => {
+    setBrandFilters((current) => ({ ...current, page }));
+  };
+
+  const changeInfluencerPage = (page) => {
+    setInfluencerFilters((current) => ({ ...current, page }));
   };
 
   const submitUser = async (event) => {
@@ -574,7 +670,17 @@ export default function AdminDashboard() {
 
         {activeTab === "brands" && (
           <div className="admin-panel">
-            <h2>Brand registrations</h2>
+            <div className="admin-panel-title-row">
+              <h2>Brand registrations</h2>
+            </div>
+            <RegistrationToolbar
+              countLabel={`${data.pagination.brands.total || 0} matching brands`}
+              filters={brandFilters}
+              onFilterChange={updateBrandFilter}
+              onSearch={applyRegistrationSearch}
+              searchPlaceholder="Company, contact, email, industry..."
+              statusOptions={brandStatuses}
+            />
             <div className="admin-registration-layout">
               <div className="admin-registration-list">
                 {data.brands.map((brand) => (
@@ -604,6 +710,7 @@ export default function AdminDashboard() {
                     <span>New campaign requests will appear here.</span>
                   </article>
                 )}
+                <RegistrationPager meta={data.pagination.brands} onPageChange={changeBrandPage} />
               </div>
               <RegistrationDetails
                 emptyMessage="Click a brand card to see the full campaign request."
@@ -617,7 +724,18 @@ export default function AdminDashboard() {
 
         {activeTab === "influencers" && (
           <div className="admin-panel">
-            <h2>Influencer registrations</h2>
+            <div className="admin-panel-title-row">
+              <h2>Influencer registrations</h2>
+              <small>Find creators by name, email, market, platform, category, or status.</small>
+            </div>
+            <RegistrationToolbar
+              countLabel={`${data.pagination.influencers.total || 0} matching influencers`}
+              filters={influencerFilters}
+              onFilterChange={updateInfluencerFilter}
+              onSearch={applyRegistrationSearch}
+              searchPlaceholder="Creator, email, country, platform..."
+              statusOptions={influencerStatuses}
+            />
             <div className="admin-registration-layout">
               <div className="admin-registration-list">
                 {data.influencers.map((influencer) => (
@@ -649,6 +767,7 @@ export default function AdminDashboard() {
                     <span>New creator applications will appear here.</span>
                   </article>
                 )}
+                <RegistrationPager meta={data.pagination.influencers} onPageChange={changeInfluencerPage} />
               </div>
               <RegistrationDetails
                 emptyMessage="Click an influencer card to see the full creator profile."

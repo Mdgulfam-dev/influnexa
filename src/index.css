@@ -2104,6 +2104,27 @@ img {
   font-weight: 950;
 }
 
+.admin-panel-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-panel-title-row h2 {
+  margin-bottom: 0;
+}
+
+.admin-panel-title-row small {
+  max-width: 520px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: right;
+}
+
 .admin-table-wrap {
   overflow-x: auto;
 }
@@ -2177,9 +2198,79 @@ img {
   align-items: start;
 }
 
+.admin-registration-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) auto auto;
+  gap: 12px;
+  align-items: end;
+  margin: -2px 0 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.94);
+  padding: 14px;
+  backdrop-filter: blur(14px);
+}
+
+.admin-registration-toolbar label {
+  display: grid;
+  gap: 6px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-registration-toolbar input,
+.admin-registration-toolbar select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--admin-button-radius, 14px);
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 850;
+  text-transform: none;
+}
+
+.admin-registration-toolbar input:focus,
+.admin-registration-toolbar select:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.admin-registration-toolbar button,
+.admin-registration-pager button {
+  min-height: 42px;
+  border: 0;
+  border-radius: var(--admin-button-radius, 14px);
+  background: #111827;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.admin-registration-toolbar > span {
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
 .admin-registration-list {
   display: grid;
   gap: 12px;
+  max-height: calc(100vh - 280px);
+  min-height: 420px;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .admin-registration-card {
@@ -2264,6 +2355,40 @@ img {
 
 .admin-registration-card.is-empty {
   padding: 16px;
+}
+
+.admin-registration-pager {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.96);
+  padding: 12px;
+  backdrop-filter: blur(14px);
+}
+
+.admin-registration-pager span,
+.admin-registration-pager strong {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.admin-registration-pager div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-registration-pager button:disabled {
+  cursor: not-allowed;
+  background: #cbd5e1;
+  color: #64748b;
 }
 
 .admin-registration-details {
@@ -3645,8 +3770,25 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-panel-title-row {
+    display: block;
+  }
+
+  .admin-panel-title-row small {
+    display: block;
+    margin-top: 8px;
+    text-align: left;
+  }
+
   .admin-registration-layout {
     grid-template-columns: 1fr;
+  }
+
+  .admin-registration-list {
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .admin-registration-details {
@@ -3663,6 +3805,15 @@ body {
     justify-content: flex-start;
   }
 
+  .admin-registration-toolbar {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-registration-toolbar > span {
+    white-space: normal;
+  }
+
   .admin-registration-details dl {
     grid-template-columns: 1fr;
   }
@@ -3670,6 +3821,16 @@ body {
   .admin-registration-card-top {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .admin-registration-pager,
+  .admin-registration-pager div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-registration-pager button {
+    width: 100%;
   }
 }
 

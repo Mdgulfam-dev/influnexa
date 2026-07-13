@@ -75,8 +75,17 @@ export async function submitRegistration(type, payload) {
   return data;
 }
 
-export async function getAdminDashboard() {
-  const response = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+export async function getAdminDashboard(params = {}) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.set(key, value);
+    }
+  });
+
+  const queryString = query.toString() ? `?${query.toString()}` : "";
+  const response = await fetch(`${API_BASE_URL}/admin/dashboard${queryString}`, {
     headers: adminHeaders(),
   });
   const data = await response.json().catch(() => ({}));
