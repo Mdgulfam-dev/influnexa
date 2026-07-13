@@ -6307,6 +6307,22 @@ button[class*="rounded-full"] {
   margin-bottom: 34px;
 }
 
+.blog-index-hero h1,
+.blog-article-hero h1,
+.blog-empty h1 {
+  max-width: 860px;
+  font-size: clamp(2.35rem, 5vw, 4.4rem);
+  line-height: 1.02;
+}
+
+.blog-index-hero p,
+.blog-article-hero p,
+.blog-empty p {
+  max-width: 680px;
+  font-size: clamp(1rem, 1.35vw, 1.12rem);
+  line-height: 1.65;
+}
+
 .blog-page-card {
   display: grid;
   gap: 22px;
@@ -6357,14 +6373,15 @@ button[class*="rounded-full"] {
 .blog-page-card h2 {
   margin: 16px 0 12px;
   color: var(--ink);
-  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-size: clamp(1.3rem, 2.15vw, 2.05rem);
   font-weight: 900;
-  line-height: 1.04;
+  line-height: 1.14;
 }
 
 .blog-page-card p {
   color: var(--muted);
-  line-height: 1.75;
+  font-size: 0.98rem;
+  line-height: 1.65;
 }
 
 .blog-page-card a,
@@ -6424,8 +6441,8 @@ button[class*="rounded-full"] {
 
 .blog-content p {
   color: var(--ink);
-  font-size: 18px;
-  line-height: 1.9;
+  font-size: 1.02rem;
+  line-height: 1.76;
 }
 
 .blog-empty {
@@ -6517,6 +6534,25 @@ button[class*="rounded-full"] {
   .blog-empty h1 {
     font-size: clamp(2.45rem, 13vw, 4rem) !important;
     line-height: 0.98 !important;
+  }
+
+  .blog-index-hero h1,
+  .blog-article-hero h1,
+  .blog-empty h1 {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  .blog-index-hero p,
+  .blog-article-hero p,
+  .blog-empty p,
+  .blog-content p {
+    font-size: 0.98rem;
+    line-height: 1.68;
+  }
+
+  .blog-page-card h2 {
+    font-size: clamp(1.22rem, 7vw, 1.7rem);
   }
 
   .hero-proof-row,
