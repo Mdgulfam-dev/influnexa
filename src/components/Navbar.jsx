@@ -37,7 +37,7 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
           <span className="brand-logo-frame">
             <img src={influnexaLogo} alt="Influnexa" />
           </span>
-          <span className="brand-copy">
+          <span className={`brand-copy ${isDark ? "brand-copy-dark" : "brand-copy-light"}`}>
             <strong>Influnexa</strong>
             <small>Influence, connect, grow</small>
           </span>

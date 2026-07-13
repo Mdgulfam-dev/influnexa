@@ -1,6 +1,7 @@
 @config "../tailwind.config.js";
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   color: #0f172a;
@@ -6921,13 +6922,54 @@ nav.fixed .premium-button:hover,
   color: #0f172a !important;
 }
 
+.production-hero .hero-actions .hero-start-campaign-button,
+.production-hero .hero-actions .hero-join-creator-button {
+  min-height: 52px;
+  padding: 14px 22px !important;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.production-hero .hero-actions .hero-join-creator-button span {
+  color: inherit !important;
+}
+
+.register-section .register-choice-card > span,
+.register-section .register-choice-card.creator > span {
+  border: 1px solid rgba(31, 111, 104, 0.2) !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  color: #0b3f3a !important;
+}
+
+.site.dark .register-section .register-choice-card > span,
+.site.dark .register-section .register-choice-card.creator > span,
+.dark .register-section .register-choice-card > span,
+.dark .register-section .register-choice-card.creator > span {
+  border-color: rgba(101, 184, 170, 0.28) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #bfe8df !important;
+}
+
 /* Navbar brand contrast fix for light mode */
 nav.fixed .brand-logo-frame {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
   border-color: rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
   background: #101413;
   box-shadow:
     0 14px 30px rgba(2, 6, 23, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.site.dark nav.fixed .brand-logo-frame,
+.dark nav.fixed .brand-logo-frame {
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+  border-radius: 8px;
 }
 
 nav.fixed .brand-copy strong {
@@ -6936,4 +6978,191 @@ nav.fixed .brand-copy strong {
 
 nav.fixed .brand-copy small {
   color: #bfe8df !important;
+}
+
+.site:not(.dark) nav.fixed .brand-copy.brand-copy-light strong,
+nav.fixed .brand-copy.brand-copy-light strong {
+  color: #f8fafc !important;
+}
+
+.site:not(.dark) nav.fixed .brand-copy.brand-copy-light small,
+nav.fixed .brand-copy.brand-copy-light small {
+  color: #bfe8df !important;
+}
+
+.site.dark nav.fixed .brand-copy strong,
+.dark nav.fixed .brand-copy strong,
+nav.fixed .brand-copy.brand-copy-dark strong {
+  color: #f8fafc !important;
+}
+
+.site.dark nav.fixed .brand-copy small,
+.dark nav.fixed .brand-copy small,
+nav.fixed .brand-copy.brand-copy-dark small {
+  color: #bfe8df !important;
+}
+
+footer .footer-brand-copy strong,
+.site.dark footer .footer-brand-copy strong,
+.dark footer .footer-brand-copy strong {
+  color: #f8fafc !important;
+}
+
+footer .footer-brand-copy small,
+.site.dark footer .footer-brand-copy small,
+.dark footer .footer-brand-copy small {
+  color: #bfe8df !important;
+}
+
+/* Mobile navbar and hero readability pass */
+@media (max-width: 760px) {
+  nav.fixed {
+    box-shadow: 0 8px 22px rgba(17, 24, 39, 0.07) !important;
+  }
+
+  nav.fixed.border-b,
+  nav.fixed.bg-transparent {
+    background: rgba(251, 250, 247, 0.9) !important;
+    box-shadow: 0 8px 22px rgba(17, 24, 39, 0.07) !important;
+    backdrop-filter: blur(18px);
+  }
+
+  .dark nav.fixed.border-b,
+  .dark nav.fixed.bg-transparent {
+    background: rgba(16, 20, 19, 0.88) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18) !important;
+  }
+
+  nav.fixed > div {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  nav.fixed .brand-lockup {
+    gap: 9px;
+  }
+
+  nav.fixed .brand-logo-frame {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border-radius: 8px;
+    box-shadow:
+      0 8px 18px rgba(2, 6, 23, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  .site.dark nav.fixed .brand-logo-frame,
+  .dark nav.fixed .brand-logo-frame {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border-radius: 8px;
+  }
+
+  nav.fixed .brand-copy strong {
+    font-size: 17px;
+    line-height: 1.05;
+  }
+
+  nav.fixed .brand-copy small {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  nav.fixed .nav-menu-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  nav.fixed .nav-menu-button span {
+    width: 18px;
+  }
+
+  .hero-shell,
+  .production-hero {
+    padding-top: 96px !important;
+  }
+
+  .production-hero .hero-copy h1,
+  .hero-copy h1 {
+    max-width: 12.5ch;
+    font-size: clamp(2.25rem, 10vw, 3.35rem) !important;
+    line-height: 1.08 !important;
+    text-wrap: balance;
+  }
+
+  .production-hero .hero-copy p,
+  .hero-copy p {
+    margin-top: 18px;
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+}
+
+@media (max-width: 420px) {
+  .production-hero .hero-copy h1,
+  .hero-copy h1 {
+    max-width: 11.5ch;
+    font-size: clamp(2.1rem, 10.6vw, 2.85rem) !important;
+    line-height: 1.1 !important;
+  }
+}
+
+/* Final hero headline refinement */
+.production-hero .hero-copy h1 {
+  max-width: 720px;
+  font-size: clamp(2.85rem, 4.35vw, 4.65rem) !important;
+  font-weight: 900;
+  line-height: 1.08 !important;
+  text-wrap: pretty;
+}
+
+@media (min-width: 1440px) {
+  .production-hero .hero-copy h1 {
+    max-width: 700px;
+    font-size: clamp(3.2rem, 4vw, 4.8rem) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .production-hero .hero-copy h1 {
+    max-width: 13.5ch;
+    font-size: clamp(2.05rem, 9vw, 2.9rem) !important;
+    line-height: 1.12 !important;
+  }
+}
+
+/* Registration form hero sizing */
+.registration-page .registration-hero h1,
+.registration-page .registration-hero.creator h1 {
+  max-width: 760px;
+  margin-top: 14px;
+  font-size: clamp(2.15rem, 4vw, 3.35rem) !important;
+  font-weight: 900;
+  line-height: 1.12 !important;
+  text-wrap: balance;
+}
+
+.registration-page .registration-hero span,
+.registration-page .registration-hero.creator span {
+  max-width: 700px;
+  margin-top: 16px;
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .registration-page .registration-hero h1,
+  .registration-page .registration-hero.creator h1 {
+    max-width: 13.5ch;
+    font-size: clamp(1.9rem, 8.5vw, 2.55rem) !important;
+    line-height: 1.14 !important;
+  }
+
+  .registration-page .registration-hero span,
+  .registration-page .registration-hero.creator span {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
 }

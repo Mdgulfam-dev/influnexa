@@ -19,5 +19,6 @@ export function applyTheme(theme) {
   }
 
   document.documentElement.classList.toggle("dark", theme === "dark");
+  document.documentElement.style.colorScheme = theme === "dark" ? "dark" : "light";
   window.localStorage.setItem(THEME_KEY, theme);
 }

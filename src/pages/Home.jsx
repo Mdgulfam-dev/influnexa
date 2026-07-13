@@ -505,14 +505,14 @@ export default function Home() {
             <div className="hero-copy relative z-10">
               <div className="hero-kicker">Influencer marketing operations</div>
               <h1>
-                Premium influencer campaigns managed with production grade discipline.
+                Premium influencer campaigns managed with production-grade discipline.
               </h1>
               <p>
                 Influnexa plans, sources, briefs, approves, coordinates, and reports creator campaigns for brands that need credible execution, polished content, and measurable proof.
               </p>
               <div className="hero-actions">
                 <Button className="hero-start-campaign-button" href="/register/brand">Start a Campaign</Button>
-                <Button href="/register/influencer" variant="secondary">
+                <Button className="hero-join-creator-button" href="/register/influencer" variant="secondary">
                   Join as Creator
                 </Button>
               </div>
