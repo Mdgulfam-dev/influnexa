@@ -290,6 +290,27 @@ export async function updateAdminUser(id, payload) {
   return data.user;
 }
 
+export async function updateOwnAdminPassword(payload) {
+  const response = await fetch(`${API_BASE_URL}/admin/users/me/password`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...adminHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401 && data.message !== "Current password is incorrect.") {
+      clearAdminToken();
+    }
+    throw new Error(data.message || "Unable to update password.");
+  }
+
+  return data.user;
+}
+
 export async function deleteAdminUser(id) {
   const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
     method: "DELETE",

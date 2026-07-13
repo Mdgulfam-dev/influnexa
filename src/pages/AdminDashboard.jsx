@@ -9,6 +9,7 @@ import {
   loginAdmin,
   logoutAdmin,
   updateAdminUser,
+  updateOwnAdminPassword,
   updateRegistrationStatus,
   updateTestimonialStatus,
 } from "../lib/api";
@@ -114,6 +115,12 @@ const initialUserForm = {
   password: "",
   role: "admin",
   status: "active",
+};
+
+const initialPasswordForm = {
+  currentPassword: "",
+  password: "",
+  confirmPassword: "",
 };
 
 const emptyDashboardData = {
@@ -303,6 +310,7 @@ export default function AdminDashboard() {
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [userForm, setUserForm] = useState(initialUserForm);
+  const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [editingUserId, setEditingUserId] = useState("");
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [selectedInfluencerId, setSelectedInfluencerId] = useState("");
@@ -419,6 +427,11 @@ export default function AdminDashboard() {
     setUserForm((current) => ({ ...current, [name]: value }));
   };
 
+  const updatePasswordField = (event) => {
+    const { name, value } = event.target;
+    setPasswordForm((current) => ({ ...current, [name]: value }));
+  };
+
   const submitLogin = async (event) => {
     event.preventDefault();
     setStatus({ type: "loading", message: "Signing in..." });
@@ -490,7 +503,7 @@ export default function AdminDashboard() {
     try {
       const payload = { ...userForm };
 
-      if (editingUserId && !payload.password) {
+      if (editingUserId) {
         delete payload.password;
       }
 
@@ -505,6 +518,29 @@ export default function AdminDashboard() {
       await loadDashboard();
       setActiveTab("users");
       setStatus({ type: "success", message: editingUserId ? "Team member updated." : "Team member added." });
+    } catch (error) {
+      setStatus({ type: "error", message: error.message });
+    }
+  };
+
+  const submitPassword = async (event) => {
+    event.preventDefault();
+
+    if (passwordForm.password !== passwordForm.confirmPassword) {
+      setStatus({ type: "error", message: "New password and confirmation do not match." });
+      return;
+    }
+
+    setStatus({ type: "loading", message: "Updating password..." });
+
+    try {
+      await updateOwnAdminPassword({
+        currentPassword: passwordForm.currentPassword,
+        password: passwordForm.password,
+      });
+      setPasswordForm(initialPasswordForm);
+      await loadDashboard({ showLoading: false });
+      setStatus({ type: "success", message: "Your password has been updated." });
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
@@ -559,6 +595,8 @@ export default function AdminDashboard() {
 
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
+  const currentUserRole = data.currentUser?.role || "admin";
+  const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
   const selectedBrand = data.brands.find((brand) => brand._id === selectedBrandId);
   const selectedInfluencer = data.influencers.find((influencer) => influencer._id === selectedInfluencerId);
 
@@ -859,70 +897,135 @@ export default function AdminDashboard() {
 
         {activeTab === "users" && (
           <div className="admin-blog-grid">
-            <form className="admin-panel admin-blog-form" onSubmit={submitUser}>
-              <h2>{editingUserId ? "Edit team member" : "Add team member"}</h2>
-              <label>Name<input name="name" value={userForm.name} onChange={updateUserField} required /></label>
-              <label>Email<input name="email" type="email" value={userForm.email} onChange={updateUserField} required /></label>
+            <form className="admin-panel admin-blog-form" onSubmit={submitPassword}>
+              <h2>Change my password</h2>
               <label>
-                Password
+                Current password
                 <input
-                  name="password"
+                  autoComplete="current-password"
+                  name="currentPassword"
                   type="password"
-                  value={userForm.password}
-                  onChange={updateUserField}
-                  required={!editingUserId}
-                  placeholder={editingUserId ? "Leave blank to keep current password" : "Minimum 8 characters"}
+                  value={passwordForm.currentPassword}
+                  onChange={updatePasswordField}
+                  required
                 />
               </label>
-              <div className="admin-form-row">
-                <label>Role<select name="role" value={userForm.role} onChange={updateUserField} disabled={isEditingOwner}>
-                  <option value="admin">Admin</option>
-                  <option value="editor">Editor</option>
-                  <option value="owner">Owner</option>
-                </select></label>
-                <label>Status<select name="status" value={userForm.status} onChange={updateUserField} disabled={isEditingOwner}>
-                  <option value="active">Active</option>
-                  <option value="disabled">Disabled</option>
-                </select></label>
-              </div>
-              {isEditingOwner && <p className="admin-owner-help">Owner role and active access are protected.</p>}
+              <label>
+                New password
+                <input
+                  name="password"
+                  autoComplete="new-password"
+                  type="password"
+                  value={passwordForm.password}
+                  onChange={updatePasswordField}
+                  required
+                  placeholder="Minimum 8 characters"
+                />
+              </label>
+              <label>
+                Confirm new password
+                <input
+                  autoComplete="new-password"
+                  name="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={updatePasswordField}
+                  required
+                />
+              </label>
               <div className="admin-login-actions">
-                <button type="submit">{editingUserId ? "Update User" : "Add User"}</button>
-                {editingUserId && <button type="button" onClick={cancelUserEdit}>Cancel</button>}
+                <button type="submit">Update Password</button>
               </div>
             </form>
 
-            <div className="admin-panel">
-              <h2>Team access</h2>
-              <div className="admin-blog-list admin-user-list">
-                {data.users.map((user) => (
-                  <article key={user._id}>
-                    <div>
-                      <Pill tone={user.status === "active" ? "success" : "default"}>{user.status}</Pill>
-                      <h3>{user.name}</h3>
-                      <p>{user.email}</p>
-                      <span>{user.role} - Last login: {formatDate(user.lastLoginAt)}</span>
-                    </div>
-                    <div className="admin-row-actions">
-                      <button type="button" onClick={() => editUser(user)}>Edit</button>
-                      {user.role === "owner" ? (
-                        <span className="admin-protected-note">Protected owner</span>
-                      ) : (
-                        <button type="button" onClick={() => removeUser(user._id)}>Delete</button>
-                      )}
-                    </div>
-                  </article>
-                ))}
-                {data.users.length === 0 && (
+            {canManageUsers ? (
+              <>
+                <form className="admin-panel admin-blog-form" onSubmit={submitUser}>
+                  <h2>{editingUserId ? "Edit team member" : "Add team member"}</h2>
+                  <label>Name<input name="name" value={userForm.name} onChange={updateUserField} required /></label>
+                  <label>Email<input name="email" type="email" value={userForm.email} onChange={updateUserField} required /></label>
+                  {!editingUserId && (
+                    <label>
+                      Initial password
+                      <input
+                        autoComplete="new-password"
+                        name="password"
+                        type="password"
+                        value={userForm.password}
+                        onChange={updateUserField}
+                        required
+                        placeholder="Minimum 8 characters"
+                      />
+                    </label>
+                  )}
+                  <div className="admin-form-row">
+                    <label>Role<select name="role" value={userForm.role} onChange={updateUserField} disabled={isEditingOwner}>
+                      <option value="admin">Admin</option>
+                      <option value="editor">Editor</option>
+                      {(currentUserRole === "owner" || userForm.role === "owner") && <option value="owner">Owner</option>}
+                    </select></label>
+                    <label>Status<select name="status" value={userForm.status} onChange={updateUserField} disabled={isEditingOwner}>
+                      <option value="active">Active</option>
+                      <option value="disabled">Disabled</option>
+                    </select></label>
+                  </div>
+                  <p className="admin-owner-help">
+                    Passwords can only be changed by the signed-in user from the password form.
+                  </p>
+                  {isEditingOwner && <p className="admin-owner-help">Owner role and active access are protected.</p>}
+                  <div className="admin-login-actions">
+                    <button type="submit">{editingUserId ? "Update User" : "Add User"}</button>
+                    {editingUserId && <button type="button" onClick={cancelUserEdit}>Cancel</button>}
+                  </div>
+                </form>
+
+                <div className="admin-panel">
+                  <h2>Team access</h2>
+                  <div className="admin-blog-list admin-user-list">
+                    {data.users.map((user) => (
+                      <article key={user._id}>
+                        <div>
+                          <Pill tone={user.status === "active" ? "success" : "default"}>{user.status}</Pill>
+                          <h3>{user.name}</h3>
+                          <p>{user.email}</p>
+                          <span>{user.role} - Last login: {formatDate(user.lastLoginAt)}</span>
+                        </div>
+                        <div className="admin-row-actions">
+                          <button type="button" onClick={() => editUser(user)}>Edit</button>
+                          {user.role === "owner" ? (
+                            <span className="admin-protected-note">Protected owner</span>
+                          ) : (
+                            <button type="button" onClick={() => removeUser(user._id)}>Delete</button>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                    {data.users.length === 0 && (
+                      <article>
+                        <div>
+                          <h3>No team members yet</h3>
+                          <p>Add your first admin user from this form.</p>
+                        </div>
+                      </article>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="admin-panel">
+                <h2>Team access</h2>
+                <div className="admin-blog-list admin-user-list">
                   <article>
                     <div>
-                      <h3>No team members yet</h3>
-                      <p>Add your first admin user from this form.</p>
+                      <Pill tone="default">{currentUserRole}</Pill>
+                      <h3>{data.currentUser?.name || "Team member"}</h3>
+                      <p>{data.currentUser?.email || "Signed-in user"}</p>
+                      <span>Owner and admin users can add or manage team access.</span>
                     </div>
                   </article>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </section>
