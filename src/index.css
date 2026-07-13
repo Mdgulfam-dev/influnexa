@@ -2170,6 +2170,189 @@ img {
   padding: 11px 12px;
 }
 
+.admin-registration-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.admin-registration-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-registration-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.admin-registration-card.active {
+  border-color: #14b8a6;
+  box-shadow: 0 18px 48px rgba(20, 184, 166, 0.16);
+}
+
+.admin-registration-card button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #334155;
+  cursor: pointer;
+  padding: 16px;
+  text-align: left;
+}
+
+.admin-registration-card button:focus-visible {
+  outline: 3px solid rgba(20, 184, 166, 0.32);
+  outline-offset: -3px;
+}
+
+.admin-registration-card strong,
+.admin-registration-card span,
+.admin-registration-card small {
+  display: block;
+}
+
+.admin-registration-card strong {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.admin-registration-card span {
+  margin-top: 6px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-registration-card small {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-registration-card-top {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 0 !important;
+}
+
+.admin-registration-card-top .admin-pill {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.admin-registration-card select {
+  width: calc(100% - 32px);
+  margin: 0 16px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--admin-button-radius, 14px);
+  background: white;
+  color: #0f172a;
+  outline: none;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.admin-registration-card.is-empty {
+  padding: 16px;
+}
+
+.admin-registration-details {
+  position: sticky;
+  top: 24px;
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, 0.08);
+  padding: 18px;
+}
+
+.admin-registration-details.is-empty {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.admin-registration-details-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.admin-registration-details-heading > div > span {
+  display: block;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-registration-details h3 {
+  margin: 4px 0 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.admin-registration-details p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.admin-registration-details dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.admin-registration-details dl div {
+  min-width: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 12px;
+}
+
+.admin-registration-details dl div.wide {
+  grid-column: 1 / -1;
+}
+
+.admin-registration-details dt {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-registration-details dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.admin-registration-details dd a {
+  color: #0f766e;
+  font-weight: 900;
+}
+
 .admin-blog-form select:disabled {
   cursor: not-allowed;
   background: #f1f5f9;
@@ -3461,6 +3644,14 @@ body {
   .admin-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .admin-registration-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-registration-details {
+    position: static;
+  }
 }
 
 @media (max-width: 768px) {
@@ -3470,6 +3661,15 @@ body {
 
   .admin-row-actions {
     justify-content: flex-start;
+  }
+
+  .admin-registration-details dl {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-registration-card-top {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

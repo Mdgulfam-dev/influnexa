@@ -14,9 +14,87 @@ import {
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 
-const brandStatuses = ["new", "contacted", "qualified", "closed"];
+const brandStatuses = [
+  "New",
+  "Under Review",
+  "Contacted",
+  "Follow-up 1",
+  "Follow-up 2",
+  "Meeting Scheduled",
+  "Requirement Received",
+  "Proposal Sent",
+  "Negotiation",
+  "Deal Won",
+  "Campaign Started",
+  "Campaign Completed",
+  "Repeat Client",
+  "No Response",
+  "Lost",
+  "Closed",
+];
 const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
 const testimonialStatuses = ["pending", "approved", "rejected"];
+
+const legacyBrandStatusLabels = {
+  new: "New",
+  contacted: "Contacted",
+  qualified: "Under Review",
+  closed: "Closed",
+};
+
+const brandDetailFields = [
+  ["Contact name", "contactName"],
+  ["Email", "email", "email"],
+  ["Phone", "phone"],
+  ["Company name", "companyName"],
+  ["Website", "website", "url"],
+  ["Country", "country"],
+  ["Industry", "industry"],
+  ["Product name", "productName"],
+  ["Product URL", "productUrl", "url"],
+  ["Campaign types", "campaignTypes"],
+  ["Campaign goals", "campaignGoals", "long"],
+  ["Target audience", "targetAudience", "long"],
+  ["Target countries", "targetCountries"],
+  ["Preferred platforms", "preferredPlatforms"],
+  ["Creator count", "creatorCount"],
+  ["Budget currency", "budgetCurrency"],
+  ["Budget range", "budgetRange"],
+  ["Timeline", "timeline"],
+  ["Product shipping ready", "productShippingReady"],
+  ["Notes", "notes", "long"],
+  ["Status", "status"],
+  ["Created", "createdAt", "date"],
+  ["Updated", "updatedAt", "date"],
+];
+
+const influencerDetailFields = [
+  ["Full name", "fullName"],
+  ["Creator name", "creatorName"],
+  ["Email", "email", "email"],
+  ["Phone", "phone"],
+  ["Country", "country"],
+  ["City", "city"],
+  ["Languages", "languages"],
+  ["Categories", "categories"],
+  ["Primary platform", "primaryPlatform"],
+  ["Primary profile", "primaryProfile", "url"],
+  ["Other profiles", "otherProfiles", "long"],
+  ["Followers", "followers"],
+  ["Engagement rate", "engagementRate"],
+  ["Average views", "averageViews"],
+  ["Audience countries", "audienceCountries"],
+  ["Content types", "contentTypes"],
+  ["Past brand work", "pastBrandWork", "long"],
+  ["Rate card", "rateCard"],
+  ["Shipping address", "shippingAddress", "long"],
+  ["Portfolio URL", "portfolioUrl", "url"],
+  ["Notes", "notes", "long"],
+  ["Consent to contact", "consentToContact", "boolean"],
+  ["Status", "status"],
+  ["Created", "createdAt", "date"],
+  ["Updated", "updatedAt", "date"],
+];
 
 const initialBlogForm = {
   title: "",
@@ -68,8 +146,96 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+function normalizeExternalUrl(value) {
+  if (!value) return "";
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+function formatStatus(value) {
+  if (!value) return "Not provided";
+  return legacyBrandStatusLabels[value] || value;
+}
+
+function brandStatusTone(status) {
+  const label = formatStatus(status);
+  if (["Deal Won", "Campaign Completed", "Repeat Client", "approved", "qualified"].includes(label)) return "success";
+  if (["Lost", "No Response", "Closed"].includes(label)) return "error";
+  return "default";
+}
+
+function renderDetailValue(record, key, type) {
+  const value = record?.[key];
+
+  if (Array.isArray(value)) {
+    return value.length ? value.join(", ") : "Not provided";
+  }
+
+  if (type === "date") {
+    return formatDate(value);
+  }
+
+  if (type === "boolean") {
+    return value ? "Yes" : "No";
+  }
+
+  if (key === "status") {
+    return formatStatus(value);
+  }
+
+  if (!value) {
+    return "Not provided";
+  }
+
+  if (type === "email") {
+    return <a href={`mailto:${value}`}>{value}</a>;
+  }
+
+  if (type === "url") {
+    return (
+      <a href={normalizeExternalUrl(value)} target="_blank" rel="noreferrer">
+        {value}
+      </a>
+    );
+  }
+
+  return value;
+}
+
 function Pill({ children, tone = "default" }) {
   return <span className={`admin-pill ${tone}`}>{children}</span>;
+}
+
+function RegistrationDetails({ emptyMessage, fields, record, title }) {
+  if (!record) {
+    return (
+      <aside className="admin-registration-details is-empty">
+        <h3>{title}</h3>
+        <p>{emptyMessage}</p>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="admin-registration-details">
+      <div className="admin-registration-details-heading">
+        <div>
+          <span>Complete details</span>
+          <h3>{title}</h3>
+        </div>
+        <Pill tone={brandStatusTone(record.status)}>
+          {formatStatus(record.status) || "New"}
+        </Pill>
+      </div>
+      <dl>
+        {fields.map(([label, key, type]) => (
+          <div className={type === "long" ? "wide" : ""} key={key}>
+            <dt>{label}</dt>
+            <dd>{renderDetailValue(record, key, type)}</dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+  );
 }
 
 export default function AdminDashboard() {
@@ -81,6 +247,8 @@ export default function AdminDashboard() {
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [userForm, setUserForm] = useState(initialUserForm);
   const [editingUserId, setEditingUserId] = useState("");
+  const [selectedBrandId, setSelectedBrandId] = useState("");
+  const [selectedInfluencerId, setSelectedInfluencerId] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -295,6 +463,8 @@ export default function AdminDashboard() {
 
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
+  const selectedBrand = data.brands.find((brand) => brand._id === selectedBrandId);
+  const selectedInfluencer = data.influencers.find((influencer) => influencer._id === selectedInfluencerId);
 
   if (!isAuthenticated) {
     return (
@@ -405,49 +575,42 @@ export default function AdminDashboard() {
         {activeTab === "brands" && (
           <div className="admin-panel">
             <h2>Brand registrations</h2>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Brand</th>
-                    <th>Contact</th>
-                    <th>Campaign</th>
-                    <th>Budget</th>
-                    <th>Created</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.brands.map((brand) => (
-                    <tr key={brand._id}>
-                      <td>
+            <div className="admin-registration-layout">
+              <div className="admin-registration-list">
+                {data.brands.map((brand) => (
+                  <article className={`admin-registration-card ${selectedBrandId === brand._id ? "active" : ""}`} key={brand._id}>
+                    <button type="button" onClick={() => setSelectedBrandId(brand._id)}>
+                      <span className="admin-registration-card-top">
                         <strong>{brand.companyName}</strong>
-                        <span>{brand.industry} - {brand.country}</span>
-                        <small>{brand.productName}</small>
-                      </td>
-                      <td>
-                        <strong>{brand.contactName}</strong>
-                        <a href={`mailto:${brand.email}`}>{brand.email}</a>
-                        <span>{brand.phone || "No phone"}</span>
-                      </td>
-                      <td>
-                        <span>{brand.campaignTypes?.join(", ") || "Not selected"}</span>
-                        <small>{brand.preferredPlatforms?.join(", ") || "No platforms"}</small>
-                      </td>
-                      <td>{brand.budgetRange}</td>
-                      <td>{formatDate(brand.createdAt)}</td>
-                      <td>
-                        <select
-                          value={brand.status}
-                          onChange={(event) => updateStatus("brands", brand._id, event.target.value)}
-                        >
-                          {brandStatuses.map((item) => <option key={item}>{item}</option>)}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <Pill tone={brandStatusTone(brand.status)}>{formatStatus(brand.status)}</Pill>
+                      </span>
+                      <span>{brand.industry} - {brand.country}</span>
+                      <small>{brand.productName}</small>
+                      <span>{brand.contactName} - {brand.email}</span>
+                      <small>{brand.budgetRange} - {formatDate(brand.createdAt)}</small>
+                    </button>
+                    <select
+                      aria-label={`Update ${brand.companyName} status`}
+                      value={formatStatus(brand.status)}
+                      onChange={(event) => updateStatus("brands", brand._id, event.target.value)}
+                    >
+                      {brandStatuses.map((item) => <option key={item}>{item}</option>)}
+                    </select>
+                  </article>
+                ))}
+                {data.brands.length === 0 && (
+                  <article className="admin-registration-card is-empty">
+                    <strong>No brand registrations yet</strong>
+                    <span>New campaign requests will appear here.</span>
+                  </article>
+                )}
+              </div>
+              <RegistrationDetails
+                emptyMessage="Click a brand card to see the full campaign request."
+                fields={brandDetailFields}
+                record={selectedBrand}
+                title={selectedBrand?.companyName || "Brand details"}
+              />
             </div>
           </div>
         )}
@@ -455,52 +618,44 @@ export default function AdminDashboard() {
         {activeTab === "influencers" && (
           <div className="admin-panel">
             <h2>Influencer registrations</h2>
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Creator</th>
-                    <th>Contact</th>
-                    <th>Audience</th>
-                    <th>Content</th>
-                    <th>Created</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.influencers.map((influencer) => (
-                    <tr key={influencer._id}>
-                      <td>
+            <div className="admin-registration-layout">
+              <div className="admin-registration-list">
+                {data.influencers.map((influencer) => (
+                  <article className={`admin-registration-card ${selectedInfluencerId === influencer._id ? "active" : ""}`} key={influencer._id}>
+                    <button type="button" onClick={() => setSelectedInfluencerId(influencer._id)}>
+                      <span className="admin-registration-card-top">
                         <strong>{influencer.creatorName}</strong>
-                        <a href={influencer.primaryProfile} target="_blank" rel="noreferrer">{influencer.primaryPlatform}</a>
-                        <span>{influencer.country}{influencer.city ? `, ${influencer.city}` : ""}</span>
-                      </td>
-                      <td>
-                        <strong>{influencer.fullName}</strong>
-                        <a href={`mailto:${influencer.email}`}>{influencer.email}</a>
-                        <span>{influencer.phone || "No phone"}</span>
-                      </td>
-                      <td>
-                        <span>{influencer.followers} followers</span>
-                        <small>{influencer.engagementRate || "No engagement"} - {influencer.averageViews || "No views"}</small>
-                      </td>
-                      <td>
-                        <span>{influencer.categories?.join(", ") || "No categories"}</span>
-                        <small>{influencer.contentTypes?.join(", ") || "No content types"}</small>
-                      </td>
-                      <td>{formatDate(influencer.createdAt)}</td>
-                      <td>
-                        <select
-                          value={influencer.status}
-                          onChange={(event) => updateStatus("influencers", influencer._id, event.target.value)}
-                        >
-                          {influencerStatuses.map((item) => <option key={item}>{item}</option>)}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <Pill tone={influencer.status === "approved" ? "success" : influencer.status === "rejected" ? "error" : "default"}>
+                          {influencer.status}
+                        </Pill>
+                      </span>
+                      <span>{influencer.primaryPlatform} - {influencer.followers} followers</span>
+                      <small>{influencer.country}{influencer.city ? `, ${influencer.city}` : ""}</small>
+                      <span>{influencer.fullName} - {influencer.email}</span>
+                      <small>{influencer.categories?.join(", ") || "No categories"} - {formatDate(influencer.createdAt)}</small>
+                    </button>
+                    <select
+                      aria-label={`Update ${influencer.creatorName} status`}
+                      value={influencer.status}
+                      onChange={(event) => updateStatus("influencers", influencer._id, event.target.value)}
+                    >
+                      {influencerStatuses.map((item) => <option key={item}>{item}</option>)}
+                    </select>
+                  </article>
+                ))}
+                {data.influencers.length === 0 && (
+                  <article className="admin-registration-card is-empty">
+                    <strong>No influencer registrations yet</strong>
+                    <span>New creator applications will appear here.</span>
+                  </article>
+                )}
+              </div>
+              <RegistrationDetails
+                emptyMessage="Click an influencer card to see the full creator profile."
+                fields={influencerDetailFields}
+                record={selectedInfluencer}
+                title={selectedInfluencer?.creatorName || "Influencer details"}
+              />
             </div>
           </div>
         )}
