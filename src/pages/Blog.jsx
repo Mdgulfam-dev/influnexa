@@ -59,6 +59,147 @@ function textSummary(value = "") {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function isShortHeading(value) {
+  const text = value.trim();
+  const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+  if (wordCount > 12 || /[.!?]$/.test(text)) {
+    return false;
+  }
+
+  return /:$/.test(text) || /^[A-Z][A-Za-z0-9&'’(),\-/ ]+$/.test(text);
+}
+
+function parseInlineList(text) {
+  const listMatch = text.match(/^(.+?:)\s+(.+)$/);
+
+  if (!listMatch) {
+    return null;
+  }
+
+  const [, intro, rest] = listMatch;
+  const items = rest
+    .split(/\s+(?=[A-Z][A-Za-z0-9&'’()/+-]*(?:\s+[A-Za-z0-9&'’()/+-]+){0,5}(?:,|$))/)
+    .map((item) => item.replace(/,$/, "").trim())
+    .filter((item) => item.length > 2);
+
+  if (items.length < 3) {
+    return null;
+  }
+
+  return { intro, items };
+}
+
+function addSmartSectionBreaks(value = "") {
+  const sectionPattern = [
+    "Table of Contents",
+    "Introduction",
+    "What Is [A-Z][A-Za-z0-9&'’(),\\-/ ]+\\?",
+    "Why [A-Z][A-Za-z0-9&'’(),\\-/ ]+ Matters",
+    "Types of [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Define Your [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Know Your [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Key Factors [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Red Flags [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Step-by-Step [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Real-World [A-Z][A-Za-z0-9&'’(),\\-/ ]+",
+    "Industry Statistics",
+    "Best Practices",
+    "Common Mistakes",
+    "Recommended Tools",
+    "Frequently Asked Questions",
+    "Key Takeaways",
+    "Conclusion",
+    "Call to Action",
+  ].join("|");
+  const sectionRegex = new RegExp(`\\s+(${sectionPattern})(?=\\s|$)`, "g");
+
+  return value.replace(sectionRegex, "\n\n$1\n");
+}
+
+function flushParagraph(paragraphLines, blocks) {
+  if (paragraphLines.length === 0) {
+    return;
+  }
+
+  const text = paragraphLines.join(" ").replace(/\s+/g, " ").trim();
+  const inlineList = parseInlineList(text);
+
+  if (inlineList) {
+    blocks.push({ type: "paragraph", text: inlineList.intro });
+    blocks.push({ type: "list", ordered: false, items: inlineList.items });
+  } else {
+    blocks.push({ type: "paragraph", text });
+  }
+
+  paragraphLines.length = 0;
+}
+
+function parseBlogContent(value = "") {
+  const blocks = [];
+  const paragraphLines = [];
+  let activeList = null;
+  const lines = addSmartSectionBreaks(value)
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) => line.trim());
+
+  const flushList = () => {
+    if (activeList?.items.length) {
+      blocks.push(activeList);
+    }
+    activeList = null;
+  };
+
+  lines.forEach((line) => {
+    if (!line) {
+      flushParagraph(paragraphLines, blocks);
+      flushList();
+      return;
+    }
+
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+    const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
+
+    if (headingMatch) {
+      flushParagraph(paragraphLines, blocks);
+      flushList();
+      blocks.push({ type: "heading", level: Math.min(headingMatch[1].length + 1, 3), text: headingMatch[2].trim() });
+      return;
+    }
+
+    if (bulletMatch || numberedMatch) {
+      flushParagraph(paragraphLines, blocks);
+      const ordered = Boolean(numberedMatch);
+      const text = (bulletMatch?.[1] || numberedMatch?.[1] || "").trim();
+
+      if (!activeList || activeList.ordered !== ordered) {
+        flushList();
+        activeList = { type: "list", ordered, items: [] };
+      }
+
+      activeList.items.push(text);
+      return;
+    }
+
+    if (isShortHeading(line)) {
+      flushParagraph(paragraphLines, blocks);
+      flushList();
+      blocks.push({ type: "heading", level: 2, text: line.replace(/:$/, "") });
+      return;
+    }
+
+    flushList();
+    paragraphLines.push(line);
+  });
+
+  flushParagraph(paragraphLines, blocks);
+  flushList();
+
+  return blocks;
+}
+
 function blogPostSchema(post) {
   const path = articlePath(post);
   const publishedAt = post.publishedAt || post.createdAt || new Date().toISOString();
@@ -107,10 +248,11 @@ function BlogCard({ post, featured = false }) {
 }
 
 function BlogArticle({ post }) {
-  const paragraphs = (post.content || post.excerpt || "")
-    .split(/\n{2,}/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const sourceContent = (post.content || post.excerpt || "").trim();
+  const articleContent = post.title && sourceContent.startsWith(post.title)
+    ? sourceContent.slice(post.title.length).trim()
+    : sourceContent;
+  const contentBlocks = parseBlogContent(articleContent);
 
   return (
     <article className="blog-article">
@@ -134,7 +276,23 @@ function BlogArticle({ post }) {
         )}
       </div>
       <div className="blog-content">
-        {paragraphs.length > 0 ? paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>) : (
+        {contentBlocks.length > 0 ? contentBlocks.map((block, index) => {
+          if (block.type === "heading") {
+            const HeadingTag = block.level === 3 ? "h3" : "h2";
+            return <HeadingTag key={`${block.type}-${index}`}>{block.text}</HeadingTag>;
+          }
+
+          if (block.type === "list") {
+            const ListTag = block.ordered ? "ol" : "ul";
+            return (
+              <ListTag key={`${block.type}-${index}`}>
+                {block.items.map((item) => <li key={item}>{item}</li>)}
+              </ListTag>
+            );
+          }
+
+          return <p key={`${block.type}-${index}`}>{block.text}</p>;
+        }) : (
           <p>This post is being prepared by the Influnexa team.</p>
         )}
       </div>

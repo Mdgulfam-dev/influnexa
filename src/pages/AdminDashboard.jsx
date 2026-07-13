@@ -9,6 +9,7 @@ import {
   loginAdmin,
   logoutAdmin,
   updateAdminUser,
+  updateBlogPost,
   updateOwnAdminPassword,
   updateRegistrationStatus,
   updateTestimonialStatus,
@@ -309,6 +310,7 @@ export default function AdminDashboard() {
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
+  const [editingBlogId, setEditingBlogId] = useState("");
   const [userForm, setUserForm] = useState(initialUserForm);
   const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [editingUserId, setEditingUserId] = useState("");
@@ -457,17 +459,42 @@ export default function AdminDashboard() {
 
   const submitBlog = async (event) => {
     event.preventDefault();
-    setStatus({ type: "loading", message: "Saving blog post..." });
+    setStatus({ type: "loading", message: editingBlogId ? "Updating blog post..." : "Saving blog post..." });
 
     try {
-      await createBlogPost(blogForm);
+      if (editingBlogId) {
+        await updateBlogPost(editingBlogId, blogForm);
+      } else {
+        await createBlogPost(blogForm);
+      }
       setBlogForm(initialBlogForm);
+      setEditingBlogId("");
       await loadDashboard();
       setActiveTab("blogs");
-      setStatus({ type: "success", message: "Blog post saved." });
+      setStatus({ type: "success", message: editingBlogId ? "Blog post updated." : "Blog post saved." });
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
+  };
+
+  const editBlog = (blog) => {
+    setEditingBlogId(blog._id);
+    setBlogForm({
+      title: blog.title || "",
+      category: blog.category || "",
+      excerpt: blog.excerpt || "",
+      content: blog.content || "",
+      author: blog.author || "Influnexa Team",
+      readTime: blog.readTime || "5 min read",
+      coverImage: blog.coverImage || "",
+      status: blog.status || "published",
+    });
+    setActiveTab("blogs");
+  };
+
+  const cancelBlogEdit = () => {
+    setEditingBlogId("");
+    setBlogForm(initialBlogForm);
   };
 
   const selectTab = (id) => {
@@ -576,6 +603,10 @@ export default function AdminDashboard() {
   const removeBlog = async (id) => {
     try {
       await deleteBlogPost(id);
+      if (editingBlogId === id) {
+        setEditingBlogId("");
+        setBlogForm(initialBlogForm);
+      }
       await loadDashboard();
     } catch (error) {
       setStatus({ type: "error", message: error.message });
@@ -820,11 +851,20 @@ export default function AdminDashboard() {
         {activeTab === "blogs" && (
           <div className="admin-blog-grid">
             <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>
-              <h2>Create blog post</h2>
+              <h2>{editingBlogId ? "Edit blog post" : "Create blog post"}</h2>
               <label>Title<input name="title" value={blogForm.title} onChange={updateBlogField} required /></label>
               <label>Category<input name="category" value={blogForm.category} onChange={updateBlogField} required /></label>
               <label>Excerpt<textarea name="excerpt" value={blogForm.excerpt} onChange={updateBlogField} required rows="3" /></label>
-              <label>Content<textarea name="content" value={blogForm.content} onChange={updateBlogField} rows="6" /></label>
+              <label>
+                Content
+                <textarea
+                  name="content"
+                  value={blogForm.content}
+                  onChange={updateBlogField}
+                  rows="10"
+                  placeholder={"Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"}
+                />
+              </label>
               <div className="admin-form-row">
                 <label>Author<input name="author" value={blogForm.author} onChange={updateBlogField} /></label>
                 <label>Read time<input name="readTime" value={blogForm.readTime} onChange={updateBlogField} /></label>
@@ -834,7 +874,10 @@ export default function AdminDashboard() {
                 <option>published</option>
                 <option>draft</option>
               </select></label>
-              <button type="submit">Create Blog</button>
+              <div className="admin-login-actions">
+                <button type="submit">{editingBlogId ? "Update Blog" : "Create Blog"}</button>
+                {editingBlogId && <button type="button" onClick={cancelBlogEdit}>Cancel</button>}
+              </div>
             </form>
 
             <div className="admin-panel">
@@ -848,7 +891,10 @@ export default function AdminDashboard() {
                       <p>{blog.excerpt}</p>
                       <span>{blog.category} - {blog.readTime} - {formatDate(blog.publishedAt)}</span>
                     </div>
-                    <button type="button" onClick={() => removeBlog(blog._id)}>Delete</button>
+                    <div className="admin-row-actions">
+                      <button type="button" onClick={() => editBlog(blog)}>Edit</button>
+                      <button type="button" onClick={() => removeBlog(blog._id)}>Delete</button>
+                    </div>
                   </article>
                 ))}
               </div>

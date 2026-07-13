@@ -193,6 +193,27 @@ export async function createBlogPost(payload) {
   return data.post;
 }
 
+export async function updateBlogPost(id, payload) {
+  const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...adminHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+    throw new Error(data.message || "Unable to update blog post.");
+  }
+
+  return data.post;
+}
+
 export async function deleteBlogPost(id) {
   const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
     method: "DELETE",
