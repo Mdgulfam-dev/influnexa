@@ -59,6 +59,14 @@ function textSummary(value = "") {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function slugifyText(value = "") {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
 function isShortHeading(value) {
   const text = value.trim();
   const wordCount = text.split(/\s+/).filter(Boolean).length;
@@ -139,10 +147,11 @@ function parseBlogContent(value = "") {
   const blocks = [];
   const paragraphLines = [];
   let activeList = null;
+  let paragraphBreaks = 0;
   const lines = addSmartSectionBreaks(value)
     .replace(/\r\n/g, "\n")
     .split("\n")
-    .map((line) => line.trim());
+    .map((line) => line.replace(/\t/g, "  ").trim());
 
   const flushList = () => {
     if (activeList?.items.length) {
@@ -155,17 +164,24 @@ function parseBlogContent(value = "") {
     if (!line) {
       flushParagraph(paragraphLines, blocks);
       flushList();
+      paragraphBreaks += 1;
       return;
     }
 
-    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    const headingMatch = line.match(/^(#{1,3})\s*(.+)$/);
     const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
     const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
 
     if (headingMatch) {
       flushParagraph(paragraphLines, blocks);
       flushList();
-      blocks.push({ type: "heading", level: Math.min(headingMatch[1].length + 1, 3), text: headingMatch[2].trim() });
+      const markerLevel = headingMatch[1].length;
+      const text = headingMatch[2].replace(/^#+\s*/, "").trim();
+
+      if (text) {
+        blocks.push({ type: "heading", level: markerLevel === 1 ? 2 : markerLevel, text });
+      }
+      paragraphBreaks = 0;
       return;
     }
 
@@ -180,18 +196,21 @@ function parseBlogContent(value = "") {
       }
 
       activeList.items.push(text);
+      paragraphBreaks = 0;
       return;
     }
 
-    if (isShortHeading(line)) {
+    if (paragraphBreaks > 0 && isShortHeading(line)) {
       flushParagraph(paragraphLines, blocks);
       flushList();
       blocks.push({ type: "heading", level: 2, text: line.replace(/:$/, "") });
+      paragraphBreaks = 0;
       return;
     }
 
     flushList();
     paragraphLines.push(line);
+    paragraphBreaks = 0;
   });
 
   flushParagraph(paragraphLines, blocks);
@@ -247,12 +266,23 @@ function BlogCard({ post, featured = false }) {
   );
 }
 
-function BlogArticle({ post }) {
+function BlogArticle({ post, relatedPosts = [] }) {
   const sourceContent = (post.content || post.excerpt || "").trim();
   const articleContent = post.title && sourceContent.startsWith(post.title)
     ? sourceContent.slice(post.title.length).trim()
     : sourceContent;
   const contentBlocks = parseBlogContent(articleContent);
+  const decoratedBlocks = contentBlocks.map((block, index) => {
+    if (block.type !== "heading") {
+      return block;
+    }
+
+    return {
+      ...block,
+      id: `${slugifyText(block.text) || "section"}-${index}`,
+    };
+  });
+  const tableOfContents = decoratedBlocks.filter((block) => block.type === "heading").slice(0, 8);
 
   return (
     <article className="blog-article">
@@ -266,6 +296,11 @@ function BlogArticle({ post }) {
             <strong>{post.author || "Influnexa Team"}</strong>
             <small>{formatDate(post.publishedAt || post.createdAt)} - {post.readTime || "5 min read"}</small>
           </div>
+          <div className="blog-article-signals" aria-label="Article highlights">
+            <span>Strategy</span>
+            <span>Execution</span>
+            <span>Reporting</span>
+          </div>
         </div>
         {post.coverImage ? (
           <img loading="eager" decoding="async" width="760" height="520" src={post.coverImage} alt={`${post.title} cover`} />
@@ -275,27 +310,48 @@ function BlogArticle({ post }) {
           </div>
         )}
       </div>
-      <div className="blog-content">
-        {contentBlocks.length > 0 ? contentBlocks.map((block, index) => {
-          if (block.type === "heading") {
-            const HeadingTag = block.level === 3 ? "h3" : "h2";
-            return <HeadingTag key={`${block.type}-${index}`}>{block.text}</HeadingTag>;
-          }
-
-          if (block.type === "list") {
-            const ListTag = block.ordered ? "ol" : "ul";
-            return (
-              <ListTag key={`${block.type}-${index}`}>
-                {block.items.map((item) => <li key={item}>{item}</li>)}
-              </ListTag>
-            );
-          }
-
-          return <p key={`${block.type}-${index}`}>{block.text}</p>;
-        }) : (
-          <p>This post is being prepared by the Influnexa team.</p>
+      <div className={`blog-article-shell ${tableOfContents.length > 1 ? "has-toc" : "without-toc"}`}>
+        {tableOfContents.length > 1 && (
+          <aside className="blog-toc" aria-label="Table of contents">
+            <span>In this article</span>
+            {tableOfContents.map((item) => (
+              <a key={item.id} href={`#${item.id}`}>{item.text}</a>
+            ))}
+          </aside>
         )}
+        <div className="blog-content">
+          {decoratedBlocks.length > 0 ? decoratedBlocks.map((block, index) => {
+            if (block.type === "heading") {
+              const HeadingTag = block.level === 3 ? "h3" : "h2";
+              return <HeadingTag id={block.id} key={`${block.type}-${index}`}>{block.text}</HeadingTag>;
+            }
+
+            if (block.type === "list") {
+              const ListTag = block.ordered ? "ol" : "ul";
+              return (
+                <ListTag key={`${block.type}-${index}`}>
+                  {block.items.map((item, itemIndex) => <li key={`${index}-${itemIndex}`}>{item}</li>)}
+                </ListTag>
+              );
+            }
+
+            return <p key={`${block.type}-${index}`}>{block.text}</p>;
+          }) : (
+            <p>This post is being prepared by the Influnexa team.</p>
+          )}
+        </div>
       </div>
+      {relatedPosts.length > 0 && (
+        <section className="blog-related" aria-label="Suggested blog posts">
+          <div className="blog-section-heading">
+            <span>Suggested reads</span>
+            <a href="/blog">View all posts</a>
+          </div>
+          <div className="blog-related-grid">
+            {relatedPosts.map((item) => <BlogCard key={item._id || item.slug || item.title} post={item} />)}
+          </div>
+        </section>
+      )}
     </article>
   );
 }
@@ -315,6 +371,7 @@ export default function Blog() {
     let active = true;
 
     if (slug) {
+      setStatus({ type: "loading", message: "" });
       getBlogPost(slug)
         .then((nextPost) => {
           if (active) {
@@ -337,17 +394,32 @@ export default function Blog() {
       };
     }
 
+    setPost(null);
+    setStatus({ type: "loading", message: "" });
+
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    let active = true;
+
     getBlogPosts("published")
       .then((nextPosts) => {
         if (active) {
           setPosts(nextPosts.length > 0 ? nextPosts : fallbackBlogPosts);
-          setStatus({ type: "success", message: "" });
+          if (!slug) {
+            setStatus({ type: "success", message: "" });
+          }
         }
       })
       .catch(() => {
         if (active) {
           setPosts(fallbackBlogPosts);
-          setStatus({ type: "success", message: "" });
+          if (!slug) {
+            setStatus({ type: "success", message: "" });
+          }
         }
       });
 
@@ -358,6 +430,28 @@ export default function Blog() {
 
   const featuredPost = useMemo(() => posts[0], [posts]);
   const remainingPosts = useMemo(() => posts.slice(1), [posts]);
+  const categoryList = useMemo(() => {
+    return [...new Set(posts.map((item) => item.category).filter(Boolean))].slice(0, 6);
+  }, [posts]);
+  const relatedPosts = useMemo(() => {
+    if (!post) {
+      return [];
+    }
+
+    const currentKey = post._id || post.slug || post.title;
+    const sameCategory = posts.filter((item) => (
+      (item._id || item.slug || item.title) !== currentKey
+      && item.category
+      && post.category
+      && item.category.toLowerCase() === post.category.toLowerCase()
+    ));
+    const otherPosts = posts.filter((item) => (
+      (item._id || item.slug || item.title) !== currentKey
+      && !sameCategory.includes(item)
+    ));
+
+    return [...sameCategory, ...otherPosts].slice(0, 3);
+  }, [post, posts]);
   const currentDescription = slug
     ? textSummary(post?.excerpt || post?.content || "Influnexa blog article on influencer marketing, UGC, product reviews, and creator campaign strategy.")
     : "Read Influnexa insights on influencer marketing, creator sourcing, product review campaigns, UGC production, campaign management, and reporting.";
@@ -413,7 +507,7 @@ export default function Blog() {
 
       <main className="blog-page-main">
         {slug ? (
-          post ? <BlogArticle post={post} /> : (
+          post ? <BlogArticle post={post} relatedPosts={relatedPosts} /> : (
             <section className="blog-empty">
               <span>Not found</span>
               <h1>Blog post not found</h1>
@@ -424,11 +518,20 @@ export default function Blog() {
         ) : (
           <>
             <section className="blog-index-hero">
-              <span>Influnexa blog</span>
-              <h1>Influencer marketing insights for brands that need trust, content, and growth.</h1>
-              <p>
-                Read practical guidance on creator sourcing, product review campaigns, UGC production, and agency-managed influencer marketing.
-              </p>
+              <div>
+                <span>Influnexa blog</span>
+                <h1>Influencer marketing insights for brands that need trust, content, and growth.</h1>
+                <p>
+                  Read practical guidance on creator sourcing, product review campaigns, UGC production, and agency-managed influencer marketing.
+                </p>
+              </div>
+              <div className="blog-index-panel" aria-label="Blog highlights">
+                <strong>{posts.length} posts</strong>
+                <small>Strategy, UGC, reviews, creator selection, and campaign operations.</small>
+                <div>
+                  {categoryList.map((category) => <span key={category}>{category}</span>)}
+                </div>
+              </div>
             </section>
 
             {featuredPost && <BlogCard post={featuredPost} featured />}

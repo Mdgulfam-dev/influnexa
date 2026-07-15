@@ -864,6 +864,7 @@ export default function AdminDashboard() {
                   rows="10"
                   placeholder={"Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"}
                 />
+                <small className="admin-field-note">Supported formatting: ## section heading, ### subheading, - bullet list, and 1. numbered list. Keep headings and list items on their own lines.</small>
               </label>
               <div className="admin-form-row">
                 <label>Author<input name="author" value={blogForm.author} onChange={updateBlogField} /></label>
