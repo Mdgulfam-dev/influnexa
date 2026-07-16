@@ -180,7 +180,9 @@ export default function About() {
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cyan-50">Tell us about your product, audience, and campaign goals. We’ll help you map the right next step.</p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button href="/register/brand" variant="dark">Talk to our team</Button>
-              <Button href="/blog" variant="secondary">Read our insights</Button>
+              <Button href="/blog" variant="onBrand">
+                Read our insights
+              </Button>
             </div>
           </div>
         </section>

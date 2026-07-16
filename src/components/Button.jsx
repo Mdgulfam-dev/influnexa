@@ -8,6 +8,8 @@ export default function Button({ children, variant = "primary", href = "#contact
     secondary:
       "border border-slate-300/70 bg-white/80 text-slate-950 shadow-lg shadow-slate-900/5 backdrop-blur hover:-translate-y-0.5 hover:border-slate-400 hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/16",
     dark: "border border-white/20 bg-white/12 text-white shadow-xl shadow-black/10 backdrop-blur hover:-translate-y-0.5 hover:bg-white/18",
+    onBrand:
+      "border border-white/75 bg-slate-950/35 text-white shadow-lg shadow-slate-950/20 backdrop-blur hover:-translate-y-0.5 hover:border-white hover:bg-slate-950/50",
   };
 
   return (
