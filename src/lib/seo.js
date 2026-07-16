@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const SITE_URL = "https://influnexa.com";
+export const SITE_URL = "https://www.influnexa.in";
 export const SITE_NAME = "Influnexa";
 export const DEFAULT_IMAGE = `${SITE_URL}/favicon.svg`;
 
