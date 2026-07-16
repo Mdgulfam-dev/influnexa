@@ -892,7 +892,7 @@ export default function Home() {
           </div>
           {[
             ["Services", ["Influencer Marketing", "#services"], ["UGC Content", "#services"], ["Reviews", "#services"], ["Analytics", "#services"]],
-            ["Resources", ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
+            ["Resources", ["About Us", "/about"], ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
             ["Legal", ["Privacy", "#home"], ["Terms", "#home"], ["Compliance", "#home"], ["Security", "#home"]],
             [
               "Contact",
