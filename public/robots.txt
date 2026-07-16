@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 
-Sitemap: https://influnexa.com/sitemap.xml
+Sitemap: https://influnexa.in/sitemap.xml
