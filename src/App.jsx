@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 import Blog from "./pages/Blog";
@@ -8,22 +9,47 @@ function App() {
   const path = window.location.pathname;
 
   if (path === "/register/brand") {
-    return <RegisterBrand />;
+    return (
+      <>
+        <RegisterBrand />
+        <Analytics />
+      </>
+    );
   }
 
   if (path === "/register/influencer") {
-    return <RegisterInfluencer />;
+    return (
+      <>
+        <RegisterInfluencer />
+        <Analytics />
+      </>
+    );
   }
 
   if (path === "/admin") {
-    return <AdminDashboard />;
+    return (
+      <>
+        <AdminDashboard />
+        <Analytics />
+      </>
+    );
   }
 
   if (path === "/blog" || path.startsWith("/blog/")) {
-    return <Blog />;
+    return (
+      <>
+        <Blog />
+        <Analytics />
+      </>
+    );
   }
 
-  return <Home />;
+  return (
+    <>
+      <Home />
+      <Analytics />
+    </>
+  );
 }
 
 export default App;
