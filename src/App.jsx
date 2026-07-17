@@ -3,7 +3,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Blog from "./pages/Blog";
 import RegisterBrand from "./pages/RegisterBrand";
 import RegisterInfluencer from "./pages/RegisterInfluencer";
-import { Analytics } from "@vercel/analytics/react";
+import About from "./pages/About";
 
 function App() {
   const path = window.location.pathname;
@@ -18,6 +18,10 @@ function App() {
 
   if (path === "/admin") {
     return <AdminDashboard />;
+  }
+
+  if (path === "/about") {
+    return <About />;
   }
 
   if (path === "/blog" || path.startsWith("/blog/")) {

@@ -9,6 +9,7 @@ const navItems = [
   ["Creators", "/#influencers"],
   ["Case Studies", "/#case-studies"],
   ["Blog", "/blog"],
+  ["About Us", "/about"],
 ];
 
 export default function Navbar({ theme = "light", onToggleTheme }) {

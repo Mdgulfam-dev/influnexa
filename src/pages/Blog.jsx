@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import { getBlogPost, getBlogPosts } from "../lib/api";
@@ -120,9 +120,17 @@ function addSmartSectionBreaks(value = "") {
     "Conclusion",
     "Call to Action",
   ].join("|");
-  const sectionRegex = new RegExp(`\\s+(${sectionPattern})(?=\\s|$)`, "g");
+  const sectionRegex = new RegExp(`[\\t ]+(${sectionPattern})(?=[\\t ]|$)`, "g");
+  const listLineRegex = /^\s*(?:\d+[.)]|[-*•])\s+/;
 
-  return value.replace(sectionRegex, "\n\n$1\n");
+  return value
+    .split(/\r?\n/)
+    .map((line) => (
+      // A table of contents is valid Markdown. Do not split a list item merely
+      // because its text happens to match one of the automatic heading patterns.
+      listLineRegex.test(line) ? line : line.replace(sectionRegex, "\n\n$1\n")
+    ))
+    .join("\n");
 }
 
 function flushParagraph(paragraphLines, blocks) {
@@ -141,6 +149,19 @@ function flushParagraph(paragraphLines, blocks) {
   }
 
   paragraphLines.length = 0;
+}
+
+function renderInlineMarkdown(value = "") {
+  return value
+    .split(/(\*\*[^*]+\*\*)/g)
+    .filter(Boolean)
+    .map((part, index) => {
+      const isBold = part.startsWith("**") && part.endsWith("**");
+
+      return isBold
+        ? <strong key={index}>{part.slice(2, -2)}</strong>
+        : <Fragment key={index}>{part}</Fragment>;
+    });
 }
 
 function parseBlogContent(value = "") {
@@ -170,7 +191,8 @@ function parseBlogContent(value = "") {
 
     const headingMatch = line.match(/^(#{1,3})\s*(.+)$/);
     const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
-    const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
+    const boldNumberedMatch = line.match(/^\*\*(\d+[.)]\s+.+)\*\*$/);
+    const numberedMatch = (boldNumberedMatch ? boldNumberedMatch[1] : line).match(/^(\d+)[.)]\s+(.+)$/);
 
     if (headingMatch) {
       flushParagraph(paragraphLines, blocks);
@@ -188,14 +210,20 @@ function parseBlogContent(value = "") {
     if (bulletMatch || numberedMatch) {
       flushParagraph(paragraphLines, blocks);
       const ordered = Boolean(numberedMatch);
-      const text = (bulletMatch?.[1] || numberedMatch?.[1] || "").trim();
+      const text = (bulletMatch?.[1] || numberedMatch?.[2] || "").trim();
+      const itemText = boldNumberedMatch ? `**${text}**` : text;
 
       if (!activeList || activeList.ordered !== ordered) {
         flushList();
-        activeList = { type: "list", ordered, items: [] };
+        activeList = {
+          type: "list",
+          ordered,
+          items: [],
+          start: ordered ? Number(numberedMatch[1]) : undefined,
+        };
       }
 
-      activeList.items.push(text);
+      activeList.items.push(itemText);
       paragraphBreaks = 0;
       return;
     }
@@ -323,19 +351,19 @@ function BlogArticle({ post, relatedPosts = [] }) {
           {decoratedBlocks.length > 0 ? decoratedBlocks.map((block, index) => {
             if (block.type === "heading") {
               const HeadingTag = block.level === 3 ? "h3" : "h2";
-              return <HeadingTag id={block.id} key={`${block.type}-${index}`}>{block.text}</HeadingTag>;
+              return <HeadingTag id={block.id} key={`${block.type}-${index}`}>{renderInlineMarkdown(block.text)}</HeadingTag>;
             }
 
             if (block.type === "list") {
               const ListTag = block.ordered ? "ol" : "ul";
               return (
-                <ListTag key={`${block.type}-${index}`}>
-                  {block.items.map((item, itemIndex) => <li key={`${index}-${itemIndex}`}>{item}</li>)}
+                <ListTag key={`${block.type}-${index}`} start={block.ordered ? block.start : undefined}>
+                  {block.items.map((item, itemIndex) => <li key={`${index}-${itemIndex}`}>{renderInlineMarkdown(item)}</li>)}
                 </ListTag>
               );
             }
 
-            return <p key={`${block.type}-${index}`}>{block.text}</p>;
+            return <p key={`${block.type}-${index}`}>{renderInlineMarkdown(block.text)}</p>;
           }) : (
             <p>This post is being prepared by the Influnexa team.</p>
           )}

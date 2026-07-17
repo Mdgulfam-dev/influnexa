@@ -7920,6 +7920,14 @@ footer .footer-brand-copy small,
   line-height: 1.75;
 }
 
+.blog-page .blog-content ul {
+  list-style-type: disc;
+}
+
+.blog-page .blog-content ol {
+  list-style-type: decimal;
+}
+
 .blog-page .blog-content li::marker {
   color: var(--brand);
   font-weight: 900;

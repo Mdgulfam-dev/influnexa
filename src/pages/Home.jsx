@@ -8,6 +8,21 @@ import { applyTheme, getInitialTheme } from "../lib/theme";
 
 const logos = ["BEAUTY", "FASHION", "TECH", "DTC", "FITNESS", "LIFESTYLE", "FOOD", "FINANCE"];
 
+const socialLinks = [
+  { label: "Facebook", type: "facebook", status: "Pending" },
+  {
+    label: "LinkedIn",
+    type: "linkedin",
+    href: "https://www.linkedin.com/company/influnexa-the-best-influencer-and-creator-marketing-company-in-india/?viewAsMember=true",
+  },
+  {
+    label: "Instagram",
+    type: "instagram",
+    href: "https://www.instagram.com/influnexa.ai?igsh=MWQza3owZXlhdzJsMA==",
+  },
+  { label: "X (Twitter)", type: "x", status: "Pending" },
+];
+
 const stats = [
   ["10,000+", "Verified Creators"],
   ["50+", "Campaigns Delivered"],
@@ -369,6 +384,25 @@ function ContactIcon({ type }) {
         </svg>
       )}
     </span>
+  );
+}
+
+function SocialIcon({ type }) {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    strokeWidth: 2,
+  };
+
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+      {type === "facebook" && <path fill="currentColor" d="M13.5 21v-8h2.8l.4-3h-3.2V8.1c0-.9.3-1.5 1.6-1.5H17V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.5v3h2.8v8h3.2Z" />}
+      {type === "linkedin" && <><rect {...common} x="4" y="9" width="4" height="11" rx=".5" /><path {...common} d="M6 5.5h.01" /><path {...common} d="M11 20v-6.2c0-2.6 1.4-4.3 3.7-4.3 2.3 0 3.3 1.6 3.3 4.3V20M11 14.2c0-2.9 1.4-4.7 4.1-4.7" /></>}
+      {type === "instagram" && <><rect {...common} x="3.5" y="3.5" width="17" height="17" rx="5" /><circle {...common} cx="12" cy="12" r="4" /><path {...common} d="M17.5 6.7h.01" /></>}
+      {type === "x" && <path {...common} d="M5 4.5 19 19.5M19 4.5 5 19.5" />}
+    </svg>
   );
 }
 
@@ -885,14 +919,32 @@ export default function Home() {
             <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
               Premium global influencer marketing for brands, agencies, startups, e-commerce teams, and creators.
             </p>
-            <form className="mt-6 flex max-w-sm gap-2" aria-label="Join Influnexa email updates">
-              <input className="min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm outline-none" placeholder="Email address" type="email" aria-label="Email address" />
-              <button className="footer-join-button rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950" type="submit">Join</button>
-            </form>
+            <div className="mt-6" aria-label="Influnexa social media">
+              <div className="flex flex-wrap gap-2">
+                {socialLinks.map((social) => (
+                  social.href ? (
+                    <a
+                      key={social.label}
+                      className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/40 hover:bg-white/10 hover:text-cyan-300"
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Follow Influnexa on ${social.label}`}
+                    >
+                      <SocialIcon type={social.type} />
+                    </a>
+                  ) : (
+                    <span key={social.label} className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full border border-white/10 bg-white/[0.03] text-slate-600" title={`${social.label} profile pending`} aria-label={`${social.label} profile pending`}>
+                      <SocialIcon type={social.type} />
+                    </span>
+                  )
+                ))}
+              </div>
+            </div>
           </div>
           {[
             ["Services", ["Influencer Marketing", "#services"], ["UGC Content", "#services"], ["Reviews", "#services"], ["Analytics", "#services"]],
-            ["Resources", ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
+            ["Resources", ["About Us", "/about"], ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
             ["Legal", ["Privacy", "#home"], ["Terms", "#home"], ["Compliance", "#home"], ["Security", "#home"]],
             [
               "Contact",
