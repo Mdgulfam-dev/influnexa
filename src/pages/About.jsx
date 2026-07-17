@@ -37,14 +37,29 @@ const leadership = [
     role: "Founder & CEO",
     initials: "MG",
     profile: "https://www.linkedin.com/in/md-gulfam-364ab5212/",
-    copy: "Md Gulfam leads Influnexa’s vision, partnerships, and campaign delivery—helping brands turn creator activity into focused, commercially useful marketing.",
+    copy: "Md Gulfam is the Founder & CEO of Influnexa, leading the company's vision, technology, and business strategy. With a strong background in software engineering, AI, and business automation, he is focused on building a modern influencer marketing platform that helps brands discover the right creators, manage campaigns efficiently, and measure results with confidence. He believes successful creator marketing is driven by the right combination of technology, data, and meaningful partnerships. His goal is to make influencer collaborations more transparent, scalable, and performance-focused for brands of all sizes.",
   },
   {
     name: "Sana Kureshi",
     role: "Co-Founder & Chief Marketing Officer",
     initials: "SK",
     profile: "https://www.linkedin.com/in/sana-kureshi-4409a63b1/",
-    copy: "Sana Kureshi leads marketing direction and brand storytelling, ensuring each campaign connects with the right audience in a clear, compelling way.",
+    copy: "Sana Kureshi is the Co-Founder & Chief Marketing Officer at Influnexa, leading brand partnerships, campaign strategy, and creator relationship management. She works closely with brands to understand their marketing objectives and develops influencer campaigns that connect with the right audience and deliver measurable business outcomes. Her focus is on building long-term relationships with brands and creators while ensuring every collaboration is authentic, well-managed, and aligned with campaign goals. She is committed to creating marketing strategies that drive meaningful engagement and sustainable brand growth.",
+  },
+];
+
+const trustSignals = [
+  {
+    title: "Clear brand understanding",
+    copy: "We begin by understanding your product, audience, market, and commercial goal before recommending creators or deliverables.",
+  },
+  {
+    title: "Thoughtful creator shortlists",
+    copy: "Each shortlist is shaped around relevance, audience quality, content style, brand fit, and the potential to create credible customer trust.",
+  },
+  {
+    title: "Smart, accountable delivery",
+    copy: "Automation-aware workflows and hands-on campaign management keep every stage clearer—from brief and outreach to approvals, publishing, and reporting.",
   },
 ];
 
@@ -152,6 +167,27 @@ export default function About() {
                   <h3 className="mt-6 text-2xl font-black">{member.name}</h3>
                   <p className="mt-1 font-bold text-cyan-700 dark:text-cyan-300">{member.role}</p>
                   <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">{member.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-16 lg:px-6 lg:py-24">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr]">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-cyan-600 dark:text-cyan-300">Why brands trust Influnexa</p>
+              <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Expertise that keeps campaigns grounded in outcomes.</h2>
+              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600 dark:text-slate-300">Our team combines marketing judgement, creator research, and practical systems to help brands move from a campaign idea to content and insights they can use.</p>
+            </div>
+            <div className="grid gap-5">
+              {trustSignals.map((signal, index) => (
+                <article key={signal.title} className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-[3.5rem_1fr] dark:border-white/10 dark:bg-slate-900">
+                  <span className="grid h-11 w-11 place-items-center rounded-full bg-cyan-100 text-sm font-black text-cyan-800 dark:bg-cyan-300/10 dark:text-cyan-300">0{index + 1}</span>
+                  <div>
+                    <h3 className="text-xl font-black">{signal.title}</h3>
+                    <p className="mt-2 leading-7 text-slate-600 dark:text-slate-300">{signal.copy}</p>
+                  </div>
                 </article>
               ))}
             </div>
