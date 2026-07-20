@@ -188,7 +188,7 @@ const reasons = [
   "Dedicated Campaign Managers",
   "Audience Quality Checks",
   "Clear Reporting",
-  "Global Creator Network",
+  "India Creator Network",
   "Product Review Expertise",
   "Transparent Budgets",
   "Fast Agency Execution",
@@ -213,13 +213,13 @@ const faqs = [
   ["How are creators selected?", "Our agency team researches creators manually using niche relevance, content quality, audience fit, engagement behavior, location, language, and previous brand suitability."],
   ["Do influencers apply for campaigns on this website?", "No. This website is not a marketplace where influencers apply to campaigns. Influnexa works as an agency and manages creator selection directly with the client."],
   ["How long does a campaign take?", "Most campaigns can start planning within a few days, with launch timing depending on creator approval, product shipping, content review, and publishing schedule."],
-  ["Which countries are supported?", "Influnexa supports creator collaborations across North America, Europe, the Middle East, Asia-Pacific, Latin America, and Africa."],
+  ["Which regions are supported?", "Influnexa supports creator collaborations across India, with creator research shaped around your target region, language, audience, and campaign requirements."],
   ["What reporting is included?", "Reports include creator list, content links, rating and review status, reach, impressions, engagement, audience response, proof of posting, and campaign learnings."],
   ["What support do we receive?", "Brands get strategy, market research, creator sourcing, brief support, negotiation, review coordination, posting checks, and final campaign analysis."],
 ];
 
 const homeDescription =
-  "Influnexa is a global influencer marketing agency for brands that need creator research, product review campaigns, UGC production, product seeding, campaign management, and clear reporting.";
+  "Influnexa is an AI-powered influencer and creator marketing company in India. We help brands discover the right creators, manage product review and UGC campaigns, and measure results with confidence.";
 
 const homeBreadcrumbs = [
   { name: "Home", path: "/" },
@@ -228,7 +228,7 @@ const homeBreadcrumbs = [
 const homeJsonLd = [
   pageSchema({
     path: "/",
-    title: "Influnexa Global Influencer Marketing Agency",
+    title: "Influnexa | AI-Powered Influencer & Creator Marketing Company in India",
     description: homeDescription,
     breadcrumbs: homeBreadcrumbs,
   }),
@@ -243,7 +243,7 @@ const homeJsonLd = [
       name: service.title,
       description: service.copy,
       provider: { "@id": `${SITE_URL}/#organization` },
-      areaServed: "Worldwide",
+      areaServed: "India",
       serviceType: service.title,
     })),
   },
@@ -417,7 +417,7 @@ function Globe() {
   ];
 
   return (
-    <div className="globe" aria-label="Animated global creator activity map">
+    <div className="globe" aria-label="Animated creator activity map">
       <div className="globe-orbit orbit-one" />
       <div className="globe-orbit orbit-two" />
       <div className="globe-grid" />
@@ -524,43 +524,84 @@ export default function Home() {
   };
 
   return (
-    <div className={`site ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}>
+    <div
+      className={`site ${theme === "dark" ? "dark bg-slate-950 text-white" : "bg-[#F8FAFC] text-slate-950"}`}
+    >
       <SEO
-        title="Influnexa | Global Influencer Marketing Agency"
+        title="Influnexa | AI-Powered Influencer & Creator Marketing Company in India"
         description={homeDescription}
         path="/"
         jsonLd={homeJsonLd}
       />
-      <Navbar theme={theme} onToggleTheme={() => setTheme((value) => (value === "dark" ? "light" : "dark"))} />
+      <Navbar
+        theme={theme}
+        onToggleTheme={() =>
+          setTheme((value) => (value === "dark" ? "light" : "dark"))
+        }
+      />
 
       <main>
-        <section id="home" className="hero-shell production-hero relative overflow-hidden px-4 pb-20 pt-32 lg:px-6 lg:pb-28 lg:pt-40">
+        <section
+          id="home"
+          className="hero-shell production-hero relative overflow-hidden px-4 pb-20 pt-32 lg:px-6 lg:pb-28 lg:pt-40"
+        >
           <div className="hero-layout mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="hero-copy relative z-10">
-              <div className="hero-kicker">Influencer marketing operations</div>
+              <div className="hero-kicker">
+                🚀 AI-Powered Influencer & Creator Marketing Company
+              </div>
+
               <h1>
-                Premium influencer campaigns managed with production-grade discipline.
+                AI-Powered Influencer & Creator Marketing Company in India
               </h1>
+
               <p>
-                Influnexa plans, sources, briefs, approves, coordinates, and reports creator campaigns for brands that need credible execution, polished content, and measurable proof.
+                Influnexa helps brands discover verified Instagram, YouTube,
+                LinkedIn, and UGC creators, launch high-performing influencer
+                marketing campaigns, manage creator collaborations, and measure
+                campaign performance through AI-powered campaign management.
               </p>
+
               <div className="hero-actions">
-                <Button className="hero-start-campaign-button" href="/register/brand">Start a Campaign</Button>
-                <Button className="hero-join-creator-button" href="/register/influencer" variant="secondary">
-                  Join as Creator
+                <Button
+                  className="hero-start-campaign-button"
+                  href="/register/brand"
+                >
+                  Start Your Campaign
+                </Button>
+
+                <Button
+                  className="hero-join-creator-button"
+                  href="/register/influencer"
+                  variant="secondary"
+                >
+                  Join as a Creator
                 </Button>
               </div>
+
               <div className="hero-proof-row">
                 {[
-                  ["50+", "Campaigns delivered"],
-                  ["8+", "Markets covered"],
-                  ["98%", "Client satisfaction"],
+                  ["50+", "Campaigns Managed"],
+                  ["500+", "Verified Creators"],
+                  ["98%", "Client Satisfaction"],
                 ].map(([value, label]) => (
                   <span key={label}>
                     <strong>{value}</strong>
                     {label}
                   </span>
                 ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <span className="hero-tag">AI Creator Discovery</span>
+
+                <span className="hero-tag">Verified Influencers</span>
+
+                <span className="hero-tag">UGC Campaigns</span>
+
+                <span className="hero-tag">Brand Collaborations</span>
+
+                <span className="hero-tag">Campaign Reporting</span>
               </div>
             </div>
 
@@ -569,37 +610,53 @@ export default function Home() {
                 <div className="production-panel-head">
                   <div>
                     <span>Live campaign desk</span>
+
                     <strong>Product Review Launch</strong>
                   </div>
-                  <small>Q3 / Global</small>
+
+                  <small>India / Creator Network</small>
                 </div>
+
                 <div className="production-status-grid">
                   {heroCampaignFlow.map(([title, copy], index) => (
                     <div key={title}>
                       <small>{String(index + 1).padStart(2, "0")}</small>
+
                       <strong>{title}</strong>
+
                       <span>{copy}</span>
                     </div>
                   ))}
                 </div>
+
                 <div className="production-review-band">
                   <div>
                     <span>Creator shortlist</span>
+
                     <strong>42</strong>
                   </div>
+
                   <div>
                     <span>Approval stage</span>
+
                     <strong>Brand review</strong>
                   </div>
+
                   <div>
                     <span>Reporting</span>
+
                     <strong>Proof-led</strong>
                   </div>
                 </div>
               </div>
+
               <div className="production-side-note">
                 <span>Agency team</span>
-                <strong>Strategy, sourcing, logistics, creator communication, content checks, and final campaign reporting.</strong>
+
+                <strong>
+                  Strategy, sourcing, logistics, creator communication, content
+                  checks, and final campaign reporting.
+                </strong>
               </div>
             </div>
           </div>
@@ -619,9 +676,14 @@ export default function Home() {
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr]">
             <div className="section-spotlight">
               <span>Modern growth partner</span>
-              <h2>Built for creator campaigns that need strategy, speed, and proof.</h2>
+              <h2>
+                Built for creator campaigns that need strategy, speed, and
+                proof.
+              </h2>
               <p>
-                Influnexa combines hands-on campaign operations with a polished reporting layer, so brands can move from creator shortlist to verified outcomes without building an internal team.
+                Influnexa combines hands-on campaign operations with a polished
+                reporting layer, so brands can move from creator shortlist to
+                verified outcomes without building an internal team.
               </p>
               <div className="section-spotlight-list">
                 {brandSignals.map(([title, copy]) => (
@@ -637,7 +699,9 @@ export default function Home() {
                 {stats.map(([value, label]) => (
                   <div key={label} className="metric-card-modern">
                     <small>{label}</small>
-                    <div className="counter text-3xl font-black text-primary md:text-4xl">{value}</div>
+                    <div className="counter text-3xl font-black text-primary md:text-4xl">
+                      {value}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -646,8 +710,13 @@ export default function Home() {
         </section>
 
         <section id="services" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Services" title="A modern agency for influencer marketing and product reviews">
-            From market research to final reporting, Influnexa runs campaigns for brands that need trust-building content, authentic product reviews, and high-quality creator assets.
+          <SectionHeader
+            eyebrow="Services"
+            title="A modern agency for influencer marketing and product reviews"
+          >
+            From market research to final reporting, Influnexa runs campaigns
+            for brands that need trust-building content, authentic product
+            reviews, and high-quality creator assets.
           </SectionHeader>
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {services.map(({ code, title, copy, points }) => (
@@ -670,11 +739,16 @@ export default function Home() {
 
         <section className="workflow-section px-4 py-24 lg:px-6" id="workflow">
           <SectionHeader eyebrow="Workflow" title="How it Works" light>
-            From brief to report, each campaign follows a clear step flow built around real creator fit, campaign control, and measurable outcomes.
+            From brief to report, each campaign follows a clear step flow built
+            around real creator fit, campaign control, and measurable outcomes.
           </SectionHeader>
           <div className="workflow-road mx-auto max-w-7xl">
             {workflowSteps.map(({ icon, title, copy }, index) => (
-              <article key={title} className="workflow-step" style={{ animationDelay: `${index * 0.07}s` }}>
+              <article
+                key={title}
+                className="workflow-step"
+                style={{ animationDelay: `${index * 0.07}s` }}
+              >
                 <WorkflowIcon type={icon} />
                 <strong>{title}</strong>
                 <p>{copy}</p>
@@ -684,8 +758,13 @@ export default function Home() {
         </section>
 
         <section id="brands" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Product review process" title="A sharper campaign system, presented like a modern operator">
-            Product review campaigns need structure: market context, creator fit, product logistics, content quality, posting proof, and transparent reporting.
+          <SectionHeader
+            eyebrow="Product review process"
+            title="A sharper campaign system, presented like a modern operator"
+          >
+            Product review campaigns need structure: market context, creator
+            fit, product logistics, content quality, posting proof, and
+            transparent reporting.
           </SectionHeader>
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="process-board">
@@ -698,32 +777,60 @@ export default function Home() {
             </div>
             <div className="process-aside">
               <small>Campaign discipline</small>
-              <h3>From shortlist to shipping to proof-of-posting, every step is structured.</h3>
+              <h3>
+                From shortlist to shipping to proof-of-posting, every step is
+                structured.
+              </h3>
               <p>
-                Instead of generic execution, Influnexa runs campaigns with clear decision checkpoints, polished content control, and a reporting layer clients can actually use.
+                Instead of generic execution, Influnexa runs campaigns with
+                clear decision checkpoints, polished content control, and a
+                reporting layer clients can actually use.
               </p>
             </div>
           </div>
         </section>
 
         <section className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Industries" title="Creator coverage for every growth category" />
+          <SectionHeader
+            eyebrow="Industries"
+            title="Creator coverage for every growth category"
+          />
           <div className="industry-cloud mx-auto max-w-7xl">
             {industries.map((industry) => (
-              <div key={industry} className="industry-card">{industry}</div>
+              <div key={industry} className="industry-card">
+                {industry}
+              </div>
             ))}
           </div>
         </section>
 
-        <section id="influencers" className="creator-network-section px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Creator network" title="Real public creator examples for brand-safe campaign planning">
-            Explore India-focused public creator examples across family lifestyle, comedy, and youth culture. These are source-backed research examples, not partnership claims.
+        <section
+          id="influencers"
+          className="creator-network-section px-4 py-20 lg:px-6"
+        >
+          <SectionHeader
+            eyebrow="Creator network"
+            title="Real public creator examples for brand-safe campaign planning"
+          >
+            Explore India-focused public creator examples across family
+            lifestyle, comedy, and youth culture. These are source-backed
+            research examples, not partnership claims.
           </SectionHeader>
           <div className="creator-network-grid mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {influencers.map((creator) => (
-              <article key={creator.name} className="influencer-card influencer-card-modern">
+              <article
+                key={creator.name}
+                className="influencer-card influencer-card-modern"
+              >
                 <div className="creator-photo-wrap">
-                  <img loading="lazy" decoding="async" width="480" height="480" src={creator.image} alt={`${creator.name}, ${creator.category} creator profile`} />
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    width="480"
+                    height="480"
+                    src={creator.image}
+                    alt={`${creator.name}, ${creator.category} creator profile`}
+                  />
                   <div className="creator-photo-overlay">
                     <span>{creator.category}</span>
                     <strong>{creator.specialty}</strong>
@@ -737,14 +844,24 @@ export default function Home() {
                   <h3 className="text-2xl font-black">{creator.name}</h3>
                   <div className="creator-metrics">
                     {creator.metrics.map(([value, label]) => (
-                      <span key={label}><strong>{value}</strong><small>{label}</small></span>
+                      <span key={label}>
+                        <strong>{value}</strong>
+                        <small>{label}</small>
+                      </span>
                     ))}
                   </div>
-                  <a className="creator-source-link" href={creator.sourceUrl} target="_blank" rel="noreferrer">
+                  <a
+                    className="creator-source-link"
+                    href={creator.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     View public source
                   </a>
                   <p className="creator-disclaimer">Public data example</p>
-                  <Button className="mt-4 w-full" href="#contact">Request Similar Creators</Button>
+                  <Button className="mt-4 w-full" href="#contact">
+                    Request Similar Creators
+                  </Button>
                 </div>
               </article>
             ))}
@@ -752,7 +869,10 @@ export default function Home() {
         </section>
 
         <section id="about" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Why choose us" title="Built for serious brands, not random applications" />
+          <SectionHeader
+            eyebrow="Why choose us"
+            title="Built for serious brands, not random applications"
+          />
           <div className="trust-grid mx-auto max-w-7xl gap-4">
             {reasons.map((reason) => (
               <div key={reason} className="reason-card">
@@ -766,11 +886,17 @@ export default function Home() {
         <section className="overflow-hidden bg-slate-950 px-4 py-24 text-white lg:px-6">
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
             <div>
-              <SectionHeader eyebrow="Global reach" title="Agency-managed creator sourcing across key markets" light>
-                We research creators by market, language, product category, audience quality, and brand fit before sharing options with the client.
+              <SectionHeader
+                eyebrow="India-wide reach"
+                title="Agency-managed creator sourcing across India"
+                light
+              >
+                We research creators by market, language, product category,
+                audience quality, and brand fit before sharing options with the
+                client.
               </SectionHeader>
               <div className="trust-banner">
-                <span>8+ countries activated</span>
+                <span>Pan-India creator sourcing</span>
                 <span>Multi-language creator sourcing</span>
                 <span>Local cultural fit review</span>
               </div>
@@ -780,34 +906,62 @@ export default function Home() {
         </section>
 
         <section id="case-studies" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Case studies" title="Campaigns engineered around business outcomes" />
+          <SectionHeader
+            eyebrow="Case studies"
+            title="Campaigns engineered around business outcomes"
+          />
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
-            {caseStudies.map(([objective, industry, creators, reach, engagement, roi, quote]) => (
-              <article key={objective} className="case-card case-study-card">
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{industry}</p>
-                <h3>{objective}</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    ["Creators", creators],
-                    ["Reach", reach],
-                    ["Engagement", engagement],
-                    ["ROI", roi],
-                  ].map(([label, value]) => (
-                    <span key={label}><strong>{value}</strong>{label}</span>
-                  ))}
-                </div>
-                  <p className="mt-6 text-slate-600 dark:text-slate-300">{quote}</p>
-              </article>
-            ))}
+            {caseStudies.map(
+              ([
+                objective,
+                industry,
+                creators,
+                reach,
+                engagement,
+                roi,
+                quote,
+              ]) => (
+                <article key={objective} className="case-card case-study-card">
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+                    {industry}
+                  </p>
+                  <h3>{objective}</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      ["Creators", creators],
+                      ["Reach", reach],
+                      ["Engagement", engagement],
+                      ["ROI", roi],
+                    ].map(([label, value]) => (
+                      <span key={label}>
+                        <strong>{value}</strong>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-slate-600 dark:text-slate-300">
+                    {quote}
+                  </p>
+                </article>
+              ),
+            )}
           </div>
         </section>
 
         <section className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Testimonials" title="Loved by brands and creators" />
+          <SectionHeader
+            eyebrow="Testimonials"
+            title="Loved by brands and creators"
+          />
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {testimonials.map((testimonial) => (
-              <article key={testimonial._id || testimonial.name} className="testimonial-card testimonial-card-modern">
-                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">{testimonial.rating || 5}.0 rated partner</div>
+              <article
+                key={testimonial._id || testimonial.name}
+                className="testimonial-card testimonial-card-modern"
+              >
+                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">
+                  {testimonial.rating || 5}.0 rated partner
+                </div>
                 <p>"{testimonial.quote}"</p>
                 <div className="testimonial-author">
                   <strong>{testimonial.name}</strong>
@@ -817,30 +971,82 @@ export default function Home() {
             ))}
             {testimonials.length === 0 && (
               <article className="testimonial-card testimonial-card-modern testimonial-empty">
-                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">Reviews pending</div>
-                <p>Approved client and creator reviews will appear here after moderation.</p>
+                <div className="text-sm font-black uppercase tracking-[0.18em] text-cyan-500">
+                  Reviews pending
+                </div>
+                <p>
+                  Approved client and creator reviews will appear here after
+                  moderation.
+                </p>
               </article>
             )}
           </div>
           <form className="testimonial-form" onSubmit={submitReview}>
             <div>
               <h3>Share your Influnexa experience</h3>
-              <p>Submitted reviews are reviewed by the admin team before publishing.</p>
+              <p>
+                Submitted reviews are reviewed by the admin team before
+                publishing.
+              </p>
             </div>
             <div className="testimonial-form-grid">
-              <label>Name<input name="name" value={reviewForm.name} onChange={updateReviewField} required /></label>
-              <label>Role or company<input name="role" value={reviewForm.role} onChange={updateReviewField} required /></label>
-              <label>Email<input name="email" type="email" value={reviewForm.email} onChange={updateReviewField} /></label>
-              <label>Rating<select name="rating" value={reviewForm.rating} onChange={updateReviewField}>
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-              </select></label>
-              <label className="wide">Review<textarea name="quote" value={reviewForm.quote} onChange={updateReviewField} rows="4" required /></label>
+              <label>
+                Name
+                <input
+                  name="name"
+                  value={reviewForm.name}
+                  onChange={updateReviewField}
+                  required
+                />
+              </label>
+              <label>
+                Role or company
+                <input
+                  name="role"
+                  value={reviewForm.role}
+                  onChange={updateReviewField}
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  name="email"
+                  type="email"
+                  value={reviewForm.email}
+                  onChange={updateReviewField}
+                />
+              </label>
+              <label>
+                Rating
+                <select
+                  name="rating"
+                  value={reviewForm.rating}
+                  onChange={updateReviewField}
+                >
+                  <option value="5">5</option>
+                  <option value="4">4</option>
+                  <option value="3">3</option>
+                  <option value="2">2</option>
+                  <option value="1">1</option>
+                </select>
+              </label>
+              <label className="wide">
+                Review
+                <textarea
+                  name="quote"
+                  value={reviewForm.quote}
+                  onChange={updateReviewField}
+                  rows="4"
+                  required
+                />
+              </label>
             </div>
-            {reviewStatus.message && <div className={`testimonial-status ${reviewStatus.type}`}>{reviewStatus.message}</div>}
+            {reviewStatus.message && (
+              <div className={`testimonial-status ${reviewStatus.type}`}>
+                {reviewStatus.message}
+              </div>
+            )}
             <button type="submit">Submit Review</button>
           </form>
         </section>
@@ -851,39 +1057,69 @@ export default function Home() {
         </section>
 
         <section id="blog" className="px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Blog" title="Influencer marketing insights and trends" />
+          <SectionHeader
+            eyebrow="Blog"
+            title="Influencer marketing insights and trends"
+          />
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
             {blogPosts.map((post) => (
-              <article key={post._id || post.title} className="blog-card insight-card">
+              <article
+                key={post._id || post.title}
+                className="blog-card insight-card"
+              >
                 <span>{post.category}</span>
                 <h3>{post.title}</h3>
                 <p>{post.excerpt || post.readTime}</p>
                 <small>{post.readTime}</small>
-                <a className="blog-card-link" href={`/blog/${post.slug || post._id}`}>Read article</a>
+                <a
+                  className="blog-card-link"
+                  href={`/blog/${post.slug || post._id}`}
+                >
+                  Read article
+                </a>
               </article>
             ))}
           </div>
           <div className="mt-10 text-center">
-            <Button className="blog-view-all-button" href="/blog" variant="secondary">View All Blog Posts</Button>
+            <Button
+              className="blog-view-all-button"
+              href="/blog"
+              variant="secondary"
+            >
+              View All Blog Posts
+            </Button>
           </div>
         </section>
 
         <section id="register" className="register-section px-4 py-20 lg:px-6">
-          <SectionHeader eyebrow="Register" title="Start as a brand or join as a creator">
-            Brands can request an agency-managed campaign. Influencers can submit their profile to be considered for future product review, UGC, and influencer marketing opportunities.
+          <SectionHeader
+            eyebrow="Register"
+            title="Start as a brand or join as a creator"
+          >
+            Brands can request an agency-managed campaign. Influencers can
+            submit their profile to be considered for future product review,
+            UGC, and influencer marketing opportunities.
           </SectionHeader>
           <div className="register-panel mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
             <article className="register-choice-card">
               <span>Brand</span>
               <h3>Need influencer marketing or product reviews?</h3>
-              <p>Share your product, audience, budget, campaign goals, review needs, and target markets.</p>
+              <p>
+                Share your product, audience, budget, campaign goals, review
+                needs, and target markets.
+              </p>
               <Button href="/register/brand">Register as Brand</Button>
             </article>
             <article className="register-choice-card creator">
               <span>Influencer</span>
               <h3>Want to join our creator database?</h3>
-              <p>Submit your profile, audience details, platforms, categories, content rates, and shipping details.</p>
-              <Button href="/register/influencer">Register as Influencer</Button>
+              <p>
+                Submit your profile, audience details, platforms, categories,
+                content rates, and shipping details.
+              </p>
+              <Button href="/register/influencer">
+                Register as Influencer
+              </Button>
             </article>
           </div>
         </section>
@@ -894,10 +1130,13 @@ export default function Home() {
               Ready to Grow Your Brand with Influencer Marketing?
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cyan-50">
-              Build trust, collect authentic product reviews, produce better UGC, and launch agency-managed creator campaigns across the world.
+              Build trust, collect authentic product reviews, produce better
+              UGC, and launch agency-managed creator campaigns across the world.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button href="#register" variant="dark">Book Free Consultation</Button>
+              <Button href="#register" variant="dark">
+                Book Free Consultation
+              </Button>
               <Button href="/register/brand">Launch Your Campaign</Button>
             </div>
           </div>
@@ -907,7 +1146,11 @@ export default function Home() {
       <footer className="bg-slate-950 px-4 py-14 text-white lg:px-6">
         <div className="footer-panel mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
-            <a className="footer-brand-lockup" href="/#home" aria-label="Influnexa home">
+            <a
+              className="footer-brand-lockup"
+              href="/#home"
+              aria-label="Influnexa home"
+            >
               <span className="footer-logo-frame">
                 <img src={influnexaLogo} alt="Influnexa" />
               </span>
@@ -917,11 +1160,12 @@ export default function Home() {
               </span>
             </a>
             <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
-              Premium global influencer marketing for brands, agencies, startups, e-commerce teams, and creators.
+              AI-powered influencer and creator marketing for brands, agencies,
+              startups, e-commerce teams, and creators across India.
             </p>
             <div className="mt-6" aria-label="Influnexa social media">
               <div className="flex flex-wrap gap-2">
-                {socialLinks.map((social) => (
+                {socialLinks.map((social) =>
                   social.href ? (
                     <a
                       key={social.label}
@@ -934,21 +1178,49 @@ export default function Home() {
                       <SocialIcon type={social.type} />
                     </a>
                   ) : (
-                    <span key={social.label} className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full border border-white/10 bg-white/[0.03] text-slate-600" title={`${social.label} profile pending`} aria-label={`${social.label} profile pending`}>
+                    <span
+                      key={social.label}
+                      className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full border border-white/10 bg-white/[0.03] text-slate-600"
+                      title={`${social.label} profile pending`}
+                      aria-label={`${social.label} profile pending`}
+                    >
                       <SocialIcon type={social.type} />
                     </span>
-                  )
-                ))}
+                  ),
+                )}
               </div>
             </div>
           </div>
           {[
-            ["Services", ["Influencer Marketing", "#services"], ["UGC Content", "#services"], ["Reviews", "#services"], ["Analytics", "#services"]],
-            ["Resources", ["About Us", "/about"], ["Blog", "/blog"], ["Case Studies", "#case-studies"], ["Creator Guide", "/register/influencer"], ["Brand Guide", "/register/brand"]],
-            ["Legal", ["Privacy", "#home"], ["Terms", "#home"], ["Compliance", "#home"], ["Security", "#home"]],
+            [
+              "Services",
+              ["Influencer Marketing", "#services"],
+              ["UGC Content", "#services"],
+              ["Reviews", "#services"],
+              ["Analytics", "#services"],
+            ],
+            [
+              "Resources",
+              ["About Us", "/about"],
+              ["Blog", "/blog"],
+              ["Case Studies", "#case-studies"],
+              ["Creator Guide", "/register/influencer"],
+              ["Brand Guide", "/register/brand"],
+            ],
+            [
+              "Legal",
+              ["Privacy", "#home"],
+              ["Terms", "#home"],
+              ["Compliance", "#home"],
+              ["Security", "#home"],
+            ],
             [
               "Contact",
-              ["support.influnexa@gmail.com", "mailto:support.influnexa@gmail.com", "email"],
+              [
+                "support.influnexa@gmail.com",
+                "mailto:support.influnexa@gmail.com",
+                "email",
+              ],
               ["+91 90014 02531", "https://wa.me/919001402531", "whatsapp"],
               ["+91 94053 65870", "https://wa.me/919405365870", "whatsapp"],
             ],
@@ -957,7 +1229,11 @@ export default function Home() {
               <h3 className="font-bold">{heading}</h3>
               <div className="mt-4 grid gap-3 text-sm text-slate-400">
                 {links.map(([label, href, icon]) => (
-                  <a className={icon ? "footer-contact-link" : undefined} key={label} href={href}>
+                  <a
+                    className={icon ? "footer-contact-link" : undefined}
+                    key={label}
+                    href={href}
+                  >
                     {icon && <ContactIcon type={icon} />}
                     {label}
                   </a>
