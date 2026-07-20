@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
+import SuccessModal from "../components/SuccessModal";
 import { submitRegistration } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 import { applyTheme, getInitialTheme } from "../lib/theme";
@@ -85,6 +86,8 @@ export default function RegisterBrand() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [hasValidationAttempt, setHasValidationAttempt] = useState(false);
   const budgetOptions = budgetOptionsByCurrency[form.budgetCurrency] || budgetOptionsByCurrency.USD;
 
   useEffect(() => {
@@ -110,14 +113,17 @@ export default function RegisterBrand() {
 
     try {
       await submitRegistration("brands", form);
-      setForm(initialForm);
-      setStatus({
-        type: "success",
-        message: "Brand registration saved. Our team will contact you shortly.",
-      });
+      setStatus({ type: "idle", message: "" });
+      setShowSuccessModal(true);
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
+  };
+
+  const closeSuccessModal = () => {
+    setForm(initialForm);
+    setHasValidationAttempt(false);
+    setShowSuccessModal(false);
   };
 
   return (
@@ -137,7 +143,7 @@ export default function RegisterBrand() {
             <span>Share the important details our strategy team needs to research creators, estimate budget, and prepare your campaign plan.</span>
           </div>
 
-          <form className="register-card registration-form" onSubmit={handleSubmit}>
+          <form className={`register-card registration-form ${hasValidationAttempt ? "has-validation-attempt" : ""}`} onSubmit={handleSubmit} onInvalidCapture={() => setHasValidationAttempt(true)}>
             <div className="form-section-title">Company and contact</div>
             <div className="form-grid">
               <label>Contact name *<input name="contactName" value={form.contactName} onChange={updateField} required /></label>
@@ -224,6 +230,12 @@ export default function RegisterBrand() {
           </div>
         </div>
       </main>
+      <SuccessModal
+        open={showSuccessModal}
+        title="Brand registration submitted"
+        message="Thank you for sharing your campaign requirements. Our team will contact you shortly."
+        onClose={closeSuccessModal}
+      />
     </div>
   );
 }

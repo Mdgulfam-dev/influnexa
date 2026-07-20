@@ -7281,6 +7281,27 @@ nav.fixed .premium-button:hover,
   color: rgba(247, 244, 236, 0.54);
 }
 
+/* Show missing or malformed registration fields after the user tries to submit. */
+.registration-form.has-validation-attempt input:not([type="checkbox"]):invalid,
+.registration-form.has-validation-attempt select:invalid,
+.registration-form.has-validation-attempt textarea:invalid {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14) !important;
+}
+
+.registration-form.has-validation-attempt .consent-row:has(input:invalid) {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14) !important;
+}
+
+.dark .registration-form.has-validation-attempt input:not([type="checkbox"]):invalid,
+.dark .registration-form.has-validation-attempt select:invalid,
+.dark .registration-form.has-validation-attempt textarea:invalid,
+.dark .registration-form.has-validation-attempt .consent-row:has(input:invalid) {
+  border-color: #fb7185 !important;
+  box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.18) !important;
+}
+
 .dark .registration-page .choice-group label,
 .dark .registration-page .consent-row {
   border-color: rgba(247, 244, 236, 0.16);
