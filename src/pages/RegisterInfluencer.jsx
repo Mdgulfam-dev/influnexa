@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
+import SuccessModal from "../components/SuccessModal";
 import { submitRegistration } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema } from "../lib/seo";
 import { applyTheme, getInitialTheme } from "../lib/theme";
@@ -68,6 +69,7 @@ export default function RegisterInfluencer() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     applyTheme(theme);
@@ -88,14 +90,16 @@ export default function RegisterInfluencer() {
 
     try {
       await submitRegistration("influencers", form);
-      setForm(initialForm);
-      setStatus({
-        type: "success",
-        message: "Influencer profile saved. Our agency team will review your details.",
-      });
+      setStatus({ type: "idle", message: "" });
+      setShowSuccessModal(true);
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
+  };
+
+  const closeSuccessModal = () => {
+    setForm(initialForm);
+    setShowSuccessModal(false);
   };
 
   return (
@@ -193,6 +197,12 @@ export default function RegisterInfluencer() {
           </div>
         </div>
       </main>
+      <SuccessModal
+        open={showSuccessModal}
+        title="Influencer profile submitted"
+        message="Thank you for joining the Influnexa creator database. Our team will review your profile for relevant opportunities."
+        onClose={closeSuccessModal}
+      />
     </div>
   );
 }
