@@ -70,6 +70,24 @@ const services = [
   },
 ];
 
+const seoCapabilities = [
+  "Influencer Marketing Agency in India",
+  "AI Influencer Marketing Platform",
+  "Find Instagram Influencers",
+  "Brand Collaboration Platform",
+  "UGC Creator Platform",
+  "Influencer Campaign Management",
+  "Creator Marketing Agency",
+  "YouTube Influencer Marketing",
+  "LinkedIn Influencer Marketing",
+  "Nano & Micro Influencer Marketing",
+  "D2C Influencer Marketing",
+  "E-commerce Influencer Marketing",
+  "Best Influencer Marketing Company",
+  "Influencer Discovery Platform",
+  "Influencer Database India",
+];
+
 const workflowSteps = [
   {
     icon: "brief",
@@ -226,12 +244,15 @@ const homeBreadcrumbs = [
 ];
 
 const homeJsonLd = [
-  pageSchema({
-    path: "/",
-    title: "Influnexa | AI-Powered Influencer & Creator Marketing Company in India",
-    description: homeDescription,
-    breadcrumbs: homeBreadcrumbs,
-  }),
+  {
+    ...pageSchema({
+      path: "/",
+      title: "Influnexa | AI-Powered Influencer & Creator Marketing Company in India",
+      description: homeDescription,
+      breadcrumbs: homeBreadcrumbs,
+    }),
+    keywords: seoCapabilities.join(", "),
+  },
   breadcrumbSchema("/", homeBreadcrumbs),
   {
     "@context": "https://schema.org",
@@ -732,6 +753,19 @@ export default function Home() {
                     <span key={point}>{point}</span>
                   ))}
                 </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-y border-slate-200 bg-slate-50 px-4 py-20 dark:border-white/10 dark:bg-slate-900/40 lg:px-6">
+          <SectionHeader eyebrow="AI-powered creator marketing" title="Influencer marketing solutions for brands across India">
+            From creator discovery to campaign reporting, Influnexa helps brands find the right creators and run focused collaborations across Instagram, YouTube, LinkedIn, and UGC channels.
+          </SectionHeader>
+          <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {seoCapabilities.map((capability) => (
+              <article key={capability} className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-800 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-100">
+                {capability}
               </article>
             ))}
           </div>
