@@ -87,6 +87,7 @@ export default function RegisterBrand() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [hasValidationAttempt, setHasValidationAttempt] = useState(false);
   const budgetOptions = budgetOptionsByCurrency[form.budgetCurrency] || budgetOptionsByCurrency.USD;
 
   useEffect(() => {
@@ -121,6 +122,7 @@ export default function RegisterBrand() {
 
   const closeSuccessModal = () => {
     setForm(initialForm);
+    setHasValidationAttempt(false);
     setShowSuccessModal(false);
   };
 
@@ -141,7 +143,7 @@ export default function RegisterBrand() {
             <span>Share the important details our strategy team needs to research creators, estimate budget, and prepare your campaign plan.</span>
           </div>
 
-          <form className="register-card registration-form" onSubmit={handleSubmit}>
+          <form className={`register-card registration-form ${hasValidationAttempt ? "has-validation-attempt" : ""}`} onSubmit={handleSubmit} onInvalidCapture={() => setHasValidationAttempt(true)}>
             <div className="form-section-title">Company and contact</div>
             <div className="form-grid">
               <label>Contact name *<input name="contactName" value={form.contactName} onChange={updateField} required /></label>

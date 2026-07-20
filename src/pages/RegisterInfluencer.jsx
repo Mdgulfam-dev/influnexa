@@ -70,6 +70,7 @@ export default function RegisterInfluencer() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState({ type: "idle", message: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [hasValidationAttempt, setHasValidationAttempt] = useState(false);
 
   useEffect(() => {
     applyTheme(theme);
@@ -99,6 +100,7 @@ export default function RegisterInfluencer() {
 
   const closeSuccessModal = () => {
     setForm(initialForm);
+    setHasValidationAttempt(false);
     setShowSuccessModal(false);
   };
 
@@ -119,7 +121,7 @@ export default function RegisterInfluencer() {
             <span>Submit your profile so our agency team can consider you for brand campaigns that match your niche, audience, and content style.</span>
           </div>
 
-          <form className="register-card registration-form influencer-form" onSubmit={handleSubmit}>
+          <form className={`register-card registration-form influencer-form ${hasValidationAttempt ? "has-validation-attempt" : ""}`} onSubmit={handleSubmit} onInvalidCapture={() => setHasValidationAttempt(true)}>
             <div className="form-section-title">Profile details</div>
             <div className="form-grid">
               <label>Full name *<input name="fullName" value={form.fullName} onChange={updateField} required /></label>
