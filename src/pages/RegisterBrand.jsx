@@ -70,7 +70,7 @@ const brandJsonLd = [
     name: "Agency-managed influencer marketing campaign planning",
     description: brandDescription,
     provider: { "@id": `${SITE_URL}/#organization` },
-    areaServed: "Worldwide",
+    areaServed: "India",
     serviceType: campaignTypes,
   },
 ];

@@ -89,7 +89,7 @@ export default function About() {
           pageSchema({
             path: "/about",
             title: "About Us",
-            description: "Influnexa is a global influencer marketing partner for creator campaigns, product reviews, UGC, and campaign management.",
+            description: "Influnexa is an AI-powered influencer and creator marketing company in India for creator campaigns, product reviews, UGC, and campaign management.",
             type: "AboutPage",
             breadcrumbs,
           }),
@@ -108,7 +108,7 @@ export default function About() {
                 Better creator partnerships, built around real business goals.
               </h1>
               <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-                Influnexa is a global influencer marketing partner for brands that need credible content, stronger product trust, and campaigns that stay organised from brief to report. We connect thoughtful strategy with the right creators, clear production systems, and reporting that makes the next decision easier.
+                Influnexa is an AI-powered influencer and creator marketing company in India for brands that need credible content, stronger product trust, and campaigns that stay organised from brief to report. We connect thoughtful strategy with the right creators, clear production systems, and reporting that makes the next decision easier.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Button href="/register/brand">Start a Campaign</Button>

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 export const SITE_URL = "https://www.influnexa.in";
 export const SITE_NAME = "Influnexa";
+export const SITE_DESCRIPTION = "Influnexa is an AI-powered influencer and creator marketing company in India, helping brands discover the right creators, manage campaigns efficiently, and measure results with confidence.";
 export const DEFAULT_IMAGE = `${SITE_URL}/favicon.svg`;
 
 export const organizationSchema = {
@@ -12,16 +13,8 @@ export const organizationSchema = {
   url: SITE_URL,
   logo: `${SITE_URL}/favicon.svg`,
   email: "support.influnexa@gmail.com",
-  description:
-    "Influnexa is a global influencer marketing agency for creator sourcing, product review campaigns, UGC production, product seeding, campaign management, and reporting.",
-  areaServed: [
-    "United States",
-    "United Kingdom",
-    "Europe",
-    "Middle East",
-    "Asia-Pacific",
-    "Worldwide",
-  ],
+  description: SITE_DESCRIPTION,
+  areaServed: "India",
   serviceType: [
     "Influencer Marketing",
     "Product Rating and Review Campaigns",
