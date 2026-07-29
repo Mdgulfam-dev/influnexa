@@ -20,6 +20,10 @@ function resolveApiBaseUrl() {
 const API_BASE_URL = resolveApiBaseUrl();
 const ADMIN_TOKEN_STORAGE_KEY = "influnexa_admin_token";
 
+export function hasAdminSession() {
+  return Boolean(sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY));
+}
+
 function adminHeaders() {
   const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 

@@ -6,6 +6,7 @@ import {
   deleteBlogPost,
   deleteTestimonial,
   getAdminDashboard,
+  hasAdminSession,
   loginAdmin,
   logoutAdmin,
   updateAdminUser,
@@ -337,7 +338,7 @@ export default function AdminDashboard() {
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 
   const tabs = useMemo(
@@ -371,10 +372,6 @@ export default function AdminDashboard() {
     }),
     [brandFilters, candidateFilters, influencerFilters]
   );
-
-  useEffect(() => {
-    localStorage.removeItem("influnexa_admin_token");
-  }, []);
 
   const loadDashboard = async ({ showLoading = true } = {}) => {
     if (showLoading) {
