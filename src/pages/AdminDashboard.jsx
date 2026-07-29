@@ -146,6 +146,7 @@ const emptyDashboardData = {
   users: [],
   jobs: [],
   applications: [],
+  analytics: { brandStatuses: [], influencerStatuses: [], jobStatuses: [], applicationStatuses: [] },
   currentUser: null,
 };
 
@@ -164,6 +165,7 @@ function normalizeDashboardData(dashboard = {}) {
     users: Array.isArray(dashboard.users) ? dashboard.users : [],
     jobs: Array.isArray(dashboard.jobs) ? dashboard.jobs : [],
     applications: Array.isArray(dashboard.applications) ? dashboard.applications : [],
+    analytics: dashboard.analytics || emptyDashboardData.analytics,
     currentUser: dashboard.currentUser || null,
   };
 }
@@ -317,10 +319,22 @@ function RegistrationPager({ meta, onPageChange }) {
   );
 }
 
+function AnalyticsChart({ title, items = [], emptyMessage }) {
+  const total = items.reduce((sum, item) => sum + item.count, 0);
+  const largest = Math.max(...items.map((item) => item.count), 1);
+
+  return (
+    <article className="admin-analytics-chart">
+      <div className="admin-analytics-chart-heading"><h3>{title}</h3><span>{total} total</span></div>
+      {items.length ? <div className="admin-chart-bars">{items.map((item) => <div className="admin-chart-row" key={item._id || "unassigned"}><div><span>{formatStatus(item._id || "Not set")}</span><strong>{item.count}</strong></div><i><b style={{ width: `${(item.count / largest) * 100}%` }} /></i></div>)}</div> : <p>{emptyMessage}</p>}
+    </article>
+  );
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["brands", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "brands";
+    return ["overview", "brands", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -344,6 +358,7 @@ export default function AdminDashboard() {
 
   const tabs = useMemo(
     () => [
+      ["overview", "Dashboard"],
       ["brands", `Brands (${data.stats.brands || 0})`],
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
       ["blogs", `Blogs (${data.blogs.length})`],
@@ -745,8 +760,8 @@ export default function AdminDashboard() {
       <section className="admin-content">
         <div className="admin-heading">
           <div>
-            <p>Dynamic dashboard</p>
-            <h1>Registrations and blog control center</h1>
+            <p>Influnexa workspace</p>
+            <h1>{activeTab === "overview" ? "Operations overview" : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}</h1>
           </div>
           <div className="admin-actions">
             <button className="admin-action-button refresh" type="button" onClick={loadDashboard}>
@@ -760,14 +775,22 @@ export default function AdminDashboard() {
 
         {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
 
-        <div className="admin-stats">
-          <article><span>Brands</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new</small></article>
-          <article><span>Influencers</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new</small></article>
-          <article><span>Blogs</span><strong>{data.stats.blogs || 0}</strong><small>{data.stats.publishedBlogs || 0} published</small></article>
-          <article><span>Testimonials</span><strong>{data.stats.testimonials || 0}</strong><small>{data.stats.pendingTestimonials || 0} pending</small></article>
-          <article><span>Users</span><strong>{data.stats.users || 0}</strong><small>{data.currentUser?.role || "admin"} access</small></article>
-          <article><span>Job applications</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} to review</small></article>
-        </div>
+        {activeTab === "overview" && (
+          <div className="admin-overview">
+            <section className="admin-overview-hero">
+              <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
+              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
+            </section>
+            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article></section>
+            <section className="admin-analytics-grid">
+              <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
+              <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
+              <AnalyticsChart title="Brand pipeline" items={data.analytics.brandStatuses} emptyMessage="Brand registrations will appear here." />
+              <AnalyticsChart title="Creator pipeline" items={data.analytics.influencerStatuses} emptyMessage="Creator registrations will appear here." />
+            </section>
+            <section className="admin-panel admin-overview-quick-actions"><div><h2>Quick actions</h2><p>Jump directly to your most common tasks.</p></div><div><button type="button" onClick={() => selectTab("jobs")}>Post a job</button><button type="button" onClick={() => selectTab("applications")}>Review candidates</button><button type="button" onClick={() => selectTab("brands")}>View brand leads</button></div></section>
+          </div>
+        )}
 
         {activeTab === "brands" && (
           <div className="admin-panel">
