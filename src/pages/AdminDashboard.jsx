@@ -6,6 +6,7 @@ import {
   deleteBlogPost,
   deleteTestimonial,
   getAdminDashboard,
+  hasAdminSession,
   loginAdmin,
   logoutAdmin,
   updateAdminUser,
@@ -13,6 +14,10 @@ import {
   updateOwnAdminPassword,
   updateRegistrationStatus,
   updateTestimonialStatus,
+  createJob,
+  updateJob,
+  deleteJob,
+  updateJobApplicationStatus,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 
@@ -123,18 +128,24 @@ const initialPasswordForm = {
   password: "",
   confirmPassword: "",
 };
+const initialJobForm = { jobId: "", title: "", department: "", type: "Full-time", location: "", experience: "", summary: "", description: "", responsibilities: "", requirements: "", status: "open" };
+const applicationStatuses = ["Review", "Shortlisted", "Selected", "Rejected", "On Hold"];
+const candidatePageSize = 25;
 
 const emptyDashboardData = {
   stats: {},
   pagination: {
     brands: { page: 1, limit: registrationPageSize, total: 0, totalPages: 1 },
     influencers: { page: 1, limit: registrationPageSize, total: 0, totalPages: 1 },
+    applications: { page: 1, limit: candidatePageSize, total: 0, totalPages: 1 },
   },
   brands: [],
   influencers: [],
   blogs: [],
   testimonials: [],
   users: [],
+  jobs: [],
+  applications: [],
   currentUser: null,
 };
 
@@ -144,12 +155,15 @@ function normalizeDashboardData(dashboard = {}) {
     pagination: {
       brands: dashboard.pagination?.brands || emptyDashboardData.pagination.brands,
       influencers: dashboard.pagination?.influencers || emptyDashboardData.pagination.influencers,
+      applications: dashboard.pagination?.applications || emptyDashboardData.pagination.applications,
     },
     brands: Array.isArray(dashboard.brands) ? dashboard.brands : [],
     influencers: Array.isArray(dashboard.influencers) ? dashboard.influencers : [],
     blogs: Array.isArray(dashboard.blogs) ? dashboard.blogs : [],
     testimonials: Array.isArray(dashboard.testimonials) ? dashboard.testimonials : [],
     users: Array.isArray(dashboard.users) ? dashboard.users : [],
+    jobs: Array.isArray(dashboard.jobs) ? dashboard.jobs : [],
+    applications: Array.isArray(dashboard.applications) ? dashboard.applications : [],
     currentUser: dashboard.currentUser || null,
   };
 }
@@ -306,7 +320,7 @@ function RegistrationPager({ meta, onPageChange }) {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["brands", "influencers", "blogs", "testimonials", "users"].includes(requestedTab) ? requestedTab : "brands";
+    return ["brands", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "brands";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -314,13 +328,18 @@ export default function AdminDashboard() {
   const [userForm, setUserForm] = useState(initialUserForm);
   const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [editingUserId, setEditingUserId] = useState("");
+  const [jobForm, setJobForm] = useState(initialJobForm);
+  const [editingJobId, setEditingJobId] = useState("");
+  const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
+  const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [selectedBrandId, setSelectedBrandId] = useState("");
   const [selectedInfluencerId, setSelectedInfluencerId] = useState("");
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", page: 1 });
   const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", page: 1 });
+  const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 
   const tabs = useMemo(
@@ -329,6 +348,8 @@ export default function AdminDashboard() {
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
+      ["jobs", `Jobs (${data.jobs.length})`],
+      ["applications", `Candidates (${data.applications.length})`],
       ["users", `Users (${data.users.length})`],
     ],
     [data]
@@ -344,13 +365,14 @@ export default function AdminDashboard() {
       influencerStatus: influencerFilters.status,
       influencerPage: influencerFilters.page,
       influencerLimit: registrationPageSize,
+      candidateSearch: candidateFilters.search.trim(),
+      candidateStatus: candidateFilters.status,
+      candidateJobId: candidateFilters.jobId.trim(),
+      candidatePage: candidateFilters.page,
+      candidateLimit: candidatePageSize,
     }),
-    [brandFilters, influencerFilters]
+    [brandFilters, candidateFilters, influencerFilters]
   );
-
-  useEffect(() => {
-    localStorage.removeItem("influnexa_admin_token");
-  }, []);
 
   const loadDashboard = async ({ showLoading = true } = {}) => {
     if (showLoading) {
@@ -433,6 +455,15 @@ export default function AdminDashboard() {
     const { name, value } = event.target;
     setPasswordForm((current) => ({ ...current, [name]: value }));
   };
+  const updateJobField = (event) => setJobForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  const submitJob = async (event) => { event.preventDefault(); setStatus({ type: "loading", message: editingJobId ? "Updating job..." : "Posting job..." }); try { if (editingJobId) await updateJob(editingJobId, jobForm); else await createJob(jobForm); setJobForm(initialJobForm); setEditingJobId(""); await loadDashboard(); setActiveTab("jobs"); setStatus({ type: "success", message: "Job saved." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
+  const editJob = (job) => { setEditingJobId(job._id); setJobForm({ ...initialJobForm, ...job, jobId: job.jobId || "", responsibilities: (job.responsibilities || []).join("\n"), requirements: (job.requirements || []).join("\n") }); setActiveTab("jobs"); };
+  const removeJob = async (id) => { if (!window.confirm("Delete this job post?")) return; try { await deleteJob(id); await loadDashboard(); setStatus({ type: "success", message: "Job deleted." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
+  const updateCandidateStatus = async (id, nextStatus) => { try { const result = await updateJobApplicationStatus(id, nextStatus); await loadDashboard({ showLoading: false }); const message = result.email?.sent ? "Status updated and email sent to the candidate." : result.email?.reason ? `Status updated, but the email was not sent: ${result.email.reason}` : result.email?.skipped ? "Status updated. Email is skipped because SendGrid is not configured." : "Candidate status updated."; setStatus({ type: result.email?.reason ? "error" : "success", message }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
+  const updateCandidateFilter = (field, value) => setCandidateFilters((current) => ({ ...current, [field]: value, page: 1 }));
+  const changeCandidatePage = (page) => setCandidateFilters((current) => ({ ...current, page }));
+  const toggleCoverLetter = (id) => setExpandedCoverLetters((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  const toggleCandidate = (id) => setExpandedCandidates((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
 
   const submitLogin = async (event) => {
     event.preventDefault();
@@ -735,6 +766,7 @@ export default function AdminDashboard() {
           <article><span>Blogs</span><strong>{data.stats.blogs || 0}</strong><small>{data.stats.publishedBlogs || 0} published</small></article>
           <article><span>Testimonials</span><strong>{data.stats.testimonials || 0}</strong><small>{data.stats.pendingTestimonials || 0} pending</small></article>
           <article><span>Users</span><strong>{data.stats.users || 0}</strong><small>{data.currentUser?.role || "admin"} access</small></article>
+          <article><span>Job applications</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} to review</small></article>
         </div>
 
         {activeTab === "brands" && (
@@ -901,6 +933,23 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === "jobs" && (
+          <div className="admin-blog-grid">
+            <form className="admin-panel admin-blog-form" onSubmit={submitJob}>
+              <h2>{editingJobId ? "Edit job post" : "Post a new job"}</h2>
+              <div className="admin-form-row"><label>Job ID<input value={editingJobId ? jobForm.jobId : "Auto-generated (INX-00001)"} readOnly /></label><label>Role title<input name="title" value={jobForm.title} onChange={updateJobField} required /></label></div>
+              <div className="admin-form-row"><label>Department<input name="department" value={jobForm.department} onChange={updateJobField} required /></label><label>Employment type<select name="type" value={jobForm.type} onChange={updateJobField}><option>Full-time</option><option>Part-time</option><option>Internship</option><option>Contract</option></select></label></div>
+              <div className="admin-form-row"><label>Location<input name="location" value={jobForm.location} onChange={updateJobField} required /></label><label>Experience<input name="experience" value={jobForm.experience} onChange={updateJobField} required /></label></div>
+              <label>Short summary<textarea name="summary" value={jobForm.summary} onChange={updateJobField} rows="2" required /></label><label>Job description<textarea name="description" value={jobForm.description} onChange={updateJobField} rows="4" required /></label><label>Responsibilities <small>(one per line)</small><textarea name="responsibilities" value={jobForm.responsibilities} onChange={updateJobField} rows="4" /></label><label>Requirements <small>(one per line)</small><textarea name="requirements" value={jobForm.requirements} onChange={updateJobField} rows="4" /></label><label>Status<select name="status" value={jobForm.status} onChange={updateJobField}><option value="open">Open</option><option value="draft">Draft</option><option value="closed">Closed</option></select></label><div className="admin-login-actions"><button type="submit">{editingJobId ? "Update Job" : "Post Job"}</button>{editingJobId && <button type="button" onClick={() => { setEditingJobId(""); setJobForm(initialJobForm); }}>Cancel</button>}</div>
+            </form>
+            <div className="admin-panel"><h2>Job posts</h2><div className="admin-blog-list">{data.jobs.map((job) => <article key={job._id}><div><Pill tone={job.status === "open" ? "success" : "default"}>{job.status}</Pill><h3>{job.jobId} · {job.title}</h3><p>{job.department} · {job.location} · {job.type}</p></div><div className="admin-row-actions"><button type="button" onClick={() => editJob(job)}>Edit</button><button type="button" onClick={() => removeJob(job._id)}>Delete</button></div></article>)}{data.jobs.length === 0 && <p>No job posts yet.</p>}</div></div>
+          </div>
+        )}
+
+        {activeTab === "applications" && (
+          <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2><small>Review applications, open resumes, and update candidate status.</small></div><form className="admin-registration-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, email, mobile, role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
         )}
 
         {activeTab === "testimonials" && (

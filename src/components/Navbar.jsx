@@ -9,6 +9,7 @@ const navItems = [
   ["Creators", "/#influencers"],
   ["Case Studies", "/#case-studies"],
   ["Blog", "/blog"],
+  ["Careers", "/careers"],
   ["About Us", "/about"],
 ];
 

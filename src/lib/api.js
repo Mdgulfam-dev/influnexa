@@ -20,6 +20,10 @@ function resolveApiBaseUrl() {
 const API_BASE_URL = resolveApiBaseUrl();
 const ADMIN_TOKEN_STORAGE_KEY = "influnexa_admin_token";
 
+export function hasAdminSession() {
+  return Boolean(sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY));
+}
+
 function adminHeaders() {
   const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 
@@ -74,6 +78,39 @@ export async function submitRegistration(type, payload) {
 
   return data;
 }
+
+export async function submitJobApplication(payload) {
+  const response = await fetch(`${API_BASE_URL}/job-applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to submit your application.");
+  }
+
+  return data;
+}
+
+export async function getJobs() {
+  const response = await fetch(`${API_BASE_URL}/jobs`);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Unable to load jobs.");
+  return data.jobs || [];
+}
+
+async function adminJobRequest(path, method, payload) {
+  const response = await fetch(`${API_BASE_URL}/admin${path}`, { method, headers: { "Content-Type": "application/json", ...adminHeaders() }, body: payload ? JSON.stringify(payload) : undefined });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Unable to update job details.");
+  return data;
+}
+export const createJob = (payload) => adminJobRequest("/jobs", "POST", payload);
+export const updateJob = (id, payload) => adminJobRequest(`/jobs/${id}`, "PATCH", payload);
+export const deleteJob = (id) => adminJobRequest(`/jobs/${id}`, "DELETE");
+export const updateJobApplicationStatus = (id, status) => adminJobRequest(`/applications/${id}/status`, "PATCH", { status });
 
 export async function getAdminDashboard(params = {}) {
   const query = new URLSearchParams();
