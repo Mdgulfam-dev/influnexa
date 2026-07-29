@@ -4,6 +4,8 @@ import Blog from "./pages/Blog";
 import RegisterBrand from "./pages/RegisterBrand";
 import RegisterInfluencer from "./pages/RegisterInfluencer";
 import About from "./pages/About";
+import Careers from "./pages/Careers";
+import JobDetail from "./pages/JobDetail";
 
 function App() {
   const path = window.location.pathname;
@@ -22,6 +24,14 @@ function App() {
 
   if (path === "/about") {
     return <About />;
+  }
+
+  if (path === "/careers") {
+    return <Careers />;
+  }
+
+  if (path.startsWith("/careers/")) {
+    return <JobDetail />;
   }
 
   if (path === "/blog" || path.startsWith("/blog/")) {
