@@ -4,7 +4,7 @@ export const SITE_URL = "https://www.influnexa.in";
 export const SITE_NAME = "Influnexa";
 export const SITE_DESCRIPTION = "Influnexa is an AI-powered influencer and creator marketing company in India, helping brands discover the right creators, manage campaigns efficiently, and measure results with confidence.";
 export const DEFAULT_IMAGE = `${SITE_URL}/favicon.svg`;
-
+//comment
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": ["Organization", "LocalBusiness"],

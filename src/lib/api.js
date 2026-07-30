@@ -111,6 +111,9 @@ export const createJob = (payload) => adminJobRequest("/jobs", "POST", payload);
 export const updateJob = (id, payload) => adminJobRequest(`/jobs/${id}`, "PATCH", payload);
 export const deleteJob = (id) => adminJobRequest(`/jobs/${id}`, "DELETE");
 export const updateJobApplicationStatus = (id, status) => adminJobRequest(`/applications/${id}/status`, "PATCH", { status });
+export const createBrandTicket = (payload) => adminJobRequest("/brand-tickets", "POST", payload);
+export const updateBrandTicket = (id, payload) => adminJobRequest(`/brand-tickets/${id}`, "PATCH", payload);
+export const deleteBrandTicket = (id) => adminJobRequest(`/brand-tickets/${id}`, "DELETE");
 
 export async function getAdminDashboard(params = {}) {
   const query = new URLSearchParams();

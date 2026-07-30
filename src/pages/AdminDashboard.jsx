@@ -18,6 +18,9 @@ import {
   updateJob,
   deleteJob,
   updateJobApplicationStatus,
+  createBrandTicket,
+  updateBrandTicket,
+  deleteBrandTicket,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 
@@ -131,6 +134,8 @@ const initialPasswordForm = {
 const initialJobForm = { jobId: "", title: "", department: "", type: "Full-time", location: "", experience: "", summary: "", description: "", responsibilities: "", requirements: "", status: "open" };
 const applicationStatuses = ["Review", "Shortlisted", "Selected", "Rejected", "On Hold"];
 const candidatePageSize = 25;
+const ticketStatuses = ["Draft", "Planned", "Active", "On Hold", "Completed", "Cancelled"];
+const initialTicketForm = { brandName: "", campaignName: "", contactName: "", contactEmail: "", objective: "", platforms: "", startDate: "", endDate: "", budget: "", currency: "USD", status: "Draft", notes: "", metrics: { creators: "", posts: "", reach: "", impressions: "", engagements: "", clicks: "", conversions: "", spend: "" } };
 
 const emptyDashboardData = {
   stats: {},
@@ -146,6 +151,8 @@ const emptyDashboardData = {
   users: [],
   jobs: [],
   applications: [],
+  tickets: [],
+  analytics: { brandStatuses: [], influencerStatuses: [], jobStatuses: [], applicationStatuses: [], ticketStatuses: [] },
   currentUser: null,
 };
 
@@ -164,6 +171,8 @@ function normalizeDashboardData(dashboard = {}) {
     users: Array.isArray(dashboard.users) ? dashboard.users : [],
     jobs: Array.isArray(dashboard.jobs) ? dashboard.jobs : [],
     applications: Array.isArray(dashboard.applications) ? dashboard.applications : [],
+    tickets: Array.isArray(dashboard.tickets) ? dashboard.tickets : [],
+    analytics: dashboard.analytics || emptyDashboardData.analytics,
     currentUser: dashboard.currentUser || null,
   };
 }
@@ -175,6 +184,15 @@ function formatDate(value) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(value));
+}
+
+function campaignDaysLeft(ticket) {
+  if (ticket?.status !== "Active" || !ticket?.endDate) return null;
+  const today = new Date();
+  const endDate = new Date(ticket.endDate);
+  today.setHours(0, 0, 0, 0);
+  endDate.setHours(0, 0, 0, 0);
+  return Math.ceil((endDate - today) / 86400000);
 }
 
 function normalizeExternalUrl(value) {
@@ -317,10 +335,22 @@ function RegistrationPager({ meta, onPageChange }) {
   );
 }
 
+function AnalyticsChart({ title, items = [], emptyMessage }) {
+  const total = items.reduce((sum, item) => sum + item.count, 0);
+  const largest = Math.max(...items.map((item) => item.count), 1);
+
+  return (
+    <article className="admin-analytics-chart">
+      <div className="admin-analytics-chart-heading"><h3>{title}</h3><span>{total} total</span></div>
+      {items.length ? <div className="admin-chart-bars">{items.map((item) => <div className="admin-chart-row" key={item._id || "unassigned"}><div><span>{formatStatus(item._id || "Not set")}</span><strong>{item.count}</strong></div><i><b style={{ width: `${(item.count / largest) * 100}%` }} /></i></div>)}</div> : <p>{emptyMessage}</p>}
+    </article>
+  );
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["brands", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "brands";
+    return ["overview", "brands", "tickets", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -330,6 +360,8 @@ export default function AdminDashboard() {
   const [editingUserId, setEditingUserId] = useState("");
   const [jobForm, setJobForm] = useState(initialJobForm);
   const [editingJobId, setEditingJobId] = useState("");
+  const [ticketForm, setTicketForm] = useState(initialTicketForm);
+  const [editingTicketId, setEditingTicketId] = useState("");
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [selectedBrandId, setSelectedBrandId] = useState("");
@@ -344,7 +376,9 @@ export default function AdminDashboard() {
 
   const tabs = useMemo(
     () => [
+      ["overview", "Dashboard"],
       ["brands", `Brands (${data.stats.brands || 0})`],
+      ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
@@ -456,6 +490,11 @@ export default function AdminDashboard() {
     setPasswordForm((current) => ({ ...current, [name]: value }));
   };
   const updateJobField = (event) => setJobForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  const updateTicketField = (event) => setTicketForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  const updateTicketMetric = (event) => setTicketForm((current) => ({ ...current, metrics: { ...current.metrics, [event.target.name]: event.target.value } }));
+  const submitTicket = async (event) => { event.preventDefault(); setStatus({ type: "loading", message: editingTicketId ? "Updating brand ticket..." : "Creating brand ticket..." }); try { if (editingTicketId) await updateBrandTicket(editingTicketId, ticketForm); else await createBrandTicket(ticketForm); setTicketForm(initialTicketForm); setEditingTicketId(""); await loadDashboard(); setActiveTab("tickets"); setStatus({ type: "success", message: editingTicketId ? "Brand ticket updated." : "Brand ticket created." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
+  const editTicket = (ticket) => { setEditingTicketId(ticket._id); setTicketForm({ ...initialTicketForm, ...ticket, startDate: ticket.startDate ? ticket.startDate.slice(0, 10) : "", endDate: ticket.endDate ? ticket.endDate.slice(0, 10) : "", platforms: (ticket.platforms || []).join(", "), metrics: { ...initialTicketForm.metrics, ...(ticket.metrics || {}) } }); setActiveTab("tickets"); };
+  const removeTicket = async (id) => { if (!window.confirm("Delete this brand ticket?")) return; try { await deleteBrandTicket(id); if (editingTicketId === id) { setEditingTicketId(""); setTicketForm(initialTicketForm); } await loadDashboard(); setStatus({ type: "success", message: "Brand ticket deleted." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
   const submitJob = async (event) => { event.preventDefault(); setStatus({ type: "loading", message: editingJobId ? "Updating job..." : "Posting job..." }); try { if (editingJobId) await updateJob(editingJobId, jobForm); else await createJob(jobForm); setJobForm(initialJobForm); setEditingJobId(""); await loadDashboard(); setActiveTab("jobs"); setStatus({ type: "success", message: "Job saved." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
   const editJob = (job) => { setEditingJobId(job._id); setJobForm({ ...initialJobForm, ...job, jobId: job.jobId || "", responsibilities: (job.responsibilities || []).join("\n"), requirements: (job.requirements || []).join("\n") }); setActiveTab("jobs"); };
   const removeJob = async (id) => { if (!window.confirm("Delete this job post?")) return; try { await deleteJob(id); await loadDashboard(); setStatus({ type: "success", message: "Job deleted." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
@@ -745,8 +784,8 @@ export default function AdminDashboard() {
       <section className="admin-content">
         <div className="admin-heading">
           <div>
-            <p>Dynamic dashboard</p>
-            <h1>Registrations and blog control center</h1>
+            <p>Influnexa workspace</p>
+            <h1>{activeTab === "overview" ? "Operations overview" : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}</h1>
           </div>
           <div className="admin-actions">
             <button className="admin-action-button refresh" type="button" onClick={loadDashboard}>
@@ -760,14 +799,23 @@ export default function AdminDashboard() {
 
         {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
 
-        <div className="admin-stats">
-          <article><span>Brands</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new</small></article>
-          <article><span>Influencers</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new</small></article>
-          <article><span>Blogs</span><strong>{data.stats.blogs || 0}</strong><small>{data.stats.publishedBlogs || 0} published</small></article>
-          <article><span>Testimonials</span><strong>{data.stats.testimonials || 0}</strong><small>{data.stats.pendingTestimonials || 0} pending</small></article>
-          <article><span>Users</span><strong>{data.stats.users || 0}</strong><small>{data.currentUser?.role || "admin"} access</small></article>
-          <article><span>Job applications</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} to review</small></article>
-        </div>
+        {activeTab === "overview" && (
+          <div className="admin-overview">
+            <section className="admin-overview-hero">
+              <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
+              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
+            </section>
+            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article></section>
+            <section className="admin-analytics-grid">
+              <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
+              <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
+              <AnalyticsChart title="Brand pipeline" items={data.analytics.brandStatuses} emptyMessage="Brand registrations will appear here." />
+              <AnalyticsChart title="Brand campaign tickets" items={data.analytics.ticketStatuses} emptyMessage="Create a brand ticket to see campaign analysis." />
+              <AnalyticsChart title="Creator pipeline" items={data.analytics.influencerStatuses} emptyMessage="Creator registrations will appear here." />
+            </section>
+            <section className="admin-panel admin-overview-quick-actions"><div><h2>Quick actions</h2><p>Jump directly to your most common tasks.</p></div><div><button type="button" onClick={() => selectTab("tickets")}>Manage campaigns</button><button type="button" onClick={() => selectTab("applications")}>Review candidates</button><button type="button" onClick={() => selectTab("brands")}>View brand leads</button></div></section>
+          </div>
+        )}
 
         {activeTab === "brands" && (
           <div className="admin-panel">
@@ -819,6 +867,28 @@ export default function AdminDashboard() {
                 record={selectedBrand}
                 title={selectedBrand?.companyName || "Brand details"}
               />
+            </div>
+          </div>
+        )}
+
+        {activeTab === "tickets" && (
+          <div className="admin-ticket-workspace">
+            <form className="admin-panel admin-blog-form" onSubmit={submitTicket}>
+              <div className="admin-panel-title-row"><h2>{editingTicketId ? "Edit brand ticket" : "Create brand ticket"}</h2><small>Create an internal campaign record and keep its delivery metrics current.</small></div>
+              <div className="admin-form-row"><label>Brand name<input name="brandName" value={ticketForm.brandName} onChange={updateTicketField} required /></label><label>Campaign name<input name="campaignName" value={ticketForm.campaignName} onChange={updateTicketField} required /></label></div>
+              <div className="admin-form-row"><label>Contact name<input name="contactName" value={ticketForm.contactName} onChange={updateTicketField} /></label><label>Contact email<input name="contactEmail" type="email" value={ticketForm.contactEmail} onChange={updateTicketField} /></label></div>
+              <label>Campaign objective<textarea name="objective" value={ticketForm.objective} onChange={updateTicketField} rows="2" placeholder="Awareness, product launch, conversions..." /></label>
+              <div className="admin-form-row"><label>Platforms <input name="platforms" value={ticketForm.platforms} onChange={updateTicketField} placeholder="Instagram, YouTube" /></label><label>Status<select name="status" value={ticketForm.status} onChange={updateTicketField}>{ticketStatuses.map((item) => <option key={item}>{item}</option>)}</select></label></div>
+              <div className="admin-form-row"><label>Start date<input name="startDate" type="date" value={ticketForm.startDate} onChange={updateTicketField} /></label><label>End date<input name="endDate" type="date" value={ticketForm.endDate} onChange={updateTicketField} /></label></div>
+              <div className="admin-form-row"><label>Budget<input min="0" name="budget" type="number" value={ticketForm.budget} onChange={updateTicketField} /></label><label>Currency<input name="currency" value={ticketForm.currency} onChange={updateTicketField} /></label></div>
+              <h3 className="admin-ticket-subheading">Campaign performance</h3>
+              <div className="admin-ticket-metrics">{[["creators", "Creators"], ["posts", "Posts"], ["reach", "Reach"], ["impressions", "Impressions"], ["engagements", "Engagements"], ["clicks", "Clicks"], ["conversions", "Conversions"], ["spend", "Spend"]].map(([key, label]) => <label key={key}>{label}<input min="0" name={key} type="number" value={ticketForm.metrics[key]} onChange={updateTicketMetric} /></label>)}</div>
+              <label>Internal notes<textarea name="notes" value={ticketForm.notes} onChange={updateTicketField} rows="3" /></label>
+              <div className="admin-login-actions"><button type="submit">{editingTicketId ? "Update Ticket" : "Create Ticket"}</button>{editingTicketId && <button type="button" onClick={() => { setEditingTicketId(""); setTicketForm(initialTicketForm); }}>Cancel</button>}</div>
+            </form>
+            <div className="admin-ticket-side">
+              <section className="admin-panel"><div className="admin-panel-title-row"><h2>Campaign analysis</h2><small>{data.stats.activeTickets || 0} active</small></div><AnalyticsChart title="Ticket status" items={data.analytics.ticketStatuses} emptyMessage="Create a ticket to see campaign status analysis." /><div className="admin-ticket-summary"><article><span>Total reach</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.reach || 0), 0).toLocaleString()}</strong></article><article><span>Total engagements</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.engagements || 0), 0).toLocaleString()}</strong></article><article><span>Conversions</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.conversions || 0), 0).toLocaleString()}</strong></article></div></section>
+              <section className="admin-panel"><h2>Brand campaign tickets</h2><div className="admin-blog-list">{data.tickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions</small></div><div className="admin-row-actions"><button type="button" onClick={() => editTicket(ticket)}>Edit</button><button type="button" onClick={() => removeTicket(ticket._id)}>Delete</button></div></article>; })}{data.tickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section>
             </div>
           </div>
         )}
