@@ -281,7 +281,7 @@ function BlogCard({ post, featured = false }) {
           <span>{post.category || "Insight"}</span>
         </div>
       )}
-      <div>
+      <div className="blog-card-copy">
         <div className="blog-meta-row">
           <span>{post.category || "Insight"}</span>
           <small>{post.readTime || "5 min read"}</small>

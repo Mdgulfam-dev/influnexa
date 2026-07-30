@@ -8216,3 +8216,45 @@ footer .footer-brand-copy small,
     gap: 8px;
   }
 }
+
+/* Keep article details on a dedicated, readable surface instead of the cover image. */
+.blog-page .blog-page-card .blog-card-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  background: #ffffff;
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.blog-page .blog-related-grid .blog-page-card,
+.blog-page .blog-page-grid .blog-page-card {
+  grid-template-rows: 260px auto;
+}
+
+.blog-page .blog-related-grid .blog-page-card > img,
+.blog-page .blog-page-grid .blog-page-card > img {
+  height: 260px;
+  min-height: 0;
+}
+
+.blog-page .blog-page-card .blog-card-copy .blog-meta-row {
+  justify-content: space-between;
+}
+
+.blog-page .blog-page-card .blog-card-copy a {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.site.dark .blog-page .blog-page-card .blog-card-copy {
+  background: #0f172a;
+}
+
+@media (max-width: 680px) {
+  .blog-page .blog-page-card .blog-card-copy {
+    padding: 22px;
+  }
+}
