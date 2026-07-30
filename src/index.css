@@ -2193,6 +2193,60 @@ main.admin-shell .admin-content > .admin-status { position: fixed; top: 22px; ri
   padding: 22px;
 }
 
+.admin-ticket-workspace {
+  display: grid;
+  grid-template-columns: minmax(420px, .95fr) minmax(420px, 1.05fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.admin-ticket-side { display: grid; gap: 20px; }
+
+.admin-ticket-subheading {
+  margin: 6px 0 0;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.admin-ticket-metrics,
+.admin-ticket-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-ticket-metrics label {
+  display: grid;
+  gap: 7px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.admin-ticket-metrics input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  color: #0f172a;
+  padding: 10px 11px;
+}
+
+.admin-ticket-summary { margin-top: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.admin-ticket-summary article { border-radius: 14px; background: #f8fafc; padding: 13px; }
+.admin-ticket-summary span { display: block; color: #64748b; font-size: 11px; font-weight: 850; }
+.admin-ticket-summary strong { display: block; margin-top: 6px; color: #0f172a; font-size: 20px; font-weight: 950; }
+
+@media (max-width: 1040px) {
+  .admin-ticket-workspace { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .admin-ticket-metrics,
+  .admin-ticket-summary { grid-template-columns: 1fr; }
+}
+
 .admin-panel h2 {
   margin: 0 0 18px;
   color: #0f172a;
