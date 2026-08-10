@@ -2357,7 +2357,7 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   top: 0;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) auto auto;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   align-items: end;
   margin: -2px 0 18px;
@@ -2426,6 +2426,39 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   overflow: auto;
   padding-right: 4px;
 }
+
+.admin-registration-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; }
+.admin-registration-table th { background: #f8fafc; color: #64748b; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+.admin-registration-table th, .admin-registration-table td { padding: 13px 14px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
+.admin-registration-table tbody tr { cursor: pointer; }
+.admin-registration-table tbody tr:hover, .admin-registration-table tbody tr.active { background: #f0fdfa; }
+.admin-registration-table td strong, .admin-registration-table td small { display: block; }
+.admin-registration-table td small { margin-top: 4px; color: #64748b; font-size: 12px; }
+.admin-registration-table select { width: 100%; min-width: 112px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; padding: 8px; }
+
+.admin-full-data-table-wrap { overflow: auto; max-height: calc(100vh - 310px); border: 1px solid #e2e8f0; border-radius: 18px; }
+.admin-full-data-table { width: 7200px; min-width: 7200px; table-layout: fixed; border: 0; border-radius: 0; }
+.admin-full-data-table th { position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+.admin-full-data-table th, .admin-full-data-table td { box-sizing: border-box; width: 250px; min-width: 250px; max-width: 250px; }
+.admin-full-data-table th.admin-actions-column, .admin-full-data-table td.admin-actions-column { width: 520px; min-width: 520px; max-width: 520px; }
+.admin-full-data-table th:first-child, .admin-full-data-table td:first-child { position: sticky; left: 0; background: #ffffff; }
+.admin-full-data-table th:first-child { z-index: 3; background: #f8fafc; }
+.admin-full-data-table td:first-child { z-index: 2; box-shadow: 8px 0 12px -12px rgba(15, 23, 42, 0.45); }
+.admin-table-cell-value { display: flex; min-width: 0; align-items: center; gap: 7px; }
+.admin-table-cell-content { min-width: 0; overflow: hidden; color: #334155; text-overflow: ellipsis; white-space: nowrap; }
+.admin-table-cell-content a { color: #4f46e5; font-weight: 800; text-decoration: none; }
+.admin-table-cell-value.is-expanded { align-items: flex-start; }
+.admin-table-cell-value.is-expanded .admin-table-cell-content { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.admin-table-cell-value.cell-categories .admin-table-cell-content { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
+.admin-table-more { flex: 0 0 auto; border: 0; background: transparent; color: #0f766e; cursor: pointer; font-size: 11px; font-weight: 900; padding: 0; white-space: nowrap; }
+.admin-profile-links { display: inline-flex; gap: 8px; min-width: max-content; }
+.admin-registration-status-buttons { display: flex; flex-wrap: nowrap; gap: 6px; max-width: 100%; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.admin-registration-status-buttons button { flex: 0 0 auto; min-height: 42px; border: 1px solid transparent; border-radius: var(--admin-button-radius, 14px); cursor: pointer; font-size: 13px; font-weight: 900; line-height: 1.2; padding: 10px 14px; white-space: nowrap; transition: transform 180ms ease, background 180ms ease; }
+.admin-registration-status-buttons button:hover { transform: translateY(-1px); }
+.admin-registration-status-buttons button.warning { background: #f59e0b; color: #ffffff; }
+.admin-registration-status-buttons button.success { background: #16a34a; color: #ffffff; }
+.admin-registration-status-buttons button.danger { background: #dc2626; color: #ffffff; }
+.admin-registration-status-buttons button.is-active { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72); }
 
 .admin-registration-card {
   border: 1px solid #e2e8f0;

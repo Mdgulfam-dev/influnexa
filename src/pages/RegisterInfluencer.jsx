@@ -15,6 +15,7 @@ const initialForm = {
   email: "",
   phone: "",
   country: "",
+  state: "",
   city: "",
   languages: "",
   categories: [],
@@ -129,8 +130,9 @@ export default function RegisterInfluencer() {
               <label>Email *<input type="email" name="email" value={form.email} onChange={updateField} required /></label>
               <label>Phone / WhatsApp<input name="phone" value={form.phone} onChange={updateField} /></label>
               <label>Country *<input name="country" value={form.country} onChange={updateField} required /></label>
+              <label>State / Province<input name="state" value={form.state} onChange={updateField} placeholder="Example: Maharashtra" /></label>
               <label>City<input name="city" value={form.city} onChange={updateField} /></label>
-              <label className="wide">Languages *<input name="languages" value={form.languages} onChange={updateField} required placeholder="Example: English, Hindi, Arabic" /></label>
+              <label className="wide">Languages *<input name="languages" list="influencer-languages" value={form.languages} onChange={updateField} required placeholder="Select or enter languages" /><datalist id="influencer-languages"><option value="English" /><option value="Hindi" /><option value="Arabic" /><option value="Spanish" /><option value="French" /><option value="Portuguese" /><option value="Bengali" /><option value="Tamil" /><option value="Telugu" /><option value="Punjabi" /></datalist></label>
             </div>
 
             <div className="form-section-title">Content and audience</div>

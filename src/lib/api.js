@@ -140,6 +140,17 @@ export async function getAdminDashboard(params = {}) {
   return data;
 }
 
+export async function getAdminRegistrations(type, params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") query.set(key, value);
+  });
+  const response = await fetch(`${API_BASE_URL}/admin/registrations/${type}?${query.toString()}`, { headers: adminHeaders() });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Unable to load registrations.");
+  return data;
+}
+
 export async function updateRegistrationStatus(type, id, status) {
   const response = await fetch(`${API_BASE_URL}/admin/${type}/${id}/status`, {
     method: "PATCH",
