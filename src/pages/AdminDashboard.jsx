@@ -376,6 +376,26 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, se
             Category
             <input placeholder="Fashion, beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
           </label>
+          <label>
+            State
+            <input placeholder="State / province" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
+          </label>
+          <label>
+            Location
+            <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
+          </label>
+          <label>
+            Language
+            <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
+          </label>
+          <label>
+            Followers from
+            <input min="0" placeholder="1000" type="number" value={filters.followerMin} onChange={(event) => onFilterChange("followerMin", event.target.value)} />
+          </label>
+          <label>
+            Followers to
+            <input min="0" placeholder="100000" type="number" value={filters.followerMax} onChange={(event) => onFilterChange("followerMax", event.target.value)} />
+          </label>
         </>
       )}
       <label>
@@ -444,9 +464,9 @@ export default function AdminDashboard() {
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", platform: "", category: "", from: "", to: "" });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", platform: "", category: "", from: "", to: "" });
+  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [influencerTable, setInfluencerTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });

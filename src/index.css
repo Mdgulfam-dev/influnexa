@@ -2371,6 +2371,7 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
 .admin-registration-toolbar label {
   display: grid;
   gap: 6px;
+  min-width: 0;
   color: #64748b;
   font-size: 11px;
   font-weight: 950;
@@ -2380,8 +2381,10 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
 
 .admin-registration-toolbar input,
 .admin-registration-toolbar select {
+  box-sizing: border-box;
   width: 100%;
-  min-height: 42px;
+  height: 46px;
+  min-height: 46px;
   border: 1px solid #cbd5e1;
   border-radius: var(--admin-button-radius, 14px);
   background: #ffffff;
@@ -2391,6 +2394,19 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   font-size: 13px;
   font-weight: 850;
   text-transform: none;
+}
+
+.admin-registration-toolbar select {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--admin-button-radius, 14px);
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 42px;
 }
 
 .admin-registration-toolbar input:focus,
