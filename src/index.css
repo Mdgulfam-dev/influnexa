@@ -2427,6 +2427,9 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   font-weight: 950;
 }
 
+.admin-registration-toolbar button.admin-filter-reset { border: 1px solid #cbd5e1; background: #ffffff; color: #475569; }
+.admin-registration-toolbar button.admin-filter-reset:hover { border-color: #94a3b8; background: #f8fafc; }
+
 .admin-registration-toolbar > span {
   color: #0f766e;
   font-size: 13px;

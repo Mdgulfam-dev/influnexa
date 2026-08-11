@@ -335,7 +335,7 @@ function RegistrationDataTable({ fields, items, emptyMessage, statusOptions, typ
   );
 }
 
-function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, searchPlaceholder, statusOptions, type }) {
+function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
       <label>
@@ -407,6 +407,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, se
         <input type="date" value={filters.to} onChange={(event) => onFilterChange("to", event.target.value)} />
       </label>
       <button type="submit">Apply</button>
+      <button className="admin-filter-reset" type="button" onClick={onReset}>Reset</button>
       <span>{countLabel}</span>
     </form>
   );
@@ -699,6 +700,19 @@ export default function AdminDashboard() {
     else loadDashboard();
   };
 
+  const resetRegistrationFilters = () => {
+    if (activeTab === "brands") {
+      const cleared = { search: "", status: "", country: "", industry: "", from: "", to: "" };
+      setBrandFilters(cleared);
+      setBrandQuery(cleared);
+    }
+    if (activeTab === "influencers") {
+      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" };
+      setInfluencerFilters(cleared);
+      setInfluencerQuery(cleared);
+    }
+  };
+
   const nextBrandPage = () => loadRegistrationTable("brands", brandQuery, brandTable.nextCursor, [...brandTable.history, brandTable.nextCursor]);
   const previousBrandPage = () => { const history = brandTable.history.slice(0, -1); loadRegistrationTable("brands", brandQuery, history.at(-1) || null, history); };
   const nextInfluencerPage = () => loadRegistrationTable("influencers", influencerQuery, influencerTable.nextCursor, [...influencerTable.history, influencerTable.nextCursor]);
@@ -936,6 +950,7 @@ export default function AdminDashboard() {
               filters={brandFilters}
               onFilterChange={updateBrandFilter}
               onSearch={applyRegistrationSearch}
+              onReset={resetRegistrationFilters}
               searchPlaceholder="Company, contact, email, industry..."
               statusOptions={brandStatuses}
               type="brands"
@@ -978,6 +993,7 @@ export default function AdminDashboard() {
               filters={influencerFilters}
               onFilterChange={updateInfluencerFilter}
               onSearch={applyRegistrationSearch}
+              onReset={resetRegistrationFilters}
               searchPlaceholder="Creator, email, country, platform..."
               statusOptions={influencerStatuses}
               type="influencers"
