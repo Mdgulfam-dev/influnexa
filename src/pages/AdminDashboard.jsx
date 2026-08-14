@@ -6,6 +6,7 @@ import {
   deleteBlogPost,
   deleteTestimonial,
   getAdminDashboard,
+  getAdminRegistrations,
   hasAdminSession,
   loginAdmin,
   logoutAdmin,
@@ -23,13 +24,17 @@ import {
   deleteBrandTicket,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
-
+import CsvCreatorSection from "../components/CsvCreatorSection";
+import UploadCreatorsCSV from "../components/UploadCreatorCSV";
+import CsvBrandSection from "../components/CsvBrandSection";
+import UploadBrandsCSV from "../components/UploadBrandsCSV";
 const brandStatuses = [
   "New",
   "Under Review",
   "Contacted",
-  "Follow-up 1",
-  "Follow-up 2",
+  "Followup-1",
+  "Followup-2",
+  "Followup-3",
   "Meeting Scheduled",
   "Requirement Received",
   "Proposal Sent",
@@ -85,12 +90,13 @@ const influencerDetailFields = [
   ["Email", "email", "email"],
   ["Phone", "phone"],
   ["Country", "country"],
+  ["State / Province", "state"],
   ["City", "city"],
   ["Languages", "languages"],
   ["Categories", "categories"],
   ["Primary platform", "primaryPlatform"],
   ["Primary profile", "primaryProfile", "url"],
-  ["Other profiles", "otherProfiles", "long"],
+  ["Other profiles", "otherProfiles", "profiles"],
   ["Followers", "followers"],
   ["Engagement rate", "engagementRate"],
   ["Average views", "averageViews"],
@@ -247,47 +253,93 @@ function renderDetailValue(record, key, type) {
     );
   }
 
+  if (type === "profiles") {
+    const urls = String(value).match(/(?:https?:\/\/|www\.)[^\s,]+/gi) || [];
+    if (!urls.length) return value;
+    return <span className="admin-profile-links">{urls.map((url, index) => <a href={normalizeExternalUrl(url)} key={`${url}-${index}`} target="_blank" rel="noreferrer">{url}</a>)}</span>;
+  }
+
   return value;
+}
+
+function RegistrationTableCell({ record, field }) {
+  const [, key, type] = field;
+  const rawValue = record?.[key];
+  const textValue = Array.isArray(rawValue) ? rawValue.join(", ") : String(rawValue || "");
+  const canExpand = key !== "categories" && textValue.length > 90;
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className={`admin-table-cell-value ${expanded ? "is-expanded" : ""} cell-${key}`}>
+      <div className="admin-table-cell-content">{renderDetailValue(record, key, type)}</div>
+      {canExpand && <button type="button" className="admin-table-more" onClick={() => setExpanded((current) => !current)}>{expanded ? "See less" : "See more"}</button>}
+    </div>
+  );
+}
+
+function RegistrationStatusButtons({ record, statusOptions, type, onUpdateStatus }) {
+  const currentStatus = type === "brands" ? formatStatus(record.status) : record.status;
+  const statusTone = (status) => {
+    const label = formatStatus(status).toLowerCase();
+    if (["approved", "deal won", "campaign started", "campaign completed", "repeat client"].includes(label)) return "success";
+    if (["rejected", "lost", "no response", "closed"].includes(label)) return "danger";
+    return "warning";
+  };
+  return (
+    <div className="admin-registration-status-buttons">
+      {statusOptions.filter((status) => formatStatus(status).toLowerCase() !== "new").map((status) => (
+        <button
+          className={`${statusTone(status)} ${currentStatus === formatStatus(status) ? "is-active" : ""}`}
+          key={status}
+          onClick={() => onUpdateStatus(type, record._id, status)}
+          type="button"
+        >
+          {formatStatus(status)}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function Pill({ children, tone = "default" }) {
   return <span className={`admin-pill ${tone}`}>{children}</span>;
 }
 
-function RegistrationDetails({ emptyMessage, fields, record, title }) {
-  if (!record) {
-    return (
-      <aside className="admin-registration-details is-empty">
-        <h3>{title}</h3>
-        <p>{emptyMessage}</p>
-      </aside>
-    );
-  }
+function registrationStatusTone(status) {
+  const label = formatStatus(status).toLowerCase();
+  if (["approved", "deal won", "campaign started", "campaign completed", "repeat client"].includes(label)) return "success";
+  if (["rejected", "lost", "no response", "closed"].includes(label)) return "error";
+  return "default";
+}
 
+function RegistrationDataTable({ fields, items, emptyMessage, statusOptions, type, onUpdateStatus }) {
   return (
-    <aside className="admin-registration-details">
-      <div className="admin-registration-details-heading">
-        <div>
-          <span>Complete details</span>
-          <h3>{title}</h3>
-        </div>
-        <Pill tone={brandStatusTone(record.status)}>
-          {formatStatus(record.status) || "New"}
-        </Pill>
-      </div>
-      <dl>
-        {fields.map(([label, key, type]) => (
-          <div className={type === "long" ? "wide" : ""} key={key}>
-            <dt>{label}</dt>
-            <dd>{renderDetailValue(record, key, type)}</dd>
-          </div>
-        ))}
-      </dl>
-    </aside>
+    <div className="admin-full-data-table-wrap">
+      <table className="admin-table admin-full-data-table">
+        <thead>
+          <tr>{fields.map(([label, key]) => <th key={key}>{label}</th>)}<th className="admin-actions-column">Actions</th></tr>
+        </thead>
+        <tbody>
+          {items.map((record) => (
+            <tr key={record._id}>
+              {fields.map(([label, key, valueType]) => (
+                <td key={key}>
+                  {key === "status" ? (
+                    <Pill tone={registrationStatusTone(record.status)}>{formatStatus(record.status)}</Pill>
+                  ) : <RegistrationTableCell record={record} field={[label, key, valueType]} />}
+                </td>
+              ))}
+              <td className="admin-actions-column"><RegistrationStatusButtons record={record} statusOptions={statusOptions} type={type} onUpdateStatus={onUpdateStatus} /></td>
+            </tr>
+          ))}
+          {!items.length && <tr><td colSpan={fields.length + 1}>{emptyMessage}</td></tr>}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
-function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, searchPlaceholder, statusOptions }) {
+function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
       <label>
@@ -309,27 +361,79 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, se
           ))}
         </select>
       </label>
+      <label>
+        Country
+        <input placeholder="Country" value={filters.country} onChange={(event) => onFilterChange("country", event.target.value)} />
+      </label>
+      {type === "brands" ? (
+        <label>
+          Industry
+          <input placeholder="Industry" value={filters.industry} onChange={(event) => onFilterChange("industry", event.target.value)} />
+        </label>
+      ) : (
+        <>
+          <label>
+            Platform
+            <input placeholder="Instagram, YouTube..." value={filters.platform} onChange={(event) => onFilterChange("platform", event.target.value)} />
+          </label>
+          <label>
+            Category
+            <input placeholder="Fashion, beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
+          </label>
+          <label>
+            State
+            <input placeholder="State / province" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
+          </label>
+          <label>
+            Location
+            <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
+          </label>
+          <label>
+            Language
+            <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
+          </label>
+          <label>
+            Followers from
+            <input min="0" placeholder="1000" type="number" value={filters.followerMin} onChange={(event) => onFilterChange("followerMin", event.target.value)} />
+          </label>
+          <label>
+            Followers to
+            <input min="0" placeholder="100000" type="number" value={filters.followerMax} onChange={(event) => onFilterChange("followerMax", event.target.value)} />
+          </label>
+        </>
+      )}
+      <label>
+        From
+        <input type="date" value={filters.from} onChange={(event) => onFilterChange("from", event.target.value)} />
+      </label>
+      <label>
+        To
+        <input type="date" value={filters.to} onChange={(event) => onFilterChange("to", event.target.value)} />
+      </label>
       <button type="submit">Apply</button>
+      <button className="admin-filter-reset" type="button" onClick={onReset}>Reset</button>
       <span>{countLabel}</span>
     </form>
   );
 }
 
-function RegistrationPager({ meta, onPageChange }) {
-  const page = meta?.page || 1;
-  const totalPages = meta?.totalPages || 1;
-  const total = meta?.total || 0;
-  const limit = meta?.limit || registrationPageSize;
-  const start = total === 0 ? 0 : (page - 1) * limit + 1;
-  const end = Math.min(page * limit, total);
-
+function RegistrationPager({ cursorHistory = [], hasMore, onPrevious, onNext, meta, onPageChange }) {
+  if (meta) {
+    const page = meta.page || 1;
+    const totalPages = meta.totalPages || 1;
+    const total = meta.total || 0;
+    const limit = meta.limit || registrationPageSize;
+    const start = total === 0 ? 0 : (page - 1) * limit + 1;
+    const end = Math.min(page * limit, total);
+    return <div className="admin-registration-pager"><span>{start}-{end} of {total}</span><div><button type="button" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Previous</button><strong>Page {page} / {totalPages}</strong><button type="button" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>Next</button></div></div>;
+  }
   return (
     <div className="admin-registration-pager">
-      <span>{start}-{end} of {total}</span>
+      <span>Cursor pagination — no deep-offset slowdown</span>
       <div>
-        <button type="button" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Previous</button>
-        <strong>Page {page} / {totalPages}</strong>
-        <button type="button" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>Next</button>
+        <button type="button" disabled={!cursorHistory.length} onClick={onPrevious}>Previous</button>
+        <strong>Page {cursorHistory.length + 1}</strong>
+        <button type="button" disabled={!hasMore} onClick={onNext}>Next</button>
       </div>
     </div>
   );
@@ -350,7 +454,8 @@ function AnalyticsChart({ title, items = [], emptyMessage }) {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["overview", "brands", "tickets", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
+    return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
+  "upload-csv-brands","blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -364,10 +469,12 @@ export default function AdminDashboard() {
   const [editingTicketId, setEditingTicketId] = useState("");
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
-  const [selectedBrandId, setSelectedBrandId] = useState("");
-  const [selectedInfluencerId, setSelectedInfluencerId] = useState("");
-  const [brandFilters, setBrandFilters] = useState({ search: "", status: "", page: 1 });
-  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", page: 1 });
+  const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
+  const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
+  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
+  const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
+  const [influencerTable, setInfluencerTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -380,6 +487,10 @@ export default function AdminDashboard() {
       ["brands", `Brands (${data.stats.brands || 0})`],
       ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
+       ["csv-creators", `CSV Creators`],
+       ["upload-csv", `CSV  Upload Creators`],
+       ["csv-brands", `CSV Brands`],
+       ["upload-csv-brands", `CSV Upload Brands`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
@@ -391,21 +502,13 @@ export default function AdminDashboard() {
 
   const dashboardParams = useMemo(
     () => ({
-      brandSearch: brandFilters.search.trim(),
-      brandStatus: brandFilters.status,
-      brandPage: brandFilters.page,
-      brandLimit: registrationPageSize,
-      influencerSearch: influencerFilters.search.trim(),
-      influencerStatus: influencerFilters.status,
-      influencerPage: influencerFilters.page,
-      influencerLimit: registrationPageSize,
       candidateSearch: candidateFilters.search.trim(),
       candidateStatus: candidateFilters.status,
       candidateJobId: candidateFilters.jobId.trim(),
       candidatePage: candidateFilters.page,
       candidateLimit: candidatePageSize,
     }),
-    [brandFilters, candidateFilters, influencerFilters]
+    [candidateFilters]
   );
 
   const loadDashboard = async ({ showLoading = true } = {}) => {
@@ -456,10 +559,33 @@ export default function AdminDashboard() {
     };
   }, [dashboardParams, isAuthenticated]);
 
+  const loadRegistrationTable = async (type, filters, after = null, history = []) => {
+    try {
+      const result = await getAdminRegistrations(type, { ...filters, limit: registrationPageSize, after });
+      const next = { items: result.items || [], hasMore: Boolean(result.pagination?.hasMore), nextCursor: result.pagination?.nextCursor || null, history };
+      if (type === "brands") setBrandTable(next);
+      else setInfluencerTable(next);
+    } catch (error) {
+      setStatus({ type: "error", message: error.message });
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated || activeTab !== "brands") return;
+    loadRegistrationTable("brands", brandQuery);
+  }, [activeTab, brandQuery, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated || activeTab !== "influencers") return;
+    loadRegistrationTable("influencers", influencerQuery);
+  }, [activeTab, influencerQuery, isAuthenticated]);
+
   const updateStatus = async (type, id, nextStatus) => {
     try {
       await updateRegistrationStatus(type, id, nextStatus);
       await loadDashboard();
+      if (type === "brands") await loadRegistrationTable("brands", brandQuery);
+      if (type === "influencers") await loadRegistrationTable("influencers", influencerQuery);
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
@@ -572,26 +698,34 @@ export default function AdminDashboard() {
     window.history.replaceState(null, "", `#${id}`);
   };
 
-  const updateBrandFilter = (field, value) => {
-    setBrandFilters((current) => ({ ...current, [field]: value, page: 1 }));
-  };
+  const updateBrandFilter = (field, value) => setBrandFilters((current) => ({ ...current, [field]: value }));
 
-  const updateInfluencerFilter = (field, value) => {
-    setInfluencerFilters((current) => ({ ...current, [field]: value, page: 1 }));
-  };
+  const updateInfluencerFilter = (field, value) => setInfluencerFilters((current) => ({ ...current, [field]: value }));
 
   const applyRegistrationSearch = (event) => {
     event.preventDefault();
-    loadDashboard();
+    if (activeTab === "brands") setBrandQuery({ ...brandFilters });
+    else if (activeTab === "influencers") setInfluencerQuery({ ...influencerFilters });
+    else loadDashboard();
   };
 
-  const changeBrandPage = (page) => {
-    setBrandFilters((current) => ({ ...current, page }));
+  const resetRegistrationFilters = () => {
+    if (activeTab === "brands") {
+      const cleared = { search: "", status: "", country: "", industry: "", from: "", to: "" };
+      setBrandFilters(cleared);
+      setBrandQuery(cleared);
+    }
+    if (activeTab === "influencers") {
+      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" };
+      setInfluencerFilters(cleared);
+      setInfluencerQuery(cleared);
+    }
   };
 
-  const changeInfluencerPage = (page) => {
-    setInfluencerFilters((current) => ({ ...current, page }));
-  };
+  const nextBrandPage = () => loadRegistrationTable("brands", brandQuery, brandTable.nextCursor, [...brandTable.history, brandTable.nextCursor]);
+  const previousBrandPage = () => { const history = brandTable.history.slice(0, -1); loadRegistrationTable("brands", brandQuery, history.at(-1) || null, history); };
+  const nextInfluencerPage = () => loadRegistrationTable("influencers", influencerQuery, influencerTable.nextCursor, [...influencerTable.history, influencerTable.nextCursor]);
+  const previousInfluencerPage = () => { const history = influencerTable.history.slice(0, -1); loadRegistrationTable("influencers", influencerQuery, history.at(-1) || null, history); };
 
   const submitUser = async (event) => {
     event.preventDefault();
@@ -698,8 +832,6 @@ export default function AdminDashboard() {
   const isEditingOwner = editingUser?.role === "owner";
   const currentUserRole = data.currentUser?.role || "admin";
   const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
-  const selectedBrand = data.brands.find((brand) => brand._id === selectedBrandId);
-  const selectedInfluencer = data.influencers.find((influencer) => influencer._id === selectedInfluencerId);
 
   if (!isAuthenticated) {
     return (
@@ -805,7 +937,11 @@ export default function AdminDashboard() {
               <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
               <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
             </section>
-            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article></section>
+            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article><article>
+  <span>CSV Creators</span>
+  <strong>{data.stats.csvRecords || 0}</strong>
+  <small>total CSV upload records</small>
+</article></section>
             <section className="admin-analytics-grid">
               <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
               <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
@@ -823,51 +959,17 @@ export default function AdminDashboard() {
               <h2>Brand registrations</h2>
             </div>
             <RegistrationToolbar
-              countLabel={`${data.pagination.brands.total || 0} matching brands`}
+              countLabel="Fast server-side filters"
               filters={brandFilters}
               onFilterChange={updateBrandFilter}
               onSearch={applyRegistrationSearch}
+              onReset={resetRegistrationFilters}
               searchPlaceholder="Company, contact, email, industry..."
               statusOptions={brandStatuses}
+              type="brands"
             />
-            <div className="admin-registration-layout">
-              <div className="admin-registration-list">
-                {data.brands.map((brand) => (
-                  <article className={`admin-registration-card ${selectedBrandId === brand._id ? "active" : ""}`} key={brand._id}>
-                    <button type="button" onClick={() => setSelectedBrandId(brand._id)}>
-                      <span className="admin-registration-card-top">
-                        <strong>{brand.companyName}</strong>
-                        <Pill tone={brandStatusTone(brand.status)}>{formatStatus(brand.status)}</Pill>
-                      </span>
-                      <span>{brand.industry} - {brand.country}</span>
-                      <small>{brand.productName}</small>
-                      <span>{brand.contactName} - {brand.email}</span>
-                      <small>{brand.budgetRange} - {formatDate(brand.createdAt)}</small>
-                    </button>
-                    <select
-                      aria-label={`Update ${brand.companyName} status`}
-                      value={formatStatus(brand.status)}
-                      onChange={(event) => updateStatus("brands", brand._id, event.target.value)}
-                    >
-                      {brandStatuses.map((item) => <option key={item}>{item}</option>)}
-                    </select>
-                  </article>
-                ))}
-                {data.brands.length === 0 && (
-                  <article className="admin-registration-card is-empty">
-                    <strong>No brand registrations yet</strong>
-                    <span>New campaign requests will appear here.</span>
-                  </article>
-                )}
-                <RegistrationPager meta={data.pagination.brands} onPageChange={changeBrandPage} />
-              </div>
-              <RegistrationDetails
-                emptyMessage="Click a brand card to see the full campaign request."
-                fields={brandDetailFields}
-                record={selectedBrand}
-                title={selectedBrand?.companyName || "Brand details"}
-              />
-            </div>
+            <RegistrationDataTable fields={brandDetailFields} items={brandTable.items} emptyMessage="No brand registrations match these filters." statusOptions={brandStatuses} type="brands" onUpdateStatus={updateStatus} />
+            <RegistrationPager cursorHistory={brandTable.history} hasMore={brandTable.hasMore} onPrevious={previousBrandPage} onNext={nextBrandPage} />
           </div>
         )}
 
@@ -900,56 +1002,35 @@ export default function AdminDashboard() {
               <small>Find creators by name, email, market, platform, category, or status.</small>
             </div>
             <RegistrationToolbar
-              countLabel={`${data.pagination.influencers.total || 0} matching influencers`}
+              countLabel="Fast server-side filters"
               filters={influencerFilters}
               onFilterChange={updateInfluencerFilter}
               onSearch={applyRegistrationSearch}
+              onReset={resetRegistrationFilters}
               searchPlaceholder="Creator, email, country, platform..."
               statusOptions={influencerStatuses}
+              type="influencers"
             />
-            <div className="admin-registration-layout">
-              <div className="admin-registration-list">
-                {data.influencers.map((influencer) => (
-                  <article className={`admin-registration-card ${selectedInfluencerId === influencer._id ? "active" : ""}`} key={influencer._id}>
-                    <button type="button" onClick={() => setSelectedInfluencerId(influencer._id)}>
-                      <span className="admin-registration-card-top">
-                        <strong>{influencer.creatorName}</strong>
-                        <Pill tone={influencer.status === "approved" ? "success" : influencer.status === "rejected" ? "error" : "default"}>
-                          {influencer.status}
-                        </Pill>
-                      </span>
-                      <span>{influencer.primaryPlatform} - {influencer.followers} followers</span>
-                      <small>{influencer.country}{influencer.city ? `, ${influencer.city}` : ""}</small>
-                      <span>{influencer.fullName} - {influencer.email}</span>
-                      <small>{influencer.categories?.join(", ") || "No categories"} - {formatDate(influencer.createdAt)}</small>
-                    </button>
-                    <select
-                      aria-label={`Update ${influencer.creatorName} status`}
-                      value={influencer.status}
-                      onChange={(event) => updateStatus("influencers", influencer._id, event.target.value)}
-                    >
-                      {influencerStatuses.map((item) => <option key={item}>{item}</option>)}
-                    </select>
-                  </article>
-                ))}
-                {data.influencers.length === 0 && (
-                  <article className="admin-registration-card is-empty">
-                    <strong>No influencer registrations yet</strong>
-                    <span>New creator applications will appear here.</span>
-                  </article>
-                )}
-                <RegistrationPager meta={data.pagination.influencers} onPageChange={changeInfluencerPage} />
-              </div>
-              <RegistrationDetails
-                emptyMessage="Click an influencer card to see the full creator profile."
-                fields={influencerDetailFields}
-                record={selectedInfluencer}
-                title={selectedInfluencer?.creatorName || "Influencer details"}
-              />
-            </div>
+            <RegistrationDataTable fields={influencerDetailFields} items={influencerTable.items} emptyMessage="No influencer registrations match these filters." statusOptions={influencerStatuses} type="influencers" onUpdateStatus={updateStatus} />
+            <RegistrationPager cursorHistory={influencerTable.history} hasMore={influencerTable.hasMore} onPrevious={previousInfluencerPage} onNext={nextInfluencerPage} />
           </div>
         )}
 
+{activeTab === "csv-creators" && (
+  <CsvCreatorSection />
+)}
+
+{activeTab === "upload-csv" && (
+  <UploadCreatorsCSV />
+)}
+
+{activeTab === "csv-brands" && (
+  <CsvBrandSection />
+)}
+
+{activeTab === "upload-csv-brands" && (
+  <UploadBrandsCSV />
+)}
         {activeTab === "blogs" && (
           <div className="admin-blog-grid">
             <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>

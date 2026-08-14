@@ -1,4 +1,4 @@
-const LOCAL_API_URL = "http://127.0.0.1:5007/api";
+const LOCAL_API_URL = "http://127.0.0.1:5001/api";
 const PRODUCTION_API_URL = "https://influnexa-backend-igoz.onrender.com/api";
 
 function isLocalHost(hostname) {
@@ -137,6 +137,17 @@ export async function getAdminDashboard(params = {}) {
     throw new Error(data.message || "Unable to load admin dashboard.");
   }
 
+  return data;
+}
+
+export async function getAdminRegistrations(type, params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") query.set(key, value);
+  });
+  const response = await fetch(`${API_BASE_URL}/admin/registrations/${type}?${query.toString()}`, { headers: adminHeaders() });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Unable to load registrations.");
   return data;
 }
 
