@@ -24,13 +24,17 @@ import {
   deleteBrandTicket,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
-
+import CsvCreatorSection from "../components/CsvCreatorSection";
+import UploadCreatorsCSV from "../components/UploadCreatorCSV";
+import CsvBrandSection from "../components/CsvBrandSection";
+import UploadBrandsCSV from "../components/UploadBrandsCSV";
 const brandStatuses = [
   "New",
   "Under Review",
   "Contacted",
-  "Follow-up 1",
-  "Follow-up 2",
+  "Followup-1",
+  "Followup-2",
+  "Followup-3",
   "Meeting Scheduled",
   "Requirement Received",
   "Proposal Sent",
@@ -450,7 +454,8 @@ function AnalyticsChart({ title, items = [], emptyMessage }) {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
-    return ["overview", "brands", "tickets", "influencers", "blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
+    return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
+  "upload-csv-brands","blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
   });
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
@@ -482,6 +487,10 @@ export default function AdminDashboard() {
       ["brands", `Brands (${data.stats.brands || 0})`],
       ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
+       ["csv-creators", `CSV Creators`],
+       ["upload-csv", `CSV  Upload Creators`],
+       ["csv-brands", `CSV Brands`],
+       ["upload-csv-brands", `CSV Upload Brands`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
@@ -928,7 +937,11 @@ export default function AdminDashboard() {
               <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
               <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
             </section>
-            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article></section>
+            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article><article>
+  <span>CSV Creators</span>
+  <strong>{data.stats.csvRecords || 0}</strong>
+  <small>total CSV upload records</small>
+</article></section>
             <section className="admin-analytics-grid">
               <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
               <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
@@ -1003,6 +1016,21 @@ export default function AdminDashboard() {
           </div>
         )}
 
+{activeTab === "csv-creators" && (
+  <CsvCreatorSection />
+)}
+
+{activeTab === "upload-csv" && (
+  <UploadCreatorsCSV />
+)}
+
+{activeTab === "csv-brands" && (
+  <CsvBrandSection />
+)}
+
+{activeTab === "upload-csv-brands" && (
+  <UploadBrandsCSV />
+)}
         {activeTab === "blogs" && (
           <div className="admin-blog-grid">
             <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>

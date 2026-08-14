@@ -1942,13 +1942,67 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   position: sticky;
   top: 0;
   height: 100vh;
+  max-height: 100vh;
+
   border-right: 1px solid #e2e8f0;
   background:
     radial-gradient(circle at 0 0, rgba(79, 70, 229, 0.16), transparent 34%),
     #ffffff;
+
   padding: 22px;
+
+  /* Sidebar scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Keep scrollbar inside sidebar */
+  box-sizing: border-box;
+}
+.admin-sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .admin-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
 .admin-logo {
   display: inline-flex;
   align-items: center;

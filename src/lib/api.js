@@ -1,4 +1,4 @@
-const LOCAL_API_URL = "http://127.0.0.1:5007/api";
+const LOCAL_API_URL = "http://127.0.0.1:5001/api";
 const PRODUCTION_API_URL = "https://influnexa-backend-igoz.onrender.com/api";
 
 function isLocalHost(hostname) {
