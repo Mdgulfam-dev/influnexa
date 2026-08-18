@@ -59,25 +59,25 @@ const legacyBrandStatusLabels = {
 };
 
 const brandDetailFields = [
-  ["Contact name", "contactName"],
+  ["Contact Name", "contactName"],
   ["Email", "email", "email"],
   ["Phone", "phone"],
-  ["Company name", "companyName"],
+  ["Company Name", "companyName"],
   ["Website", "website", "url"],
   ["Country", "country"],
   ["Industry", "industry"],
-  ["Product name", "productName"],
+  ["Product Name", "productName"],
   ["Product URL", "productUrl", "url"],
-  ["Campaign types", "campaignTypes"],
-  ["Campaign goals", "campaignGoals", "long"],
-  ["Target audience", "targetAudience", "long"],
-  ["Target countries", "targetCountries"],
-  ["Preferred platforms", "preferredPlatforms"],
-  ["Creator count", "creatorCount"],
-  ["Budget currency", "budgetCurrency"],
-  ["Budget range", "budgetRange"],
+  ["Campaign Types", "campaignTypes"],
+  ["Campaign Goals", "campaignGoals", "long"],
+  ["Target Audience", "targetAudience", "long"],
+  ["Target Countries", "targetCountries"],
+  ["Preferred Platforms", "preferredPlatforms"],
+  ["Creator Count", "creatorCount"],
+  ["Budget Currency", "budgetCurrency"],
+  ["Budget Range", "budgetRange"],
   ["Timeline", "timeline"],
-  ["Product shipping ready", "productShippingReady"],
+  ["Product Shipping Ready", "productShippingReady"],
   ["Notes", "notes", "long"],
   ["Status", "status"],
   ["Created", "createdAt", "date"],
@@ -85,8 +85,8 @@ const brandDetailFields = [
 ];
 
 const influencerDetailFields = [
-  ["Full name", "fullName"],
-  ["Creator name", "creatorName"],
+  ["Full Name", "fullName"],
+  ["Creator Name", "creatorName"],
   ["Email", "email", "email"],
   ["Phone", "phone"],
   ["Country", "country"],
@@ -94,25 +94,24 @@ const influencerDetailFields = [
   ["City", "city"],
   ["Languages", "languages"],
   ["Categories", "categories"],
-  ["Primary platform", "primaryPlatform"],
-  ["Primary profile", "primaryProfile", "url"],
-  ["Other profiles", "otherProfiles", "profiles"],
+  ["Primary Platform", "primaryPlatform"],
+  ["Primary Profile", "primaryProfile", "url"],
+  ["Other Profiles", "otherProfiles", "profiles"],
   ["Followers", "followers"],
-  ["Engagement rate", "engagementRate"],
-  ["Average views", "averageViews"],
-  ["Audience countries", "audienceCountries"],
-  ["Content types", "contentTypes"],
-  ["Past brand work", "pastBrandWork", "long"],
-  ["Rate card", "rateCard"],
-  ["Shipping address", "shippingAddress", "long"],
+  ["Engagement Rate", "engagementRate"],
+  ["Average Views", "averageViews"],
+  ["Audience Countries", "audienceCountries"],
+  ["Content Types", "contentTypes"],
+  ["Past Brand Work", "pastBrandWork", "long"],
+  ["Rate Card", "rateCard"],
+  ["Shipping Address", "shippingAddress", "long"],
   ["Portfolio URL", "portfolioUrl", "url"],
   ["Notes", "notes", "long"],
-  ["Consent to contact", "consentToContact", "boolean"],
+  ["Consent To Contact", "consentToContact", "boolean"],
   ["Status", "status"],
   ["Created", "createdAt", "date"],
   ["Updated", "updatedAt", "date"],
 ];
-
 const initialBlogForm = {
   title: "",
   category: "",
@@ -246,37 +245,130 @@ function renderDetailValue(record, key, type) {
   }
 
   if (type === "url") {
-    return (
-      <a href={normalizeExternalUrl(value)} target="_blank" rel="noreferrer">
-        {value}
-      </a>
-    );
-  }
+  return (
+    <a
+      href={normalizeExternalUrl(value)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="
+        block
+        w-full
+        max-w-full
+        min-w-0
+        whitespace-normal
+        break-words
+        text-blue-600
+        hover:underline
+      "
+      style={{
+        overflowWrap: "anywhere",
+        wordBreak: "break-word",
+      }}
+    >
+      {value}
+    </a>
+  );
+}
 
-  if (type === "profiles") {
-    const urls = String(value).match(/(?:https?:\/\/|www\.)[^\s,]+/gi) || [];
-    if (!urls.length) return value;
-    return <span className="admin-profile-links">{urls.map((url, index) => <a href={normalizeExternalUrl(url)} key={`${url}-${index}`} target="_blank" rel="noreferrer">{url}</a>)}</span>;
-  }
+if (type === "profiles") {
+  const urls =
+    String(value).match(/(?:https?:\/\/|www\.)[^\s,]+/gi) || [];
 
+  if (!urls.length) return value;
+
+  return (
+    <div
+      className="admin-profile-links"
+      style={{
+        width: "100%",
+        maxWidth: "100%",
+        minWidth: 0,
+        whiteSpace: "normal",
+        overflow: "visible",
+      }}
+    >
+      {urls.map((url, index) => (
+        <a
+          key={`${url}-${index}`}
+          href={normalizeExternalUrl(url)}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "block",
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: 0,
+            whiteSpace: "normal",
+            overflow: "visible",
+            overflowWrap: "anywhere",
+            wordBreak: "break-all",
+            textOverflow: "clip",
+            marginBottom: "6px",
+          }}
+          className="text-blue-600 hover:underline"
+        >
+          {url}
+        </a>
+      ))}
+    </div>
+  );
+}
   return value;
 }
 
 function RegistrationTableCell({ record, field }) {
   const [, key, type] = field;
+
   const rawValue = record?.[key];
-  const textValue = Array.isArray(rawValue) ? rawValue.join(", ") : String(rawValue || "");
-  const canExpand = key !== "categories" && textValue.length > 90;
+
+  const textValue = Array.isArray(rawValue)
+    ? rawValue.join(", ")
+    : String(rawValue || "");
+
+  const canExpand =
+    key !== "categories" && textValue.length > 90;
+
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className={`admin-table-cell-value ${expanded ? "is-expanded" : ""} cell-${key}`}>
-      <div className="admin-table-cell-content">{renderDetailValue(record, key, type)}</div>
-      {canExpand && <button type="button" className="admin-table-more" onClick={() => setExpanded((current) => !current)}>{expanded ? "See less" : "See more"}</button>}
+    <div className="w-full min-w-0 max-w-full overflow-hidden">
+
+      <div
+        className={`
+          w-full
+          min-w-0
+          max-w-full
+          whitespace-normal
+          break-words
+          ${expanded ? "" : "line-clamp-2 overflow-hidden"}
+        `}
+        style={{
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
+        }}
+      >
+        {renderDetailValue(record, key, type)}
+      </div>
+
+      {canExpand && (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="
+            mt-1
+            text-xs
+            font-medium
+            text-blue-600
+            hover:text-blue-800
+            hover:underline
+          "
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      )}
     </div>
   );
 }
-
 function RegistrationStatusButtons({ record, statusOptions, type, onUpdateStatus }) {
   const currentStatus = type === "brands" ? formatStatus(record.status) : record.status;
   const statusTone = (status) => {
@@ -312,38 +404,79 @@ function registrationStatusTone(status) {
   return "default";
 }
 
-function RegistrationDataTable({ fields, items, emptyMessage, statusOptions, type, onUpdateStatus }) {
+function RegistrationDataTable({
+  fields,
+  items,
+  emptyMessage,
+  statusOptions,
+  type,
+  onUpdateStatus,
+}) {
   return (
     <div className="admin-full-data-table-wrap">
       <table className="admin-table admin-full-data-table">
         <thead>
-          <tr>{fields.map(([label, key]) => <th key={key}>{label}</th>)}<th className="admin-actions-column">Actions</th></tr>
+          <tr>
+            {fields.map(([label, key]) => (
+              <th key={key}>{label}</th>
+            ))}
+            <th className="admin-actions-column">Actions</th>
+          </tr>
         </thead>
+
         <tbody>
           {items.map((record) => (
             <tr key={record._id}>
               {fields.map(([label, key, valueType]) => (
-                <td key={key}>
+                <td
+                  key={key}
+                  className="
+                    px-4
+                    py-5
+                    align-top
+                  "
+                >
                   {key === "status" ? (
-                    <Pill tone={registrationStatusTone(record.status)}>{formatStatus(record.status)}</Pill>
-                  ) : <RegistrationTableCell record={record} field={[label, key, valueType]} />}
+                    <Pill tone={registrationStatusTone(record.status)}>
+                      {formatStatus(record.status)}
+                    </Pill>
+                  ) : (
+                    <RegistrationTableCell
+                      record={record}
+                      field={[label, key, valueType]}
+                    />
+                  )}
                 </td>
               ))}
-              <td className="admin-actions-column"><RegistrationStatusButtons record={record} statusOptions={statusOptions} type={type} onUpdateStatus={onUpdateStatus} /></td>
+
+              <td className="admin-actions-column">
+                <RegistrationStatusButtons
+                  record={record}
+                  statusOptions={statusOptions}
+                  type={type}
+                  onUpdateStatus={onUpdateStatus}
+                />
+              </td>
             </tr>
           ))}
-          {!items.length && <tr><td colSpan={fields.length + 1}>{emptyMessage}</td></tr>}
+
+          {!items.length && (
+            <tr>
+              <td colSpan={fields.length + 1}>
+                {emptyMessage}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
   );
 }
-
 function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
       <label>
-        Search
+        Global Search
         <input
           name="search"
           placeholder={searchPlaceholder}
@@ -355,7 +488,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
       <label>
         Status
         <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)}>
-          <option value="">All statuses</option>
+          <option value="">All Statuses</option>
           {statusOptions.map((item) => (
             <option key={item} value={item}>{formatStatus(item)}</option>
           ))}
@@ -378,11 +511,11 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
           </label>
           <label>
             Category
-            <input placeholder="Fashion, beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
+            <input placeholder="Fashion, Beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
           </label>
           <label>
             State
-            <input placeholder="State / province" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
+            <input placeholder="State / Province" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
           </label>
           <label>
             Location
@@ -393,11 +526,11 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
             <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
           </label>
           <label>
-            Followers from
+            Followers From
             <input min="0" placeholder="1000" type="number" value={filters.followerMin} onChange={(event) => onFilterChange("followerMin", event.target.value)} />
           </label>
           <label>
-            Followers to
+            Followers To
             <input min="0" placeholder="100000" type="number" value={filters.followerMax} onChange={(event) => onFilterChange("followerMax", event.target.value)} />
           </label>
         </>
@@ -417,28 +550,89 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
   );
 }
 
-function RegistrationPager({ cursorHistory = [], hasMore, onPrevious, onNext, meta, onPageChange }) {
+function RegistrationPager({
+  cursorHistory = [],
+  hasMore,
+  onPrevious,
+  onNext,
+  meta,
+  onPageChange,
+}) {
   if (meta) {
     const page = meta.page || 1;
     const totalPages = meta.totalPages || 1;
     const total = meta.total || 0;
     const limit = meta.limit || registrationPageSize;
+
     const start = total === 0 ? 0 : (page - 1) * limit + 1;
     const end = Math.min(page * limit, total);
-    return <div className="admin-registration-pager"><span>{start}-{end} of {total}</span><div><button type="button" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Previous</button><strong>Page {page} / {totalPages}</strong><button type="button" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>Next</button></div></div>;
+
+    return (
+      <div className="admin-registration-pager">
+        <div className="admin-pager-info">
+          <span>
+            Showing <strong>{start}</strong>–<strong>{end}</strong> of{" "}
+            <strong>{total}</strong>
+          </span>
+        </div>
+
+        <div className="admin-pager-controls">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
+            Previous
+          </button>
+
+          <span className="admin-pager-page">
+            Page <strong>{page}</strong> / <strong>{totalPages}</strong>
+          </span>
+
+          <button
+            type="button"
+            disabled={page >= totalPages}
+            onClick={() => onPageChange(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    );
   }
+
+  const currentPage = cursorHistory.length + 1;
+
   return (
     <div className="admin-registration-pager">
-      <span>Cursor pagination — no deep-offset slowdown</span>
-      <div>
-        <button type="button" disabled={!cursorHistory.length} onClick={onPrevious}>Previous</button>
-        <strong>Page {cursorHistory.length + 1}</strong>
-        <button type="button" disabled={!hasMore} onClick={onNext}>Next</button>
+      <div className="admin-pager-info">
+        <span>Cursor pagination</span>
+      </div>
+
+      <div className="admin-pager-controls">
+        <button
+          type="button"
+          disabled={!cursorHistory.length}
+          onClick={onPrevious}
+        >
+          Previous
+        </button>
+
+        <span className="admin-pager-page">
+          Page <strong>{currentPage}</strong>
+        </span>
+
+        <button
+          type="button"
+          disabled={!hasMore}
+          onClick={onNext}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
 }
-
 function AnalyticsChart({ title, items = [], emptyMessage }) {
   const total = items.reduce((sum, item) => sum + item.count, 0);
   const largest = Math.max(...items.map((item) => item.count), 1);
@@ -1002,7 +1196,6 @@ export default function AdminDashboard() {
               <small>Find creators by name, email, market, platform, category, or status.</small>
             </div>
             <RegistrationToolbar
-              countLabel="Fast server-side filters"
               filters={influencerFilters}
               onFilterChange={updateInfluencerFilter}
               onSearch={applyRegistrationSearch}

@@ -9,7 +9,7 @@ function UploadBrandsCSV() {
   // ========================================
   // STATES
   // ========================================
-
+const [expandedRows, setExpandedRows] = useState({});
   const [file, setFile] = useState(null);
 
   const [loading, setLoading] = useState(false);
@@ -540,7 +540,12 @@ function UploadBrandsCSV() {
 
   };
 
-
+const toggleReason = (index) => {
+  setExpandedRows((prev) => ({
+    ...prev,
+    [index]: !prev[index],
+  }));
+};
   // ========================================
   // UI
   // ========================================
@@ -679,9 +684,9 @@ function UploadBrandsCSV() {
               <label
                 className="
                   block
-                  text-xs
+                  text-sm
                   font-bold
-                  uppercase
+                  
                   tracking-wide
                   text-slate-500
                   mb-2
@@ -1164,35 +1169,35 @@ function UploadBrandsCSV() {
   >
     <tr>
 
-      <th className="w-[80px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[80px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         SL No.
       </th>
 
-      <th className="w-[200px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[200px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Company Name
       </th>
 
-      <th className="w-[180px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[180px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Full Name
       </th>
 
-      <th className="w-[240px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[240px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Email Id
       </th>
 
-      <th className="w-[240px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[240px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Official Email ID
       </th>
 
-      <th className="w-[180px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[180px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Mobile Number
       </th>
 
-      <th className="w-[140px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[140px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Status
       </th>
 
-      <th className="w-[400px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+      <th className="w-[400px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Reason
       </th>
 
@@ -1303,7 +1308,7 @@ function UploadBrandsCSV() {
 
 
           {/* REASON */}
-         <td
+   <td
   className="
     w-[400px]
     px-4
@@ -1312,14 +1317,58 @@ function UploadBrandsCSV() {
     align-middle
   "
 >
-  <div
-    className="
-      max-w-[380px]
-      whitespace-normal
-      break-words
-    "
-  >
-    {item.reason || "-"}
+  <div className="max-w-[380px]">
+    {expandedRows[index] ? (
+      <div>
+        <div className="whitespace-normal break-words text-slate-700">
+          {item.reason || "-"}
+        </div>
+
+        {item.reason && item.reason.length > 100 && (
+          <button
+            type="button"
+            onClick={() => toggleReason(index)}
+            className="
+              mt-1
+              text-xs
+              font-semibold
+              text-blue-600
+              hover:text-blue-800
+              hover:underline
+            "
+          >
+            See Less
+          </button>
+        )}
+      </div>
+    ) : (
+      <div>
+        <div className="whitespace-normal break-words text-slate-700">
+          {item.reason
+            ? item.reason.length > 100
+              ? `${item.reason.substring(0, 100)}...`
+              : item.reason
+            : "-"}
+        </div>
+
+        {item.reason && item.reason.length > 100 && (
+          <button
+            type="button"
+            onClick={() => toggleReason(index)}
+            className="
+              mt-1
+              text-xs
+              font-semibold
+              text-blue-600
+              hover:text-blue-800
+              hover:underline
+            "
+          >
+            See More
+          </button>
+        )}
+      </div>
+    )}
   </div>
 </td>
 

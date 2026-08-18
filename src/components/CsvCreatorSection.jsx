@@ -9,14 +9,16 @@ import { io } from "socket.io-client";
 import Select from "react-select";
 
 function CsvCreatorSection() {
-
+const [copiedEmail, setCopiedEmail] = useState(null);
+const [copiedPhone, setCopiedPhone] = useState(null);
   const [creators, setCreators] = useState([]);
   const [filterTimeout,setFilterTimeout] = useState(null);
   const [isFiltered,setIsFiltered] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState(null);
 const [showEdit, setShowEdit] = useState(false);
 const adminEmail = localStorage.getItem("adminEmail") || "";
-
+const [expandedBios, setExpandedBios] = useState({});
+const [copiedWhatsapp, setCopiedWhatsapp] = useState(null);
 const [page, setPage] = useState(1);
 const [limit] = useState(100);
 const [totalPages, setTotalPages] = useState(1);
@@ -665,33 +667,44 @@ const tableCellClass = `
 const selectStyles = {
   control: (base, state) => ({
     ...base,
-    minHeight: "56px",
-    height: "56px",
-    maxHeight: "56px",
+    minHeight: "44px",
+    height: "44px",
+    maxHeight: "44px",
     borderRadius: "12px",
-    borderColor: state.isFocused ? "#64748b" : "#cbd5e1",
+
+    borderColor: state.isFocused
+      ? "#cbd5e1"
+      : "#e2e8f0",
+
+    borderWidth: "1px",
+
     boxShadow: state.isFocused
-      ? "0 0 0 2px rgba(100,116,139,0.15)"
+      ? "0 0 0 2px rgba(226, 232, 240, 0.6)"
       : "none",
+
     backgroundColor: "#ffffff",
-    "&:hover": {
-      borderColor: "#94a3b8",
-    },
     alignItems: "center",
     overflow: "hidden",
+
+    "&:hover": {
+      borderColor: "#cbd5e1",
+    },
   }),
 
   valueContainer: (base) => ({
     ...base,
-    height: "56px",
-    minHeight: "56px",
-    maxHeight: "56px",
-    padding: "4px 8px",
+    height: "44px",
+    minHeight: "44px",
+    maxHeight: "44px",
+    padding: "2px 12px",
+
     display: "flex",
     flexWrap: "nowrap",
     alignItems: "center",
+
     overflowX: "auto",
     overflowY: "hidden",
+
     flex: "1 1 auto",
     scrollbarWidth: "none",
 
@@ -702,9 +715,11 @@ const selectStyles = {
 
   placeholder: (base) => ({
     ...base,
-    color: "#94a3b8",
-    fontSize: "15px",
+    color: "#A3A3A3",
+    fontSize: "14px",
+    fontWeight: "600",
     whiteSpace: "nowrap",
+    
   }),
 
   input: (base) => ({
@@ -718,21 +733,22 @@ const selectStyles = {
 
   multiValue: (base) => ({
     ...base,
-    backgroundColor: "#e2e8f0",
-    borderRadius: "6px",
+    backgroundColor: "#f1f5f9",
+    borderRadius: "7px",
     margin: "2px 3px 2px 0",
     height: "30px",
     minWidth: "max-content",
     flexShrink: 0,
+
     display: "flex",
     alignItems: "center",
   }),
 
   multiValueLabel: (base) => ({
     ...base,
-    color: "#334155",
+    color: "#475569",
     fontSize: "13px",
-    padding: "5px 6px",
+    padding: "5px 7px",
     whiteSpace: "nowrap",
   }),
 
@@ -741,23 +757,27 @@ const selectStyles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+
     width: "26px",
     height: "30px",
     padding: "0",
-    color: "#334155",
+
+    color: "#64748b",
     cursor: "pointer",
 
     "&:hover": {
-      backgroundColor: "#cbd5e1",
-      color: "#0f172a",
+      backgroundColor: "#e2e8f0",
+      color: "#334155",
     },
   }),
 
   indicatorsContainer: (base) => ({
     ...base,
-    height: "56px",
+    height: "44px",
+
     display: "flex",
     alignItems: "center",
+
     flexShrink: 0,
     backgroundColor: "#ffffff",
   }),
@@ -765,11 +785,25 @@ const selectStyles = {
   clearIndicator: (base) => ({
     ...base,
     padding: "6px",
+    color: "#94a3b8",
+
+    "&:hover": {
+      color: "#64748b",
+    },
   }),
 
   dropdownIndicator: (base) => ({
     ...base,
     padding: "8px",
+    color: "#94a3b8",
+
+    "&:hover": {
+      color: "#64748b",
+    },
+  }),
+
+  indicatorSeparator: () => ({
+    display: "none",
   }),
 
   menu: (base) => ({
@@ -777,6 +811,8 @@ const selectStyles = {
     zIndex: 9999,
     borderRadius: "12px",
     overflow: "hidden",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.08)",
   }),
 
   menuPortal: (base) => ({
@@ -875,45 +911,47 @@ const selectStyles = {
 CSV FILTER SECTION
 ========================= */}
 <div className="px-7 pb-6">
-<div
+ <div
     className="
-      rounded-[22px]
-      border
-      border-slate-200
-      bg-slate-50
-      p-5
-    "
-  >
-<div
-  className="
-    grid
-    grid-cols-1
-    sm:grid-cols-2
-    lg:grid-cols-4
-    xl:grid-cols-6
-    gap-4
-    items-start
+    rounded-[22px]
+    border
+    border-slate-200
+    bg-slate-50
+    p-5
   "
 >
-
+  
+    <div
+      className="
+  grid
+    grid-cols-1
+    gap-x-5
+    gap-y-5
+    sm:grid-cols-2
+    lg:grid-cols-[1.5fr_1fr_1fr_1fr]
+  "
+    >
 {
 [
 {
 name:"fullName",
 type:"text",
+ label: "Full Name",
 placeholder:"Full Name"
 },
 
 {
 name:"email",
 type:"text",
+label: "Email",
 placeholder:"Email"
 },
 
 {
 name:"phoneNumber",
 type:"text",
-placeholder:"phoneNumber"
+label:"Phone",
+placeholder:"Phone"
 },
 
 // {
@@ -926,6 +964,7 @@ placeholder:"phoneNumber"
 {
 name:"instagramFollowersRange",
 type:"select",
+label:"Followers Range",
 placeholder:"Followers Range",
 options:filterOptions.instagramFollowersRange
 },
@@ -933,12 +972,14 @@ options:filterOptions.instagramFollowersRange
 {
   name: "exactFollowers",
   type: "number",
+  label:"Exact Followers",
   placeholder: "Exact Followers",
 },
 {
 name:"categories",
 type:"select",
 placeholder:"Category",
+label:"Category",
 options:filterOptions.categories
 },
 
@@ -946,6 +987,7 @@ options:filterOptions.categories
 {
 name:"gender",
 type:"select",
+label:"Gender",
 placeholder:"Gender",
 options:filterOptions.gender,
 },
@@ -954,6 +996,7 @@ options:filterOptions.gender,
 {
   name: "dateOfBirth",
   type: "date",
+  label:"Date of Birth",
   placeholder: "Date of Birth",
 },
 
@@ -961,6 +1004,7 @@ options:filterOptions.gender,
 {
 name:"city",
 type:"text",
+label:"City",
 placeholder:"City"
 },
 
@@ -969,6 +1013,7 @@ placeholder:"City"
 name:"state",
 type:"select",
 placeholder:"State",
+label:"State",
 options:filterOptions.state
 },
 
@@ -976,12 +1021,14 @@ options:filterOptions.state
 {
 name:"country",
 type:"select",
+label:"Country",
 placeholder:"Country",
 options:filterOptions.country
 },
 {
   name: "pincode",
   type: "text",
+  label:"Pincode",
   placeholder: "Pincode",
 },
 
@@ -995,6 +1042,7 @@ options:filterOptions.country
 {
 name:"youtubeSubscribersRange",
 type:"select",
+label:"Youtube Subscribers",
 placeholder:"Youtube Subscribers",
 options:filterOptions.youtubeSubscribersRange
 },
@@ -1003,6 +1051,7 @@ options:filterOptions.youtubeSubscribersRange
 {
 name:"platform",
 type:"select",
+label:"Platform",
 placeholder:"Platform",
 options:filterOptions.platform
 },
@@ -1011,6 +1060,7 @@ options:filterOptions.platform
 {
 name:"typeOfCeleb",
 type:"select",
+label:"Celebrity Type",
 placeholder:"Celebrity Type",
 options:filterOptions.typeOfCeleb
 
@@ -1020,6 +1070,7 @@ options:filterOptions.typeOfCeleb
 {
 name:"languages",
 type:"select",
+label:"Language",
 placeholder:"Language",
 options:filterOptions.languages
 },
@@ -1028,18 +1079,21 @@ options:filterOptions.languages
 {
   name: "InflunexaUserId",
   type: "text",
+  label:"Influnexa User ID",
   placeholder: "Influnexa User ID",
 },
 
 {
   name: "campaignType",
   type: "select",
+  label:"Campaign Type",
   placeholder: "Campaign Type",
   options: filterOptions.campaignType
 },
 {
   name: "influencerType",
   type: "select",
+  label:"Influencer Type",
   placeholder: "Influencer Type",
   options: [
     "Nano Influencer",
@@ -1052,6 +1106,7 @@ options:filterOptions.languages
 {
   name: "contactStatus",
   type: "select",
+  label:"Contact Status",
   placeholder: "Contact Status",
   options: [
     "Mobile Only",
@@ -1060,14 +1115,17 @@ options:filterOptions.languages
   ]
 },
 
-].map((field)=>(
+].map((field) => (
 
+  <div key={field.name}>
 
-field.type === "select" ? (
+    <label className="mb-1 block text-[14px] font-bold text-slate-500 ">
+      {field.label}
+    </label>
 
-  <Select
-    key={field.name}
-    
+    {field.type === "select" ? (
+
+      <Select
     isMulti
     closeMenuOnSelect={false}
     placeholder={field.placeholder}
@@ -1140,19 +1198,21 @@ field.type === "select" ? (
     placeholder={field.placeholder}
     className="
   w-full
-  h-14
+  h-11
   px-4
   bg-white
   border
-  border-slate-300
+  border-slate-200
   rounded-xl
   text-slate-700
-  placeholder:text-slate-400
+  placeholder:text-neutral-400
   outline-none
   transition
-  focus:border-slate-500
+  focus:border-slate-300
   focus:ring-2
-  focus:ring-slate-200
+  focus:ring-slate-100
+  placeholder:text-[14px]
+   placeholder:font-bold
 "
     value={filters[field.name] || ""}
 
@@ -1187,7 +1247,8 @@ field.type === "select" ? (
     }}
   />
 
-)
+)}
+</div>
 ))}
 </div>
 </div>
@@ -1270,10 +1331,13 @@ Loading CSV creators...
 ">
 
    <div className="
+    relative
+    isolate
     w-full
     overflow-x-auto
     overflow-y-auto
     max-h-[650px]
+  
   ">
 
     <table className="
@@ -1286,9 +1350,7 @@ Loading CSV creators...
 
  <thead className="
         bg-slate-50
-        sticky
-        top-0
-        z-20
+      
       ">
 
 
@@ -1296,15 +1358,12 @@ Loading CSV creators...
 
 
 <th  className="
-    sticky
-    left-0
-    z-30
+    sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1317,15 +1376,40 @@ Loading CSV creators...
     </th>
 
 
-
-
-<th  className="
+<th
+  className="
+    sticky
+    left-0
+    top-0
+    z-40
+    w-[310px]
+    min-w-[310px]
+    max-w-[310px]
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-r
+    border-slate-200
+    whitespace-nowrap
+  "
+>
+  Full Name
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1338,12 +1422,13 @@ Instagram Username
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1356,12 +1441,13 @@ Instagram Link
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1374,12 +1460,13 @@ Followers Range
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1389,33 +1476,14 @@ Followers Range
 ">
 Exact Followers
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Categories
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1426,14 +1494,14 @@ Categories
 Phone
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1443,33 +1511,14 @@ Phone
 ">
 Whatsapp
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Full Name
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1479,15 +1528,66 @@ Full Name
 ">
 Email
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Categories
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Campaign Type
+</th>
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Influencer Type
+</th>
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1500,12 +1600,13 @@ Gender
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1515,66 +1616,15 @@ Gender
 ">
 DOB
 </th>
+
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Influencer Type
-</th>
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Campaign Type
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Deal Type
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+  
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1587,30 +1637,13 @@ Languages
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Speaking Video
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+  
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1620,15 +1653,14 @@ Speaking Video
 ">
 Full Address
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1641,12 +1673,13 @@ Landmark
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+  
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1659,12 +1692,13 @@ City
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+  
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1677,12 +1711,13 @@ State
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1695,12 +1730,13 @@ Country
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1711,32 +1747,14 @@ Country
 Pincode
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Photo Link
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1746,15 +1764,14 @@ Photo Link
 ">
 Youtube Username
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1767,12 +1784,13 @@ Youtube Channel
 
 
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1783,14 +1801,14 @@ Youtube Channel
 Youtube Subscribers
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1801,14 +1819,31 @@ Youtube Subscribers
 Instagram Reel Price
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Photo Link
+</th>
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1819,14 +1854,14 @@ Instagram Reel Price
 Instagram Story Price
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1837,14 +1872,14 @@ Instagram Story Price
 Instagram Post Price
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1855,14 +1890,14 @@ Instagram Post Price
 Dedicated Youtube Video
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1873,14 +1908,14 @@ Dedicated Youtube Video
 Integrated Youtube Video
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1891,14 +1926,14 @@ Integrated Youtube Video
 Dedicated Shorts
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1908,14 +1943,14 @@ Dedicated Shorts
 ">
 Integrated Shorts
 </th>
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1923,17 +1958,34 @@ Integrated Shorts
     border-slate-200
     whitespace-nowrap
 ">
-Bio
+Deal Type
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Speaking Video
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1944,32 +1996,14 @@ Bio
 TV/Movies Celebrity
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Celebrity Type
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1980,14 +2014,32 @@ Celebrity Type
 Available Platforms
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Celebrity Type
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -1998,14 +2050,14 @@ Available Platforms
 Amazon Reviews
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2013,17 +2065,16 @@ Amazon Reviews
     border-slate-200
     whitespace-nowrap
 ">
-Fetched From Brand
+Platform
 </th>
-
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2034,32 +2085,14 @@ Fetched From Brand
 Fetched For Brand
 </th>
 
-
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Platform
-</th>
-
-
-<th  className="
-    px-4
-    py-4
-    text-left
-    text-xs
-    font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2070,12 +2103,31 @@ Platform
 Fetched Date
 </th>
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Fetched From Brand
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2086,13 +2138,33 @@ Fetched Date
 Timestamp
 </th>
 
+
 <th  className="
+sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+Bio
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2104,12 +2176,13 @@ InflunexaUserId
 </th>
 
  <th  className="
+ sticky top-0 z-30
     px-4
     py-4
     text-left
-    text-xs
+    text-sm
     font-bold
-    uppercase
+    
     tracking-wider
     text-slate-500
     bg-slate-50
@@ -2179,9 +2252,6 @@ key={creator._id}
 "
 >
  <td className="
-    sticky
-    left-0
-    z-20
     px-4
     py-5
     text-sm
@@ -2196,6 +2266,29 @@ key={creator._id}
   ">
     {(page - 1) * limit + index + 1}
   </td>
+
+<td
+  className="
+    sticky
+    left-0
+    z-20
+    w-[310px]
+    min-w-[310px]
+    max-w-[310px]
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    bg-white
+    border-b
+    border-r
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+  "
+>
+  {creator.fullName || "-"}
+</td>
 
 <td className="
     px-4
@@ -2268,6 +2361,148 @@ key={creator._id}
 ">
   {creator.exactFollowers || "-"}
 </td>
+<td
+  className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+  "
+>
+  {creator.phoneNumber ? (
+    <div className="group flex items-center gap-2">
+      <span>{creator.phoneNumber}</span>
+
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(creator.phoneNumber);
+
+          setCopiedPhone(creator._id);
+
+          setTimeout(() => {
+            setCopiedPhone(null);
+          }, 1500);
+        }}
+        className="
+          opacity-0
+          group-hover:opacity-100
+          transition-opacity
+          duration-200
+          text-xs
+          text-blue-600
+          hover:text-blue-800
+          font-medium
+          cursor-pointer
+        "
+        title="Copy phone number"
+      >
+        {copiedPhone === creator._id ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
+
+<td
+  className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+  "
+>
+  {creator.whatsappNumber ? (
+    <div className="group flex items-center gap-2">
+      <span>{creator.whatsappNumber}</span>
+
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(creator.whatsappNumber);
+
+          setCopiedWhatsapp(creator._id);
+
+          setTimeout(() => {
+            setCopiedWhatsapp(null);
+          }, 1500);
+        }}
+        className="
+          opacity-0
+          group-hover:opacity-100
+          transition-opacity
+          duration-200
+          text-xs
+          text-blue-600
+          hover:text-blue-800
+          font-medium
+          cursor-pointer
+        "
+        title="Copy WhatsApp number"
+      >
+        {copiedWhatsapp === creator._id ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
+<td
+  className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+  "
+>
+  {creator.email ? (
+    <div className="group flex items-center gap-2">
+      <span>{creator.email}</span>
+
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(creator.email);
+
+          setCopiedEmail(creator._id);
+
+          setTimeout(() => {
+            setCopiedEmail(null);
+          }, 1500);
+        }}
+        className="
+          opacity-0
+          group-hover:opacity-100
+          transition-opacity
+          duration-200
+          text-xs
+          text-blue-600
+          hover:text-blue-800
+          font-medium
+          cursor-pointer
+        "
+        title="Copy email"
+      >
+        {copiedEmail === creator._id ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
 
 <td className="
     px-4
@@ -2281,7 +2516,6 @@ key={creator._id}
 ">
   {creator.categories?.join(", ") || "-"}
 </td>
-
 <td className="
     px-4
     py-5
@@ -2292,7 +2526,7 @@ key={creator._id}
     whitespace-nowrap
     align-middle
 ">
-  {creator.phoneNumber || "-"}
+  {creator.campaignType?.join(", ") || "-"}
 </td>
 
 <td className="
@@ -2305,35 +2539,8 @@ key={creator._id}
     whitespace-nowrap
     align-middle
 ">
-  {creator.whatsappNumber || "-"}
+  {creator.influencerType}
 </td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.fullName || "-"}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.email || "-"}
-</td>
-
 <td className="
     px-4
     py-5
@@ -2370,73 +2577,8 @@ key={creator._id}
     whitespace-nowrap
     align-middle
 ">
-  {creator.influencerType}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.campaignType?.join(", ") || "-"}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.whatKindOfDealDoYouParticipateIn || "-"}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
   {creator.languages?.join(", ") || "-"}
 </td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-  text-blue-600
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-    hover:underline
-">
-  {creator.speakingVideoLink ? (
-    <a
-      href={creator.speakingVideoLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:underline"
-    >
-    Speaking Video link
-    </a>
-  ) : (
-    "-"
-  )}
-</td>
-
 <td className="
   px-4
   py-5
@@ -2524,32 +2666,6 @@ key={creator._id}
 ">
   {creator.pincode || "-"}
 </td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-  text-blue-600
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-    hover:underline
-">
-  {creator.photoLink ? (
-    <a
-      href={creator.photoLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:underline"
-    >
-      View Photo
-    </a>
-  ) : (
-    "-"
-  )}
-</td>
-
 <td className="
     px-4
     py-5
@@ -2604,7 +2720,6 @@ key={creator._id}
 ">
   {creator.youtubeSubscribersRange || "-"}
 </td>
-
 <td className="
     px-4
     py-5
@@ -2616,6 +2731,30 @@ key={creator._id}
     align-middle
 ">
   {creator.commercialsFor1InstagramReel || "-"}
+</td>
+<td className="
+    px-4
+    py-5
+    text-sm
+  text-blue-600
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+    hover:underline
+">
+  {creator.photoLink ? (
+    <a
+      href={creator.photoLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      View Photo
+    </a>
+  ) : (
+    "-"
+  )}
 </td>
 
 <td className="
@@ -2669,7 +2808,6 @@ key={creator._id}
 ">
   {creator.commercialsFor1IntegratedYouTubeVideo || "-"}
 </td>
-
 <td cclassName="
     px-4
     py-5
@@ -2695,29 +2833,44 @@ key={creator._id}
 ">
   {creator.commercialsFor1IntegratedYouTubeShortsVideo || "-"}
 </td>
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.whatKindOfDealDoYouParticipateIn || "-"}
+</td>
+
 
 
 <td className="
-  px-4
-  py-5
-  text-sm
-  text-slate-700
-  border-b
-  border-slate-200
-  align-top
-  w-[350px]
-  max-w-[350px]
+    px-4
+    py-5
+    text-sm
+  text-blue-600
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+    hover:underline
 ">
-  <div className="
-    max-w-[350px]
-    whitespace-normal
-    break-words
-    leading-6
-    line-clamp-3
-    overflow-hidden
-  ">
-    {creator.bio || "-"}
-  </div>
+  {creator.speakingVideoLink ? (
+    <a
+      href={creator.speakingVideoLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+    Speaking Video link
+    </a>
+  ) : (
+    "-"
+  )}
 </td>
 
 <td className="
@@ -2732,7 +2885,6 @@ key={creator._id}
 ">
   {creator.areYouATvMoviesOttCelebrity || "-"}
 </td>
-
 <td className="
     px-4
     py-5
@@ -2745,7 +2897,6 @@ key={creator._id}
 ">
   {creator.typeOfCeleb || "-"}
 </td>
-
 <td className="
     px-4
     py-5
@@ -2758,7 +2909,6 @@ key={creator._id}
 ">
   {creator.whatAllPlatformsAreYouAvailableOn?.join(", ") || "-"}
 </td>
-
 <td className="
     px-4
     py-5
@@ -2770,6 +2920,43 @@ key={creator._id}
     align-middle
 ">
   {creator.howManyAmazonReviewsYouDoPerMonth || "-"}
+</td>
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.platform || "-"}
+</td>
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.fetchedForBrand || "-"}
+</td>
+
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.fetchedDate || "-"}
 </td>
 
 <td className="
@@ -2795,46 +2982,55 @@ key={creator._id}
     whitespace-nowrap
     align-middle
 ">
-  {creator.fetchedForBrand || "-"}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.platform || "-"}
-</td>
-
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.fetchedDate || "-"}
-</td>
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
   {creator.timestamp || "-"}
 </td>
+<td
+  className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    align-top
+    w-[350px]
+    max-w-[350px]
+  "
+>
+  <div className="max-w-[350px]">
+    {creator.bio ? (
+      <>
+        <div
+          className={`whitespace-normal break-words leading-6 ${
+            expandedBios[creator._id]
+              ? ""
+              : "line-clamp-2 overflow-hidden"
+          }`}
+        >
+          {creator.bio}
+        </div>
+
+        {creator.bio.length > 80 && (
+          <button
+            type="button"
+            onClick={() =>
+              setExpandedBios((prev) => ({
+                ...prev,
+                [creator._id]: !prev[creator._id],
+              }))
+            }
+            className="mt-1 text-blue-600 hover:text-blue-800 font-medium text-xs"
+          >
+            {expandedBios[creator._id] ? "See Less" : "See More"}
+          </button>
+        )}
+      </>
+    ) : (
+      "-"
+    )}
+  </div>
+</td>
+
 <td className="
     px-4
     py-5

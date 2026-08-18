@@ -5,7 +5,7 @@ import Papa from "papaparse";
 import { saveAs } from "file-saver";
 
 function UploadCreatorsCSV(){
-
+const [expandedReasons, setExpandedReasons] = useState({});
   const [file,setFile] = useState(null);
   const [loading,setLoading] = useState(false);
 const [summary, setSummary] = useState({
@@ -429,6 +429,12 @@ const downloadFailedCSV = () => {
   saveAs(blob, "Failed_Creators.csv");
 };
 
+const toggleReason = (index) => {
+  setExpandedReasons((prev) => ({
+    ...prev,
+    [index]: !prev[index],
+  }));
+};
 
 return(
 <div className="
@@ -523,9 +529,9 @@ return(
 
         <label className="
           block
-          text-xs
+          text-sm
           font-bold
-          uppercase
+          
           tracking-wide
           text-slate-500
           mb-2
@@ -890,9 +896,8 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -904,9 +909,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -918,9 +923,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -932,9 +937,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -946,9 +951,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -960,9 +965,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -974,9 +979,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -988,9 +993,9 @@ return(
   px-4
   py-4
   text-left
-  text-xs
+  text-sm
   font-bold
-  uppercase
+  
   tracking-wider
   text-slate-500
   bg-slate-50
@@ -1115,20 +1120,69 @@ return(
 
 
       {/* REASON */}
-      <td className="
-        px-4
-        py-4
-        text-sm
-        text-slate-600
-        max-w-[350px]
-      ">
+     <td
+  className="
+    px-4
+    py-4
+    text-sm
+    text-slate-600
+    max-w-[350px]
+    align-top
+  "
+>
+  <div className="max-w-[350px]">
+    {expandedReasons[index] ? (
+      <>
+        <div className="whitespace-normal break-words">
+          {item.reason || "-"}
+        </div>
+
+        {item.reason && item.reason.length > 100 && (
+          <button
+            type="button"
+            onClick={() => toggleReason(index)}
+            className="
+              mt-1
+              text-xs
+              font-semibold
+              text-blue-600
+              hover:text-blue-800
+              hover:underline
+            "
+          >
+            See Less
+          </button>
+        )}
+      </>
+    ) : (
+      <>
         <div
           className="truncate"
           title={item.reason || ""}
         >
           {item.reason || "-"}
         </div>
-      </td>
+
+        {item.reason && item.reason.length > 100 && (
+          <button
+            type="button"
+            onClick={() => toggleReason(index)}
+            className="
+              mt-1
+              text-xs
+              font-semibold
+              text-blue-600
+              hover:text-blue-800
+              hover:underline
+            "
+          >
+            See More
+          </button>
+        )}
+      </>
+    )}
+  </div>
+</td>
 
     </tr>
 

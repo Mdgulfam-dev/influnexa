@@ -31,15 +31,16 @@ function MultiSelectDropdown({
   };
 
   return (
-    <div className="relative">
+    <div className={`relative ${open ? "z-[999999]" : "z-10"}`}>
       <label className="
         block
         mb-2
-        text-xs
+        text-sm
         font-bold
-        uppercase
+        
         tracking-wide
         text-slate-500
+        
       ">
         {label}
       </label>
@@ -67,11 +68,13 @@ function MultiSelectDropdown({
           items-center
           justify-between
           gap-2
+          
+          
         "
       >
         <div className="flex flex-wrap gap-1.5 flex-1">
           {value.length === 0 ? (
-            <span className="text-slate-400">
+            <span className="text-neutral-500 font-semibold ">
               {placeholder}
             </span>
           ) : (
@@ -89,6 +92,7 @@ function MultiSelectDropdown({
                   text-slate-700
                   text-xs
                   font-medium
+                  
                 "
               >
                 {item}
@@ -122,7 +126,9 @@ function MultiSelectDropdown({
         <div
           className="
             absolute
-            z-50
+             left-0
+      top-full
+            z-[999999]
             mt-2
             w-full
             bg-white
@@ -130,7 +136,8 @@ function MultiSelectDropdown({
             border-slate-200
             rounded-xl
             shadow-xl
-            overflow-hidden
+            overflow-visible
+            
           "
         >
           {/* HEADER */}
@@ -143,6 +150,7 @@ function MultiSelectDropdown({
             border-b
             border-slate-100
             bg-slate-50
+            
           ">
             <span className="
               text-xs
@@ -245,7 +253,8 @@ const [filterOptions, setFilterOptions] = useState({
   const [csvBrands, setCsvBrands] = useState([]);
 const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
-
+const [copiedOfficialEmail, setCopiedOfficialEmail] = useState(null);
+const [copiedMobile, setCopiedMobile] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [totalPages, setTotalPages] = useState(1);
@@ -812,7 +821,7 @@ const getStatusDetails = (status) => {
   switch (status) {
     case "Pending":
       return {
-        day: "Day 0",
+        day: "-",
         outreach: "Lead added, no message sent",
       };
 
@@ -926,7 +935,6 @@ const getReminder = (brand) => {
   const status = brand.status || "Pending";
 
   const targetDays = {
-    Pending: 0,
     Reachout: 1,
     "Followup-1": 3,
     "Followup-2": 7,
@@ -1140,9 +1148,11 @@ const getReminder = (brand) => {
     FILTER SECTION
 ======================================== */}
 
-<div className="px-7 pb-6">
+<div className=" relative z-[100] px-7 pb-6">
 
   <div className="
+   relative
+    z-[100]
     rounded-[22px]
     border
     border-slate-200
@@ -1209,12 +1219,15 @@ const getReminder = (brand) => {
     {/* FILTER GRID */}
 
     <div className="
-      grid
-      grid-cols-1
-      sm:grid-cols-2
-      lg:grid-cols-4
-      gap-4
-    ">
+    relative
+    z-0
+    grid
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-4
+    gap-4
+  "
+  >
 
 
       {/* COMPANY NAME */}
@@ -1224,9 +1237,8 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
           tracking-wide
           text-slate-500
         ">
@@ -1256,6 +1268,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1269,9 +1282,8 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
           tracking-wide
           text-slate-500
         ">
@@ -1301,6 +1313,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1308,6 +1321,7 @@ const getReminder = (brand) => {
 
 
       {/* PROSPECTS */}
+
 <MultiSelectDropdown
   label="Prospects"
   options={filterOptions.prospects}
@@ -1326,9 +1340,8 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
           tracking-wide
           text-slate-500
         ">
@@ -1358,6 +1371,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1371,11 +1385,12 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+          
           tracking-wide
           text-slate-500
+          
         ">
           Official Email
         </label>
@@ -1403,6 +1418,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1416,9 +1432,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+          
           tracking-wide
           text-slate-500
         ">
@@ -1448,6 +1464,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1461,9 +1478,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+          
           tracking-wide
           text-slate-500
         ">
@@ -1493,6 +1510,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1506,9 +1524,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+      
           tracking-wide
           text-slate-500
         ">
@@ -1538,6 +1556,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1551,9 +1570,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+        
           tracking-wide
           text-slate-500
         ">
@@ -1583,6 +1602,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1596,9 +1616,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+        
           tracking-wide
           text-slate-500
         ">
@@ -1628,6 +1648,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1635,6 +1656,7 @@ const getReminder = (brand) => {
 
 
       {/* AGE OF COMPANY */}
+
 <MultiSelectDropdown
   label="Age Of Company"
   options={filterOptions.ageOfCompany}
@@ -1646,6 +1668,7 @@ const getReminder = (brand) => {
 />
 
 
+
       {/* WEBSITE */}
 
       <div>
@@ -1653,9 +1676,9 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-xs
+          text-sm
           font-bold
-          uppercase
+          
           tracking-wide
           text-slate-500
         ">
@@ -1685,6 +1708,7 @@ const getReminder = (brand) => {
             focus:border-slate-500
             focus:ring-2
             focus:ring-slate-200
+            placeholder:font-semibold
           "
         />
 
@@ -1835,81 +1859,218 @@ const getReminder = (brand) => {
 HEADER
 ======================================== */}
 
-<thead
-  className="
-    bg-slate-50
-    sticky
-    top-0
-    z-20
-  "
->
+<thead className="bg-slate-50">
   <tr>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* SL NO */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       SL No.
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* COMPANY NAME - FIXED */}
+    <th
+      className="
+        sticky
+        left-0
+        top-0
+        z-50
+        w-[220px]
+        min-w-[220px]
+        max-w-[220px]
+        px-4
+        py-4
+        text-left
+        text-[14px]
+        font-bold
+        tracking-wider
+        text-slate-500
+        bg-slate-50
+        border-r
+        border-b
+        border-slate-200
+        whitespace-nowrap
+      "
+    >
       Company Name
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* FULL NAME */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       Full Name
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* PROSPECTS */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       ProsPects
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* EMAIL */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       Email Id
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* OFFICIAL EMAIL */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       Official Email Id
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* MOBILE */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       Mobile Number
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* LINKEDIN */}
+    <th
+      className="
+        sticky
+        top-0
+        z-30
+        px-4
+        py-3
+        text-left
+        whitespace-nowrap
+        font-semibold
+        text-slate-500
+        bg-slate-50
+        border-b
+        border-slate-200
+      "
+    >
       Linkedin Profile
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* CITY */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       City
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* ADDRESS */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Address
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* DIRECTORS */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Directors
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* AGE */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Age of the Company
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* WEBSITE */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Website URL
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* DATA TYPE */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Data Type
     </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* STATUS */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Status
     </th>
 
-<th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
-  Reminder
-</th>
+    {/* REMINDER */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
+      Reminder
+    </th>
 
-    <th className="px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-700 border-b border-slate-200">
+    {/* ACTION */}
+    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Action
     </th>
 
@@ -1947,15 +2108,23 @@ HEADER
         {/* COMPANY */}
         <td
           className="
-            w-[180px]
-            px-4
-            py-3
-            text-left
-            whitespace-nowrap
-            align-middle
-            font-semibold
-            text-slate-800
-          "
+    sticky
+    left-0
+    z-20
+    w-[220px]
+    min-w-[220px]
+    max-w-[220px]
+    px-4
+    py-3
+    text-left
+    whitespace-nowrap
+    align-middle
+    font-semibold
+    text-slate-800
+    bg-white
+    border-r
+    border-slate-200
+  "
         >
           {brand.companyName || "-"}
         </td>
@@ -1979,20 +2148,86 @@ HEADER
         </td>
 
 
-        {/* OFFICIAL EMAIL */}
-        <td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.officialEmail || "-"}
-        </td>
+       {/* OFFICIAL EMAIL */}
+<td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+  {brand.officialEmail ? (
+    <div className="group flex items-center gap-2">
+      <span>{brand.officialEmail}</span>
+
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(brand.officialEmail);
+
+          setCopiedOfficialEmail(brand._id);
+
+          setTimeout(() => {
+            setCopiedOfficialEmail(null);
+          }, 1500);
+        }}
+        className="
+          opacity-0
+          group-hover:opacity-100
+          transition-opacity
+          duration-200
+          text-xs
+          text-blue-600
+          hover:text-blue-800
+          font-medium
+          cursor-pointer
+        "
+        title="Copy official email"
+      >
+        {copiedOfficialEmail === brand._id ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
 
 
         {/* MOBILE */}
-        <td className="w-[170px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.mobileNumber || "-"}
-        </td>
+        {/* MOBILE NUMBER */}
+<td className="w-[180px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+  {brand.mobileNumber ? (
+    <div className="group flex items-center gap-2">
+      <span>{brand.mobileNumber}</span>
 
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(brand.mobileNumber);
+
+          setCopiedMobile(brand._id);
+
+          setTimeout(() => {
+            setCopiedMobile(null);
+          }, 1500);
+        }}
+        className="
+          opacity-0
+          group-hover:opacity-100
+          transition-opacity
+          duration-200
+          text-xs
+          text-blue-600
+          hover:text-blue-800
+          font-medium
+          cursor-pointer
+        "
+        title="Copy mobile number"
+      >
+        {copiedMobile === brand._id ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
 
         {/* LINKEDIN */}
-       <td className="w-[360px] min-w-[360px] max-w-[360px] px-4 py-3 text-left align-middle">
+       <td className="w-[360px] min-w-[360px] max-w-[360px] px-4 py-3 text-left align-middle text-blue-600 ">
   {brand.linkedinProfile ? (
     <a
       href={
@@ -2038,7 +2273,7 @@ HEADER
 
 
         {/* WEBSITE */}
-        <td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+  <td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
   {brand.websiteUrl ? (
     <a
       href={
@@ -2048,7 +2283,8 @@ HEADER
       }
       target="_blank"
       rel="noopener noreferrer"
-      className="text-blue-600 hover:underline"
+      className="block max-w-[330px] break-all !text-blue-600 hover:!text-blue-800"
+      title={brand.websiteUrl}
     >
       {brand.websiteUrl}
     </a>

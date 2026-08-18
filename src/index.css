@@ -2345,12 +2345,12 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
 
 .admin-table th {
   color: #64748b;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 950;
   letter-spacing: 0.08em;
   padding: 12px;
   text-align: left;
-  text-transform: uppercase;
+  
 }
 
 .admin-table td {
@@ -2421,16 +2421,118 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   padding: 14px;
   backdrop-filter: blur(14px);
 }
+.admin-registration-toolbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(260px, 1fr));
+  gap: 18px 16px;
 
+  width: 100%;
+  box-sizing: border-box;
+
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+/* Filter labels */
+.admin-registration-toolbar > label {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Search input specifically */
+.admin-registration-toolbar > label:first-child {
+  min-width: 360px;
+}
+
+/* Inputs and selects */
+.admin-registration-toolbar input,
+.admin-registration-toolbar select {
+  width: 100%;
+  min-width: 0;
+  height: 58px;
+
+  box-sizing: border-box;
+}
+
+/* IMPORTANT:
+   Do NOT truncate the placeholder */
+.admin-registration-toolbar input::placeholder {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Search placeholder */
+.admin-registration-toolbar > label:first-child input {
+  min-width: 360px;
+}
+
+/* Desktop */
+@media (min-width: 1400px) {
+  .admin-registration-toolbar {
+    grid-template-columns:
+      minmax(360px, 1.4fr)
+      minmax(220px, 1fr)
+      minmax(220px, 1fr)
+      minmax(220px, 1fr);
+  }
+
+  .admin-registration-toolbar > label:first-child,
+  .admin-registration-toolbar > label:first-child input {
+    min-width: 360px;
+  }
+}
+
+/* Normal desktop */
+@media (min-width: 1000px) and (max-width: 1399px) {
+  .admin-registration-toolbar {
+    grid-template-columns:
+      minmax(340px, 1.4fr)
+      repeat(3, minmax(200px, 1fr));
+  }
+
+  .admin-registration-toolbar > label:first-child,
+  .admin-registration-toolbar > label:first-child input {
+    min-width: 340px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 700px) and (max-width: 999px) {
+  .admin-registration-toolbar {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .admin-registration-toolbar > label:first-child,
+  .admin-registration-toolbar > label:first-child input {
+    min-width: 0;
+  }
+}
+
+/* Mobile */
+@media (max-width: 699px) {
+  .admin-registration-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-registration-toolbar > label:first-child,
+  .admin-registration-toolbar > label:first-child input {
+    min-width: 0;
+  }
+}
 .admin-registration-toolbar label {
   display: grid;
   gap: 6px;
   min-width: 0;
   color: #64748b;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 950;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  
 }
 
 .admin-registration-toolbar input,
@@ -2480,7 +2582,85 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   font-size: 13px;
   font-weight: 950;
 }
+.admin-registration-pager {
+  width: 100%;
+  min-height: 72px;
+  margin-top: 20px;
+  padding: 16px 20px;
 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  box-sizing: border-box;
+
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  position: relative;
+  z-index: 20;
+
+  overflow: visible;
+}
+
+.admin-pager-info {
+  flex: 0 0 auto;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.admin-pager-info strong {
+  color: #111827;
+}
+
+.admin-pager-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.admin-pager-controls button {
+  min-width: 90px;
+  height: 40px;
+  padding: 0 14px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #fff;
+  color: #111827;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.admin-pager-controls button:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.admin-pager-controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-pager-page {
+  min-width: 100px;
+  text-align: center;
+  white-space: nowrap;
+
+  color: #64748b;
+  font-size: 14px;
+}
+
+.admin-pager-page strong {
+  color: #111827;
+}
 .admin-registration-toolbar button.admin-filter-reset { border: 1px solid #cbd5e1; background: #ffffff; color: #475569; }
 .admin-registration-toolbar button.admin-filter-reset:hover { border-color: #94a3b8; background: #f8fafc; }
 
@@ -2509,22 +2689,183 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
 .admin-registration-table td small { margin-top: 4px; color: #64748b; font-size: 12px; }
 .admin-registration-table select { width: 100%; min-width: 112px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; padding: 8px; }
 
-.admin-full-data-table-wrap { overflow: auto; max-height: calc(100vh - 310px); border: 1px solid #e2e8f0; border-radius: 18px; }
-.admin-full-data-table { width: 7200px; min-width: 7200px; table-layout: fixed; border: 0; border-radius: 0; }
+.admin-full-data-table-wrap {  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 100%;
+
+  margin-top: 24px;
+
+  overflow-x: auto;
+  overflow-y: visible;
+
+  clear: both; }
+.admin-full-data-table {  width: max-content;
+  min-width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  table-layout: auto; }
 .admin-full-data-table th { position: sticky; top: 0; z-index: 1; white-space: nowrap; }
-.admin-full-data-table th, .admin-full-data-table td { box-sizing: border-box; width: 250px; min-width: 250px; max-width: 250px; }
+.admin-full-data-table th, .admin-full-data-table td {  vertical-align: top;
+  box-sizing: border-box;}
+  .admin-full-data-table thead th {
+  position: static;
+
+  white-space: nowrap;
+
+  background: #f8fafc;
+
+  padding: 16px;
+}
+
+/* Data columns */
+.admin-full-data-table tbody td {
+  min-width: 180px;
+  max-width: 350px;
+
+  padding: 20px 16px;
+
+  white-space: normal;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* Actions */
+.admin-full-data-table .admin-actions-column {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+
+  white-space: normal;
+}
+
+/* ================================
+   FILTER SECTION
+================================ */
+
+.admin-registration-toolbar {
+  position: relative;
+  z-index: 5;
+
+  width: 100%;
+  max-width: 100%;
+
+  height: auto;
+  min-height: 0;
+
+  margin-bottom: 24px;
+
+  overflow: visible;
+
+  box-sizing: border-box;
+}
+
+.admin-registration-toolbar > label {
+  min-width: 0;
+  width: 100%;
+
+  box-sizing: border-box;
+}
+
+.admin-registration-toolbar input,
+.admin-registration-toolbar select {
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+}
+
+/* Buttons should stay above table */
+.admin-registration-toolbar button,
+.admin-registration-toolbar span {
+  position: relative;
+  z-index: 6;
+}
 .admin-full-data-table th.admin-actions-column, .admin-full-data-table td.admin-actions-column { width: 520px; min-width: 520px; max-width: 520px; }
 .admin-full-data-table th:first-child, .admin-full-data-table td:first-child { position: sticky; left: 0; background: #ffffff; }
 .admin-full-data-table th:first-child { z-index: 3; background: #f8fafc; }
 .admin-full-data-table td:first-child { z-index: 2; box-shadow: 8px 0 12px -12px rgba(15, 23, 42, 0.45); }
-.admin-table-cell-value { display: flex; min-width: 0; align-items: center; gap: 7px; }
-.admin-table-cell-content { min-width: 0; overflow: hidden; color: #334155; text-overflow: ellipsis; white-space: nowrap; }
-.admin-table-cell-content a { color: #4f46e5; font-weight: 800; text-decoration: none; }
+.admin-table-cell-value {  width: 100%; min-width: 0;
+  max-width: 100%;
+  overflow: hidden; }
+.admin-table-cell-content {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;}
+  .admin-table-cell-content.collapsed {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* After See More */
+.admin-table-cell-content.expanded {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.admin-table-cell-value:has(.expanded) {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.admin-table-cell-content.expanded {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+.admin-table-cell-content a {  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;}
 .admin-table-cell-value.is-expanded { align-items: flex-start; }
 .admin-table-cell-value.is-expanded .admin-table-cell-content { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
 .admin-table-cell-value.cell-categories .admin-table-cell-content { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
-.admin-table-more { flex: 0 0 auto; border: 0; background: transparent; color: #0f766e; cursor: pointer; font-size: 11px; font-weight: 900; padding: 0; white-space: nowrap; }
-.admin-profile-links { display: inline-flex; gap: 8px; min-width: max-content; }
+.admin-table-more { display: inline-block;
+  margin-top: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer; }
+  .admin-table-more:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.admin-profile-links { width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal !important;
+  overflow: visible !important;}
+  .admin-profile-links a {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-all !important;
+  text-overflow: clip !important;
+}
 .admin-registration-status-buttons { display: flex; flex-wrap: nowrap; gap: 6px; max-width: 100%; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
 .admin-registration-status-buttons button { flex: 0 0 auto; min-height: 42px; border: 1px solid transparent; border-radius: var(--admin-button-radius, 14px); cursor: pointer; font-size: 13px; font-weight: 900; line-height: 1.2; padding: 10px 14px; white-space: nowrap; transition: transform 180ms ease, background 180ms ease; }
 .admin-registration-status-buttons button:hover { transform: translateY(-1px); }
