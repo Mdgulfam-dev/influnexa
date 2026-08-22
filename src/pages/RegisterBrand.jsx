@@ -146,7 +146,7 @@ export default function RegisterBrand() {
           <form className={`register-card registration-form ${hasValidationAttempt ? "has-validation-attempt" : ""}`} onSubmit={handleSubmit} onInvalidCapture={() => setHasValidationAttempt(true)}>
             <div className="form-section-title">Company and contact</div>
             <div className="form-grid">
-              <label>Contact name *<input name="contactName" value={form.contactName} onChange={updateField} required /></label>
+              <label>Full name *<input name="contactName" value={form.contactName} onChange={updateField} required /></label>
               <label>Work email *<input type="email" name="email" value={form.email} onChange={updateField} required /></label>
               <label>Phone / WhatsApp<input name="phone" value={form.phone} onChange={updateField} /></label>
               <label>Company name *<input name="companyName" value={form.companyName} onChange={updateField} required /></label>

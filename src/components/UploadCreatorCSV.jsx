@@ -946,7 +946,7 @@ return(
   border-b
   border-slate-200
   whitespace-nowrap
-">Mobile</th>
+">Phone</th>
 <th className="
   px-4
   py-4

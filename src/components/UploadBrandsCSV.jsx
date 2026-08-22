@@ -469,8 +469,8 @@ const [expandedRows, setExpandedRows] = useState({});
           "Full Name":
             item.fullName || "",
 
-          "ProsPects":
-            item.prospects || "",
+          "designation":
+            item.designation || "",
 
           "Email Id":
             item.email || "",

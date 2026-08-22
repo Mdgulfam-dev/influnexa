@@ -622,20 +622,35 @@ setPage(1);
 
 
 const inputClass = `
+  box-border
   w-full
-  h-14
-  px-4
-  bg-white
+  h-[46px]
+  min-h-[46px]
+  max-h-[46px]
+  px-[12px]
+  py-[10px]
+
   border
   border-slate-300
-  rounded-xl
-  text-slate-700
-  placeholder:text-slate-400
+  rounded-[14px]
+
+  bg-white
+
+  text-[#0f172a]
+  text-[13px]
+  font-[850]
+
+  placeholder:text-[#94a3b8]
+  placeholder:text-[13px]
+  placeholder:font-[850]
+  placeholder:opacity-100
+
   outline-none
   transition
-  focus:border-slate-500
+
+  focus:border-[#cbd5e1]
   focus:ring-2
-  focus:ring-slate-200
+  focus:ring-[rgba(226,232,240,0.55)]
 `;
 
 const tableHeaderClass = `
@@ -665,62 +680,73 @@ const tableCellClass = `
 `;
 
 const selectStyles = {
-  control: (base, state) => ({
-    ...base,
-    minHeight: "44px",
-    height: "44px",
-    maxHeight: "44px",
-    borderRadius: "12px",
+ control: (base, state) => ({
+  ...base,
 
-    borderColor: state.isFocused
-      ? "#cbd5e1"
-      : "#e2e8f0",
+  boxSizing: "border-box",
+  width: "100%",
 
-    borderWidth: "1px",
+  minHeight: "46px",
+  height: "46px",
+  maxHeight: "46px",
 
-    boxShadow: state.isFocused
-      ? "0 0 0 2px rgba(226, 232, 240, 0.6)"
-      : "none",
+  borderRadius: "14px",
 
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    overflow: "hidden",
+  border: "1px solid #cbd5e1",
 
-    "&:hover": {
-      borderColor: "#cbd5e1",
-    },
-  }),
+  backgroundColor: "#ffffff",
 
-  valueContainer: (base) => ({
-    ...base,
-    height: "44px",
-    minHeight: "44px",
-    maxHeight: "44px",
-    padding: "2px 12px",
+  color: "#0f172a",
 
-    display: "flex",
-    flexWrap: "nowrap",
-    alignItems: "center",
+  fontSize: "13px",
+  fontWeight: 850,
 
-    overflowX: "auto",
-    overflowY: "hidden",
+  boxShadow: state.isFocused
+    ? "0 0 0 2px rgba(226, 232, 240, 0.55)"
+    : "none",
 
-    flex: "1 1 auto",
-    scrollbarWidth: "none",
+  outline: "none",
 
-    "&::-webkit-scrollbar": {
-      display: "none",
-    },
-  }),
+  alignItems: "center",
+
+  overflow: "hidden",
+
+  "&:hover": {
+    borderColor: "#cbd5e1",
+  },
+}),
+
+ valueContainer: (base) => ({
+  ...base,
+
+  height: "46px",
+  minHeight: "46px",
+  maxHeight: "46px",
+
+  padding: "2px 9px",
+
+  display: "flex",
+  flexWrap: "nowrap",
+  alignItems: "center",
+
+  overflowX: "auto",
+  overflowY: "hidden",
+
+  flex: "1 1 auto",
+  scrollbarWidth: "none",
+
+  "&::-webkit-scrollbar": {
+    display: "none",
+  },
+}),
 
   placeholder: (base) => ({
-    ...base,
-    color: "#A3A3A3",
-    fontSize: "14px",
-    fontWeight: "600",
-    whiteSpace: "nowrap",
-    
-  }),
+  ...base,
+  color: "#94a3b8",
+  fontSize: "13px",
+  fontWeight: 850,
+  whiteSpace: "nowrap",
+}),
 
   input: (base) => ({
     ...base,
@@ -1119,7 +1145,15 @@ options:filterOptions.languages
 
   <div key={field.name}>
 
-    <label className="mb-1 block text-[14px] font-bold text-slate-500 ">
+    <label className="
+  grid
+  gap-[6px]
+  min-w-0
+  text-slate-500
+  text-[13px]
+  font-[950]
+  tracking-[0.06em]
+">
       {field.label}
     </label>
 
@@ -1196,24 +1230,8 @@ options:filterOptions.languages
     name={field.name}
     type={field.type}
     placeholder={field.placeholder}
-    className="
-  w-full
-  h-11
-  px-4
-  bg-white
-  border
-  border-slate-200
-  rounded-xl
-  text-slate-700
-  placeholder:text-neutral-400
-  outline-none
-  transition
-  focus:border-slate-300
-  focus:ring-2
-  focus:ring-slate-100
-  placeholder:text-[14px]
-   placeholder:font-bold
-"
+    className={inputClass}
+  
     value={filters[field.name] || ""}
 
     onChange={(e) => {
@@ -1368,11 +1386,11 @@ Loading CSV creators...
     text-slate-500
     bg-slate-50
     border-b
-    border-r
+    
     border-slate-200
     whitespace-nowrap
   ">
-      S.No.
+      SL.No.
     </th>
 
 
@@ -2259,7 +2277,7 @@ key={creator._id}
     text-slate-700
     bg-white
     border-b
-    border-r
+   
     border-slate-200
     whitespace-nowrap
     align-middle
@@ -2808,7 +2826,7 @@ key={creator._id}
 ">
   {creator.commercialsFor1IntegratedYouTubeVideo || "-"}
 </td>
-<td cclassName="
+<td className="
     px-4
     py-5
     text-sm

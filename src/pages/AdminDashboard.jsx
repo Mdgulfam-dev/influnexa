@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { FaSyncAlt } from "react-icons/fa";
 import {
   createBlogPost,
   createAdminUser,
@@ -48,7 +49,7 @@ const brandStatuses = [
   "Closed",
 ];
 const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
-const testimonialStatuses = ["pending", "approved", "rejected"];
+const testimonialStatuses = ["Pending", "Approved", "Rejected"];
 const registrationPageSize = 25;
 
 const legacyBrandStatusLabels = {
@@ -59,7 +60,7 @@ const legacyBrandStatusLabels = {
 };
 
 const brandDetailFields = [
-  ["Contact Name", "contactName"],
+  ["Full Name", "fullName"],
   ["Email", "email", "email"],
   ["Phone", "phone"],
   ["Company Name", "companyName"],
@@ -90,14 +91,14 @@ const influencerDetailFields = [
   ["Email", "email", "email"],
   ["Phone", "phone"],
   ["Country", "country"],
-  ["State / Province", "state"],
+  ["State", "state"],
   ["City", "city"],
   ["Languages", "languages"],
   ["Categories", "categories"],
   ["Primary Platform", "primaryPlatform"],
-  ["Primary Profile", "primaryProfile", "url"],
+  ["Primary Profile", "primaryProfile", "profiles"],
   ["Other Profiles", "otherProfiles", "profiles"],
-  ["Followers", "followers"],
+  ["Followers", "followers","followers"],
   ["Engagement Rate", "engagementRate"],
   ["Average Views", "averageViews"],
   ["Audience Countries", "audienceCountries"],
@@ -105,7 +106,7 @@ const influencerDetailFields = [
   ["Past Brand Work", "pastBrandWork", "long"],
   ["Rate Card", "rateCard"],
   ["Shipping Address", "shippingAddress", "long"],
-  ["Portfolio URL", "portfolioUrl", "url"],
+  ["Portfolio URL", "portfolioUrl", "profiles"],
   ["Notes", "notes", "long"],
   ["Consent To Contact", "consentToContact", "boolean"],
   ["Status", "status"],
@@ -160,7 +161,16 @@ const emptyDashboardData = {
   analytics: { brandStatuses: [], influencerStatuses: [], jobStatuses: [], applicationStatuses: [], ticketStatuses: [] },
   currentUser: null,
 };
-
+const followerRanges = [
+  { value: "Under 1K", label: "Under 1K", min: 0, max: 999 },
+  { value: "1K - 10K", label: "1K - 10K", min: 1000, max: 10000 },
+  { value: "10K - 50K", label: "10K - 50K", min: 10001, max: 50000 },
+  { value: "50K - 100K", label: "50K - 100K", min: 50001, max: 100000 },
+  { value: "100K - 500K", label: "100K - 500K", min: 100001, max: 500000 },
+  { value: "500K - 1M", label: "500K - 1M", min: 500001, max: 1000000 },
+  { value: "1M - 5M", label: "1M - 5M", min: 1000001, max: 5000000 },
+  { value: "5M+", label: "5M+", min: 5000001, max: "" },
+];
 function normalizeDashboardData(dashboard = {}) {
   return {
     stats: dashboard.stats || {},
@@ -191,6 +201,49 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+function getDaysAgo(value) {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const today = new Date();
+
+  // Compare calendar dates only
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+
+  const differenceInMilliseconds =
+    today.getTime() - date.getTime();
+
+  const differenceInDays = Math.floor(
+    differenceInMilliseconds / 86400000
+  );
+
+  return Math.max(0, differenceInDays);
+}
+
+
+function formatRelativeDate(value, label = "Latest activity") {
+  const days = getDaysAgo(value);
+
+  if (days === null) {
+    return `${label}: No data`;
+  }
+
+  if (days === 0) {
+    return `${label}: Today`;
+  }
+
+  if (days === 1) {
+    return `${label}: 1 day ago`;
+  }
+
+  return `${label}: ${days} days ago`;
+}
 function campaignDaysLeft(ticket) {
   if (ticket?.status !== "Active" || !ticket?.endDate) return null;
   const today = new Date();
@@ -202,7 +255,20 @@ function campaignDaysLeft(ticket) {
 
 function normalizeExternalUrl(value) {
   if (!value) return "";
-  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+
+  const url = String(value).trim();
+
+  if (!url) return "";
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  if (/^www\./i.test(url)) {
+    return `https://${url}`;
+  }
+
+  return `https://${url}`;
 }
 
 function formatStatus(value) {
@@ -223,7 +289,15 @@ function renderDetailValue(record, key, type) {
   if (Array.isArray(value)) {
     return value.length ? value.join(", ") : "Not provided";
   }
+if (type === "followers") {
+  const followers = Number(value);
 
+  if (Number.isNaN(followers)) {
+    return "Not provided";
+  }
+
+  return followers.toLocaleString("en-US");
+}
   if (type === "date") {
     return formatDate(value);
   }
@@ -241,31 +315,52 @@ function renderDetailValue(record, key, type) {
   }
 
   if (type === "email") {
-    return <a href={`mailto:${value}`}>{value}</a>;
-  }
-
-  if (type === "url") {
   return (
     <a
-      href={normalizeExternalUrl(value)}
+      href={`mailto:${value}`}
+      className="
+        text-blue-600
+        hover:underline
+        break-all
+      "
+    >
+      {value}
+    </a>
+  );
+}
+
+  if (type === "url") {
+  const url = normalizeExternalUrl(value);
+
+  if (!url) {
+    return "Not provided";
+  }
+
+  return (
+    <a
+      href={url}
       target="_blank"
       rel="noopener noreferrer"
       className="
         block
         w-full
-        max-w-full
         min-w-0
+        max-w-full
         whitespace-normal
-        break-words
+        break-all
         text-blue-600
+        hover:text-blue-800
         hover:underline
       "
       style={{
         overflowWrap: "anywhere",
-        wordBreak: "break-word",
+        wordBreak: "break-all",
+      }}
+      onClick={(event) => {
+        event.stopPropagation();
       }}
     >
-      {value}
+      {String(value)}
     </a>
   );
 }
@@ -283,8 +378,6 @@ if (type === "profiles") {
         width: "100%",
         maxWidth: "100%",
         minWidth: 0,
-        whiteSpace: "normal",
-        overflow: "visible",
       }}
     >
       {urls.map((url, index) => (
@@ -293,19 +386,18 @@ if (type === "profiles") {
           href={normalizeExternalUrl(url)}
           target="_blank"
           rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
           style={{
             display: "block",
             width: "100%",
             maxWidth: "100%",
             minWidth: 0,
-            whiteSpace: "normal",
-            overflow: "visible",
+
             overflowWrap: "anywhere",
             wordBreak: "break-all",
-            textOverflow: "clip",
-            marginBottom: "6px",
+
+            marginBottom: "4px",
           }}
-          className="text-blue-600 hover:underline"
         >
           {url}
         </a>
@@ -318,55 +410,67 @@ if (type === "profiles") {
 
 function RegistrationTableCell({ record, field }) {
   const [, key, type] = field;
-
+if (key === "__slNo") {
+  return (
+    <div className="w-[70px] text-left font-medium text-slate-700">
+      {record.__slNo}
+    </div>
+  );
+}
   const rawValue = record?.[key];
 
   const textValue = Array.isArray(rawValue)
     ? rawValue.join(", ")
-    : String(rawValue || "");
+    : String(rawValue ?? "");
 
-  const canExpand =
-    key !== "categories" && textValue.length > 90;
+  const canExpand =textValue.length > 65;
 
   const [expanded, setExpanded] = useState(false);
-
   return (
-    <div className="w-full min-w-0 max-w-full overflow-hidden">
+    <div className="w-full min-w-0 max-w-full">
+  <div
+    className={`
+      w-full
+      min-w-0
+      max-w-full
+      whitespace-normal
+      break-words
+      leading-5
+      ${!expanded ? "line-clamp-2 overflow-hidden":""}
+    `}
+    style={{
+      overflowWrap: "anywhere",
+      wordBreak: "break-word",
+    }}
+  >
+    {renderDetailValue(record, key, type)}
+  </div>
 
-      <div
-        className={`
-          w-full
-          min-w-0
-          max-w-full
-          whitespace-normal
-          break-words
-          ${expanded ? "" : "line-clamp-2 overflow-hidden"}
-        `}
-        style={{
-          overflowWrap: "anywhere",
-          wordBreak: "break-word",
-        }}
-      >
-        {renderDetailValue(record, key, type)}
-      </div>
-
-      {canExpand && (
-        <button
-          type="button"
-          onClick={() => setExpanded((prev) => !prev)}
-          className="
-            mt-1
-            text-xs
-            font-medium
-            text-blue-600
-            hover:text-blue-800
-            hover:underline
-          "
-        >
-          {expanded ? "See less" : "See more"}
-        </button>
-      )}
-    </div>
+  {canExpand && (
+    <button
+      type="button"
+      onClick={() => setExpanded((prev) => !prev)}
+      className="
+        mt-1
+        block
+        w-fit
+        p-0
+        border-0
+        bg-transparent
+        text-xs
+        font-medium
+        leading-4
+        text-blue-600
+        hover:text-blue-800
+        hover:underline
+        whitespace-nowrap
+        cursor-pointer
+      "
+    >
+      {expanded ? "See less" : "See more"}
+    </button>
+  )}
+</div>
   );
 }
 function RegistrationStatusButtons({ record, statusOptions, type, onUpdateStatus }) {
@@ -416,7 +520,11 @@ function RegistrationDataTable({
     <div className="admin-full-data-table-wrap">
       <table className="admin-table admin-full-data-table">
         <thead>
+          
           <tr>
+            <th className="admin-table-sl-no">
+  SL No.
+</th>
             {fields.map(([label, key]) => (
               <th key={key}>{label}</th>
             ))}
@@ -425,9 +533,14 @@ function RegistrationDataTable({
         </thead>
 
         <tbody>
-          {items.map((record) => (
+          {items.map((record,index) => (
+            
             <tr key={record._id}>
+              <td className="admin-table-sl-no">
+  {index + 1}
+</td>
               {fields.map(([label, key, valueType]) => (
+                
                 <td
                   key={key}
                   className="
@@ -446,7 +559,7 @@ function RegistrationDataTable({
                       field={[label, key, valueType]}
                     />
                   )}
-                </td>
+                </td> 
               ))}
 
               <td className="admin-actions-column">
@@ -475,6 +588,32 @@ function RegistrationDataTable({
 function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
+       {type === "influencers" && (
+        <>
+      <label>
+  Followers
+  <select
+    value={filters.followerRange}
+    onChange={(event) => {
+      const selected = followerRanges.find(
+        (range) => range.label === event.target.value
+      );
+
+      onFilterChange("followerRange", event.target.value);
+      onFilterChange("followerMin", selected?.min ?? "");
+      onFilterChange("followerMax", selected?.max ?? "");
+    }}
+  >
+    <option value="">All Followers</option>
+
+    {followerRanges.map((range) => (
+      <option key={range.label} value={range.label}>
+        {range.label}
+      </option>
+    ))}
+  </select>
+</label>
+
       <label>
         Global Search
         <input
@@ -485,6 +624,34 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
           onChange={(event) => onFilterChange("search", event.target.value)}
         />
       </label>
+
+      <label>
+            Location
+            <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
+          </label>
+           <label>
+            State
+            <input placeholder="State" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
+          </label>
+
+           <label>
+        Country
+        <input placeholder="Country" value={filters.country} onChange={(event) => onFilterChange("country", event.target.value)} />
+      </label>
+
+       <label>
+            Category
+            <input placeholder="Fashion, Beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
+          </label>
+         <label>
+            Language
+            <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
+          </label>
+
+           <label>
+            Platform
+            <input placeholder="Instagram, YouTube..." value={filters.platform} onChange={(event) => onFilterChange("platform", event.target.value)} />
+          </label>
       <label>
         Status
         <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)}>
@@ -494,10 +661,8 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
           ))}
         </select>
       </label>
-      <label>
-        Country
-        <input placeholder="Country" value={filters.country} onChange={(event) => onFilterChange("country", event.target.value)} />
-      </label>
+     </>
+       )}
       {type === "brands" ? (
         <label>
           Industry
@@ -505,36 +670,30 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
         </label>
       ) : (
         <>
-          <label>
-            Platform
-            <input placeholder="Instagram, YouTube..." value={filters.platform} onChange={(event) => onFilterChange("platform", event.target.value)} />
-          </label>
-          <label>
-            Category
-            <input placeholder="Fashion, Beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
-          </label>
-          <label>
-            State
-            <input placeholder="State / Province" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
-          </label>
-          <label>
-            Location
-            <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
-          </label>
-          <label>
-            Language
-            <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
-          </label>
-          <label>
-            Followers From
-            <input min="0" placeholder="1000" type="number" value={filters.followerMin} onChange={(event) => onFilterChange("followerMin", event.target.value)} />
-          </label>
-          <label>
-            Followers To
-            <input min="0" placeholder="100000" type="number" value={filters.followerMax} onChange={(event) => onFilterChange("followerMax", event.target.value)} />
-          </label>
-        </>
+       </>
       )}
+
+       <label>
+      Country
+      <input
+        placeholder="Country"
+        value={filters.country}
+        onChange={(event) =>
+          onFilterChange("country", event.target.value)
+        }
+      />
+    </label>
+
+    <label>
+      Location
+      <input
+        placeholder="City"
+        value={filters.location}
+        onChange={(event) =>
+          onFilterChange("location", event.target.value)
+        }
+      />
+    </label>
       <label>
         From
         <input type="date" value={filters.from} onChange={(event) => onFilterChange("from", event.target.value)} />
@@ -543,8 +702,24 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
         To
         <input type="date" value={filters.to} onChange={(event) => onFilterChange("to", event.target.value)} />
       </label>
-      <button type="submit">Apply</button>
-      <button className="admin-filter-reset" type="button" onClick={onReset}>Reset</button>
+      <div className="admin-filter-actions">
+      <button type="submit" className="admin-filter-btn">Apply</button>
+      {Object.values(filters).some((value) =>
+  Array.isArray(value)
+    ? value.length > 0
+    : String(value ?? "").trim() !== ""
+) && (
+  <div className="admin-filter-reset-wrapper">
+  <button
+    className="admin-filter-btn admin-filter-reset"
+    type="button"
+    onClick={onReset}
+  >
+    Clear
+  </button>
+  </div>
+)}
+      </div>
       <span>{countLabel}</span>
     </form>
   );
@@ -644,8 +819,32 @@ function AnalyticsChart({ title, items = [], emptyMessage }) {
     </article>
   );
 }
+function RelativeDate({ value, label = "Latest activity" }) {
+  const days = getDaysAgo(value);
 
+  if (days === null) {
+    return (
+      <span className="admin-relative-date">
+        {label}: No data
+      </span>
+    );
+  }
+
+  return (
+    <span className="admin-relative-date">
+      {label}:{" "}
+      <strong>
+        {days === 0
+          ? "Today"
+          : days === 1
+          ? "1 day ago"
+          : `${days} days ago`}
+      </strong>
+    </span>
+  );
+}
 export default function AdminDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
     return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
@@ -660,13 +859,14 @@ export default function AdminDashboard() {
   const [jobForm, setJobForm] = useState(initialJobForm);
   const [editingJobId, setEditingJobId] = useState("");
   const [ticketForm, setTicketForm] = useState(initialTicketForm);
+  const [ticketErrors, setTicketErrors] = useState({});
   const [editingTicketId, setEditingTicketId] = useState("");
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" });
+  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [influencerTable, setInfluencerTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
@@ -693,6 +893,98 @@ export default function AdminDashboard() {
     ],
     [data]
   );
+
+
+const validateTicketForm = () => {
+  const errors = {};
+
+  // ==============================
+  // 1. CHECK EMPTY REQUIRED FIELDS
+  // ==============================
+
+  if (!ticketForm.brandName?.trim()) {
+    errors.brandName = "Brand name is required";
+  }
+
+  if (!ticketForm.campaignName?.trim()) {
+    errors.campaignName = "Campaign name is required";
+  }
+
+  if (!ticketForm.contactName?.trim()) {
+    errors.contactName = "Full name is required";
+  }
+
+  if (!ticketForm.contactEmail?.trim()) {
+    errors.contactEmail = "Contact email is required";
+  }
+
+  if (!ticketForm.objective?.trim()) {
+    errors.objective = "Campaign objective is required";
+  }
+
+  if (!ticketForm.platforms?.trim()) {
+    errors.platforms = "Platforms are required";
+  }
+
+  if (!ticketForm.status?.trim()) {
+    errors.status = "Status is required";
+  }
+
+  if (!ticketForm.startDate) {
+    errors.startDate = "Start date is required";
+  }
+
+  if (!ticketForm.endDate) {
+    errors.endDate = "End date is required";
+  }
+
+  if (
+    ticketForm.budget === "" ||
+    ticketForm.budget === null ||
+    ticketForm.budget === undefined
+  ) {
+    errors.budget = "Budget is required";
+  }
+
+  if (!ticketForm.currency?.trim()) {
+    errors.currency = "Currency is required";
+  }
+
+  // =================================
+  // 2. IF EMPTY FIELDS EXIST
+  // SHOW ONLY EMPTY FIELD ERRORS
+  // =================================
+
+  if (Object.keys(errors).length > 0) {
+    setTicketErrors(errors);
+    return false;
+  }
+
+  // ==============================
+  // 3. NOW CHECK EMAIL FORMAT
+  // ==============================
+
+  const email = ticketForm.contactEmail.trim();
+
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  alert("Please enter a valid email address.");
+
+  setTicketErrors({
+    contactEmail: "Please enter a valid email address."
+  });
+
+  return false;
+}
+
+  // ==============================
+  // 4. EVERYTHING IS VALID
+  // ==============================
+
+  setTicketErrors({});
+
+  return true;
+};
+
 
   const dashboardParams = useMemo(
     () => ({
@@ -722,6 +1014,8 @@ export default function AdminDashboard() {
       setStatus({ type: "error", message: error.message });
     }
   };
+
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -812,7 +1106,8 @@ export default function AdminDashboard() {
   const updateJobField = (event) => setJobForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   const updateTicketField = (event) => setTicketForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   const updateTicketMetric = (event) => setTicketForm((current) => ({ ...current, metrics: { ...current.metrics, [event.target.name]: event.target.value } }));
-  const submitTicket = async (event) => { event.preventDefault(); setStatus({ type: "loading", message: editingTicketId ? "Updating brand ticket..." : "Creating brand ticket..." }); try { if (editingTicketId) await updateBrandTicket(editingTicketId, ticketForm); else await createBrandTicket(ticketForm); setTicketForm(initialTicketForm); setEditingTicketId(""); await loadDashboard(); setActiveTab("tickets"); setStatus({ type: "success", message: editingTicketId ? "Brand ticket updated." : "Brand ticket created." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
+  const submitTicket = async (event) => { event.preventDefault();   if (!validateTicketForm()) {
+    return;}  const isEditing = Boolean(editingTicketId); setStatus({ type: "loading", message: editingTicketId ? "Updating brand ticket..." : "Creating brand ticket..." }); try { if (editingTicketId) await updateBrandTicket(editingTicketId, ticketForm); else await createBrandTicket(ticketForm); setTicketForm(initialTicketForm); setEditingTicketId(""); await loadDashboard(); setActiveTab("tickets"); setStatus({ type: "success", message: editingTicketId ? "Brand ticket updated." : "Brand ticket created." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
   const editTicket = (ticket) => { setEditingTicketId(ticket._id); setTicketForm({ ...initialTicketForm, ...ticket, startDate: ticket.startDate ? ticket.startDate.slice(0, 10) : "", endDate: ticket.endDate ? ticket.endDate.slice(0, 10) : "", platforms: (ticket.platforms || []).join(", "), metrics: { ...initialTicketForm.metrics, ...(ticket.metrics || {}) } }); setActiveTab("tickets"); };
   const removeTicket = async (id) => { if (!window.confirm("Delete this brand ticket?")) return; try { await deleteBrandTicket(id); if (editingTicketId === id) { setEditingTicketId(""); setTicketForm(initialTicketForm); } await loadDashboard(); setStatus({ type: "success", message: "Brand ticket deleted." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
   const submitJob = async (event) => { event.preventDefault(); setStatus({ type: "loading", message: editingJobId ? "Updating job..." : "Posting job..." }); try { if (editingJobId) await updateJob(editingJobId, jobForm); else await createJob(jobForm); setJobForm(initialJobForm); setEditingJobId(""); await loadDashboard(); setActiveTab("jobs"); setStatus({ type: "success", message: "Job saved." }); } catch (error) { setStatus({ type: "error", message: error.message }); } };
@@ -840,12 +1135,18 @@ export default function AdminDashboard() {
   };
 
   const logout = () => {
-    logoutAdmin();
-    setIsAuthenticated(false);
-    setPassword("");
-    setData(emptyDashboardData);
-    setStatus({ type: "idle", message: "" });
-  };
+  const confirmed = window.confirm(
+    "Are you sure you want to logout from the Admin Dashboard?"
+  );
+
+  if (!confirmed) return;
+
+  logoutAdmin();
+  setIsAuthenticated(false);
+  setPassword("");
+  setData(emptyDashboardData);
+  setStatus({ type: "idle", message: "" });
+};
 
   const submitBlog = async (event) => {
     event.preventDefault();
@@ -910,7 +1211,7 @@ export default function AdminDashboard() {
       setBrandQuery(cleared);
     }
     if (activeTab === "influencers") {
-      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", from: "", to: "" };
+      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "",followerRange: "", from: "", to: "" };
       setInfluencerFilters(cleared);
       setInfluencerQuery(cleared);
     }
@@ -1031,7 +1332,7 @@ export default function AdminDashboard() {
     return (
       <main className="admin-login-shell">
         <section className="admin-login-card">
-          <a className="admin-logo" href="/">
+          <div className="admin-logo">
             <span className="admin-logo-frame">
               <img src={influnexaLogo} alt="Influnexa" />
             </span>
@@ -1039,7 +1340,7 @@ export default function AdminDashboard() {
               <strong>Influnexa</strong>
               <small>Admin</small>
             </span>
-          </a>
+          </div>
           <div className="admin-login-copy">
             <p>Secure access</p>
             <h1>Admin login</h1>
@@ -1072,7 +1373,7 @@ export default function AdminDashboard() {
             {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
             <div className="admin-login-actions">
               <button type="submit">Login</button>
-              <a className="admin-home-link" href="/">Back to website</a>
+             
             </div>
           </form>
         </section>
@@ -1081,17 +1382,50 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="admin-shell">
-      <aside className="admin-sidebar">
-        <a className="admin-logo" href="/">
-          <span className="admin-logo-frame">
+    <main className={`admin-shell ${sidebarOpen ? "sidebar-open" : ""}`}>
+      <button
+  type="button"
+  className="admin-mobile-menu"
+  onClick={(e) => {
+    e.stopPropagation();
+    setSidebarOpen((prev) => !prev);
+  }}
+  aria-label="Toggle sidebar"
+>
+  ⋮
+</button>
+      <div className="admin-logo"
+      onMouseEnter={() => {
+    if (window.innerWidth >768) {
+      setSidebarOpen(true);
+    }
+  }}>
+      
+<span className="admin-logo-frame">
             <img src={influnexaLogo} alt="Influnexa" />
           </span>
           <span className="admin-logo-copy">
             <strong>Influnexa</strong>
             <small>Admin</small>
           </span>
-        </a>
+          
+          <button
+           onMouseEnter={() => setSidebarOpen(false)}
+  className="admin-action-button refresh"
+  type="button"
+  onClick={loadDashboard}
+  title="Refresh dashboard"
+  aria-label="Refresh dashboard"
+>
+<FaSyncAlt />
+</button>
+      </div>
+      
+      <aside
+  className={`admin-sidebar ${sidebarOpen ? "sidebar-open" : ""}`}
+  onMouseLeave={() => setSidebarOpen(false)}
+>
+        
         <nav>
           {tabs.map(([id, label]) => (
             <button
@@ -1104,7 +1438,13 @@ export default function AdminDashboard() {
             </button>
           ))}
         </nav>
-        <a className="admin-home-link" href="/">Back to website</a>
+        <button
+  className="admin-sidebar-logout"
+  type="button"
+  onClick={logout}
+>
+  Logout
+</button>
       </aside>
 
       <section className="admin-content">
@@ -1113,14 +1453,8 @@ export default function AdminDashboard() {
             <p>Influnexa workspace</p>
             <h1>{activeTab === "overview" ? "Operations overview" : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}</h1>
           </div>
-          <div className="admin-actions">
-            <button className="admin-action-button refresh" type="button" onClick={loadDashboard}>
-              Refresh
-            </button>
-            <button className="admin-action-button logout" type="button" onClick={logout}>
-              Logout
-            </button>
-          </div>
+   
+            
         </div>
 
         {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
@@ -1131,11 +1465,108 @@ export default function AdminDashboard() {
               <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
               <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
             </section>
-            <section className="admin-overview-metrics"><article><span>Active jobs</span><strong>{data.analytics.jobStatuses.find((item) => item._id === "open")?.count || 0}</strong><small>live opportunities</small></article><article><span>Candidates</span><strong>{data.stats.applications || 0}</strong><small>{data.stats.reviewApplications || 0} awaiting review</small></article><article><span>Brand leads</span><strong>{data.stats.brands || 0}</strong><small>{data.stats.newBrands || 0} new requests</small></article><article><span>Active campaigns</span><strong>{data.stats.activeTickets || 0}</strong><small>{data.stats.tickets || 0} brand tickets</small></article><article><span>Creators</span><strong>{data.stats.influencers || 0}</strong><small>{data.stats.newInfluencers || 0} new registrations</small></article><article>
-  <span>CSV Creators</span>
-  <strong>{data.stats.csvRecords || 0}</strong>
-  <small>total CSV upload records</small>
-</article></section>
+            <section className="admin-overview-metrics">
+  {/* 2. ACTIVE JOBS */}
+  <article >
+    <span>Active jobs</span>
+
+    <strong>
+      {
+        data.analytics.jobStatuses.find(
+          (item) => item._id === "open"
+        )?.count || 0
+      }
+    </strong>
+
+    <small>
+      live opportunities
+    </small>
+
+    <small>
+      Latest job: {formatDate(data.stats.latestJobDate)}
+    </small>
+  </article>
+  {/* 4. CANDIDATES */}
+  <article>
+    <span>Candidates</span>
+
+    <strong>
+      {data.stats.applications || 0}
+    </strong>
+
+    <small>
+      {data.stats.reviewApplications || 0} awaiting review
+    </small>
+
+    <small>
+      Latest application: {formatDate(data.stats.latestApplicationDate)}
+    </small>
+  </article>
+{/* 3. BRAND LEADS */}
+  <article>
+    <span>Brand leads</span>
+
+    <strong>
+      {data.stats.brands || 0}
+    </strong>
+
+    <small>
+      {data.stats.newBrands || 0} new requests
+    </small>
+
+    <small>
+      Latest registration:{" "}
+      {formatDate(data.stats.latestBrandDate)}
+    </small>
+  </article>
+              <article>
+    <span>Active campaigns</span>
+
+    <strong>
+      {data.stats.activeTickets || 0}
+    </strong>
+
+    <small>
+      {data.stats.tickets || 0} brand tickets
+    </small>
+
+    <small>
+      Latest campaign: {formatDate(data.stats.latestTicketDate)}
+    </small>
+  </article>
+    {/* 1. CREATORS */}
+  <article>
+    <span>Creators</span>
+
+    <strong>
+      {data.stats.influencers || 0}
+    </strong>
+
+    <small>
+      {data.stats.newInfluencers || 0} new registrations
+    </small>
+
+    <small>
+      Latest Registered: {formatDate(data.stats.latestInfluencerDate)}
+    </small>
+  </article>
+  {/* 6. CSV CREATORS */}
+  <article>
+    <span>CSV Creators</span>
+
+    <strong>
+      {data.stats.csvRecords || 0}
+    </strong>
+
+    <small>
+      total CSV upload records
+    </small>
+
+    <small>
+      Latest upload: {formatDate(data.stats.latestCsvUploadDate)}
+    </small>
+  </article>
+  </section>
             <section className="admin-analytics-grid">
               <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
               <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
@@ -1153,7 +1584,7 @@ export default function AdminDashboard() {
               <h2>Brand registrations</h2>
             </div>
             <RegistrationToolbar
-              countLabel="Fast server-side filters"
+            
               filters={brandFilters}
               onFilterChange={updateBrandFilter}
               onSearch={applyRegistrationSearch}
@@ -1162,7 +1593,7 @@ export default function AdminDashboard() {
               statusOptions={brandStatuses}
               type="brands"
             />
-            <RegistrationDataTable fields={brandDetailFields} items={brandTable.items} emptyMessage="No brand registrations match these filters." statusOptions={brandStatuses} type="brands" onUpdateStatus={updateStatus} />
+            <RegistrationDataTable fields={brandDetailFields} items={brandTable.items}emptyMessage="No brand registrations match these filters." statusOptions={brandStatuses} type="brands" onUpdateStatus={updateStatus} />
             <RegistrationPager cursorHistory={brandTable.history} hasMore={brandTable.hasMore} onPrevious={previousBrandPage} onNext={nextBrandPage} />
           </div>
         )}
@@ -1170,16 +1601,233 @@ export default function AdminDashboard() {
         {activeTab === "tickets" && (
           <div className="admin-ticket-workspace">
             <form className="admin-panel admin-blog-form" onSubmit={submitTicket}>
-              <div className="admin-panel-title-row"><h2>{editingTicketId ? "Edit brand ticket" : "Create brand ticket"}</h2><small>Create an internal campaign record and keep its delivery metrics current.</small></div>
-              <div className="admin-form-row"><label>Brand name<input name="brandName" value={ticketForm.brandName} onChange={updateTicketField} required /></label><label>Campaign name<input name="campaignName" value={ticketForm.campaignName} onChange={updateTicketField} required /></label></div>
-              <div className="admin-form-row"><label>Contact name<input name="contactName" value={ticketForm.contactName} onChange={updateTicketField} /></label><label>Contact email<input name="contactEmail" type="email" value={ticketForm.contactEmail} onChange={updateTicketField} /></label></div>
-              <label>Campaign objective<textarea name="objective" value={ticketForm.objective} onChange={updateTicketField} rows="2" placeholder="Awareness, product launch, conversions..." /></label>
-              <div className="admin-form-row"><label>Platforms <input name="platforms" value={ticketForm.platforms} onChange={updateTicketField} placeholder="Instagram, YouTube" /></label><label>Status<select name="status" value={ticketForm.status} onChange={updateTicketField}>{ticketStatuses.map((item) => <option key={item}>{item}</option>)}</select></label></div>
-              <div className="admin-form-row"><label>Start date<input name="startDate" type="date" value={ticketForm.startDate} onChange={updateTicketField} /></label><label>End date<input name="endDate" type="date" value={ticketForm.endDate} onChange={updateTicketField} /></label></div>
-              <div className="admin-form-row"><label>Budget<input min="0" name="budget" type="number" value={ticketForm.budget} onChange={updateTicketField} /></label><label>Currency<input name="currency" value={ticketForm.currency} onChange={updateTicketField} /></label></div>
-              <h3 className="admin-ticket-subheading">Campaign performance</h3>
-              <div className="admin-ticket-metrics">{[["creators", "Creators"], ["posts", "Posts"], ["reach", "Reach"], ["impressions", "Impressions"], ["engagements", "Engagements"], ["clicks", "Clicks"], ["conversions", "Conversions"], ["spend", "Spend"]].map(([key, label]) => <label key={key}>{label}<input min="0" name={key} type="number" value={ticketForm.metrics[key]} onChange={updateTicketMetric} /></label>)}</div>
-              <label>Internal notes<textarea name="notes" value={ticketForm.notes} onChange={updateTicketField} rows="3" /></label>
+              <div className="admin-panel-title-row"><h2>{editingTicketId ? "Edit brand ticket" : "Create brand ticket"}</h2></div>
+              <div className="admin-form-row">
+  <label>
+    Brand name <span className="admin-required">*</span>
+    <input
+      name="brandName"
+      value={ticketForm.brandName}
+      onChange={updateTicketField}
+     
+    />
+
+  {ticketErrors.brandName && (
+    <small className="admin-inline-error">
+      {ticketErrors.brandName}
+    </small>
+  )}
+  </label>
+
+  <label>
+    Campaign name <span className="admin-required">*</span>
+    <input
+      name="campaignName"
+      value={ticketForm.campaignName}
+      onChange={updateTicketField}
+     
+    />
+    {ticketErrors.campaignName && (
+    <small className="admin-inline-error">
+      {ticketErrors.campaignName}
+    </small>
+  )}
+  </label>
+</div>
+
+<div className="admin-form-row">
+  <label>
+    Full name <span className="admin-required">*</span>
+    <input
+      name="contactName"
+      value={ticketForm.contactName}
+      onChange={updateTicketField}
+      
+    />
+    {ticketErrors.contactName && (
+  <small className="admin-inline-error">
+    {ticketErrors.contactName}
+  </small>
+)}
+
+  </label>
+
+  <label>
+    Contact email <span className="admin-required">*</span>
+    <input
+      name="contactEmail"
+      type="email"
+      value={ticketForm.contactEmail}
+      onChange={updateTicketField}
+      
+    />
+    {ticketErrors.contactEmail && (
+  <small className="admin-inline-error">
+    {ticketErrors.contactEmail}
+  </small>
+)}
+  </label>
+</div>
+
+<label>
+  Campaign objective <span className="admin-required">*</span>
+  <textarea
+    name="objective"
+    value={ticketForm.objective}
+    onChange={updateTicketField}
+    rows="2"
+    placeholder="Awareness, product launch, conversions..."
+  
+  />
+  {ticketErrors.objective && (
+  <small className="admin-inline-error">
+    {ticketErrors.objective}
+  </small>
+)}
+</label>
+
+<div className="admin-form-row">
+  <label>
+    Platforms <span className="admin-required">*</span>
+    <input
+      name="platforms"
+      value={ticketForm.platforms}
+      onChange={updateTicketField}
+      placeholder="Instagram, YouTube"
+      
+    />
+    {ticketErrors.platforms && (
+  <small className="admin-inline-error">
+    {ticketErrors.platforms}
+  </small>
+)}
+  </label>
+
+  <label>
+    Status <span className="admin-required">*</span>
+    <select
+      name="status"
+      value={ticketForm.status}
+      onChange={updateTicketField}
+      required
+    >
+      {ticketStatuses.map((item) => (
+        <option key={item}>{item}</option>
+      ))}
+    </select>
+    {ticketErrors.status && (
+  <small className="admin-inline-error">
+    {ticketErrors.status}
+  </small>
+)}
+  </label>
+</div>
+
+<div className="admin-form-row">
+  <label>
+    Start date <span className="admin-required">*</span>
+    <input
+      name="startDate"
+      type="date"
+      value={ticketForm.startDate}
+      onChange={updateTicketField}
+    
+    />
+    {ticketErrors.startDate && (
+  <small className="admin-inline-error">
+    {ticketErrors.startDate}
+  </small>
+)}
+  </label>
+
+  <label>
+    End date <span className="admin-required">*</span>
+    <input
+      name="endDate"
+      type="date"
+      value={ticketForm.endDate}
+      onChange={updateTicketField}
+      
+    />
+    {ticketErrors.endDate && (
+  <small className="admin-inline-error">
+    {ticketErrors.endDate}
+  </small>
+)}
+  </label>
+</div>
+
+<div className="admin-form-row">
+  <label>
+    Budget <span className="admin-required">*</span>
+    <input
+      min="0"
+      name="budget"
+      type="number"
+      value={ticketForm.budget}
+      onChange={updateTicketField}
+      
+    />
+    {ticketErrors.budget && (
+  <small className="admin-inline-error">
+    {ticketErrors.budget}
+  </small>
+)}
+  </label>
+
+  <label>
+    Currency <span className="admin-required">*</span>
+    <input
+      name="currency"
+      value={ticketForm.currency}
+      onChange={updateTicketField}
+  required
+    />
+    {ticketErrors.currency && (
+  <small className="admin-inline-error">
+    {ticketErrors.currency}
+  </small>
+)}
+  </label>
+</div>
+
+<h3 className="admin-ticket-subheading">
+  Campaign performance
+</h3>
+
+<div className="admin-ticket-metrics">
+  {[
+    ["creators", "Creators"],
+    ["posts", "Posts"],
+    ["reach", "Reach"],
+    ["impressions", "Impressions"],
+    ["engagements", "Engagements"],
+    ["clicks", "Clicks"],
+    ["conversions", "Conversions"],
+    ["spend", "Spend"]
+  ].map(([key, label]) => (
+    <label key={key}>
+      {label}
+      <input
+        min="0"
+        name={key}
+        type="number"
+        value={ticketForm.metrics[key]}
+        onChange={updateTicketMetric}
+      />
+    </label>
+  ))}
+</div>
+
+<label>
+  Internal notes
+  <textarea
+    name="notes"
+    value={ticketForm.notes}
+    onChange={updateTicketField}
+    rows="3"
+  />
+</label>
               <div className="admin-login-actions"><button type="submit">{editingTicketId ? "Update Ticket" : "Create Ticket"}</button>{editingTicketId && <button type="button" onClick={() => { setEditingTicketId(""); setTicketForm(initialTicketForm); }}>Cancel</button>}</div>
             </form>
             <div className="admin-ticket-side">
@@ -1193,7 +1841,7 @@ export default function AdminDashboard() {
           <div className="admin-panel">
             <div className="admin-panel-title-row">
               <h2>Influencer registrations</h2>
-              <small>Find creators by name, email, market, platform, category, or status.</small>
+              
             </div>
             <RegistrationToolbar
               filters={influencerFilters}
@@ -1224,60 +1872,172 @@ export default function AdminDashboard() {
 {activeTab === "upload-csv-brands" && (
   <UploadBrandsCSV />
 )}
-        {activeTab === "blogs" && (
-          <div className="admin-blog-grid">
-            <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>
-              <h2>{editingBlogId ? "Edit blog post" : "Create blog post"}</h2>
-              <label>Title<input name="title" value={blogForm.title} onChange={updateBlogField} required /></label>
-              <label>Category<input name="category" value={blogForm.category} onChange={updateBlogField} required /></label>
-              <label>Excerpt<textarea name="excerpt" value={blogForm.excerpt} onChange={updateBlogField} required rows="3" /></label>
-              <label>
-                Content
-                <textarea
-                  name="content"
-                  value={blogForm.content}
-                  onChange={updateBlogField}
-                  rows="10"
-                  placeholder={"Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"}
-                />
-                <small className="admin-field-note">Supported formatting: ## section heading, ### subheading, - bullet list, and 1. numbered list. Keep headings and list items on their own lines.</small>
-              </label>
-              <div className="admin-form-row">
-                <label>Author<input name="author" value={blogForm.author} onChange={updateBlogField} /></label>
-                <label>Read time<input name="readTime" value={blogForm.readTime} onChange={updateBlogField} /></label>
-              </div>
-              <label>Cover image URL<input name="coverImage" value={blogForm.coverImage} onChange={updateBlogField} /></label>
-              <label>Status<select name="status" value={blogForm.status} onChange={updateBlogField}>
-                <option>published</option>
-                <option>draft</option>
-              </select></label>
-              <div className="admin-login-actions">
-                <button type="submit">{editingBlogId ? "Update Blog" : "Create Blog"}</button>
-                {editingBlogId && <button type="button" onClick={cancelBlogEdit}>Cancel</button>}
-              </div>
-            </form>
+     {activeTab === "blogs" && (
+  <div className="admin-blog-grid">
+    <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>
+      <h2>{editingBlogId ? "Edit blog post" : "Create blog post"}</h2>
 
-            <div className="admin-panel">
-              <h2>Blog posts</h2>
-              <div className="admin-blog-list">
-                {data.blogs.map((blog) => (
-                  <article key={blog._id}>
-                    <div>
-                      <Pill tone={blog.status === "published" ? "success" : "default"}>{blog.status}</Pill>
-                      <h3>{blog.title}</h3>
-                      <p>{blog.excerpt}</p>
-                      <span>{blog.category} - {blog.readTime} - {formatDate(blog.publishedAt)}</span>
-                    </div>
-                    <div className="admin-row-actions">
-                      <button type="button" onClick={() => editBlog(blog)}>Edit</button>
-                      <button type="button" onClick={() => removeBlog(blog._id)}>Delete</button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
+      <label>
+        Title <span className="admin-required">*</span>
+        <input
+          name="title"
+          value={blogForm.title}
+          onChange={updateBlogField}
+          required
+        />
+      </label>
+
+      <label>
+        Category <span className="admin-required">*</span>
+        <input
+          name="category"
+          value={blogForm.category}
+          onChange={updateBlogField}
+          required
+        />
+      </label>
+
+      <label>
+        Excerpt <span className="admin-required">*</span>
+        <textarea
+          name="excerpt"
+          value={blogForm.excerpt}
+          onChange={updateBlogField}
+          required
+          rows="3"
+        />
+      </label>
+
+      <label>
+        Content <span className="admin-required">*</span>
+        <textarea
+          name="content"
+          value={blogForm.content}
+          onChange={updateBlogField}
+          required
+          rows="10"
+          placeholder={"Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"}
+        />
+
+        <small className="admin-field-note">
+          Supported formatting: ## section heading, ### subheading, - bullet
+          list, and 1. numbered list. Keep headings and list items on their own
+          lines.
+        </small>
+      </label>
+
+      <div className="admin-form-row">
+        <label>
+          Author <span className="admin-required">*</span>
+          <input
+            name="author"
+            value={blogForm.author}
+            onChange={updateBlogField}
+            required
+          />
+        </label>
+
+        <label>
+          Read time <span className="admin-required">*</span>
+          <input
+            name="readTime"
+            value={blogForm.readTime}
+            onChange={updateBlogField}
+            required
+          />
+        </label>
+      </div>
+
+      <label>
+        Cover image URL <span className="admin-required">*</span>
+        <input
+          name="coverImage"
+          value={blogForm.coverImage}
+          onChange={updateBlogField}
+          required
+        />
+      </label>
+
+      <label>
+        Status <span className="admin-required">*</span>
+        <select
+          name="status"
+          value={blogForm.status}
+          onChange={updateBlogField}
+          required
+        >
+          <option value="published">published</option>
+          <option value="draft">draft</option>
+        </select>
+      </label>
+
+      <div className="admin-login-actions">
+        <button type="submit">
+          {editingBlogId ? "Update Blog" : "Create Blog"}
+        </button>
+
+        {editingBlogId && (
+          <button type="button" onClick={cancelBlogEdit}>
+            Cancel
+          </button>
         )}
+      </div>
+    </form>
+
+    {/* Blog posts list - keep your existing code */}
+    <div className="admin-panel">
+      <h2>Blog posts</h2>
+
+      <div className="admin-blog-list">
+        {data.blogs.map((blog) => (
+          <article key={blog._id}>
+            <div>
+              <Pill
+                tone={
+                  blog.status === "published" ? "success" : "default"
+                }
+              >
+                {blog.status}
+              </Pill>
+
+              <h3>{blog.title}</h3>
+              <p>{blog.excerpt}</p>
+
+              <span>
+                {blog.category} - {blog.readTime} -{" "}
+                {formatDate(blog.publishedAt)}
+              </span>
+            </div>
+
+            <div className="admin-row-actions">
+              <button
+                type="button"
+                onClick={() => editBlog(blog)}
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const confirmed = window.confirm(
+                    "Are you sure you want to delete this blog?"
+                  );
+
+                  if (confirmed) {
+                    removeBlog(blog._id);
+                  }
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
 
         {activeTab === "jobs" && (
           <div className="admin-blog-grid">

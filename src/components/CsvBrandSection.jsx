@@ -35,7 +35,7 @@ function MultiSelectDropdown({
       <label className="
         block
         mb-2
-        text-sm
+         text-[13px]
         font-bold
         
         tracking-wide
@@ -50,31 +50,35 @@ function MultiSelectDropdown({
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className="
-          w-full
-          min-h-[44px]
-          px-3
-          py-2
-          rounded-xl
-          border
-          border-slate-300
-          bg-white
-          text-sm
-          text-left
-          outline-none
-          focus:border-slate-500
-          focus:ring-2
-          focus:ring-slate-200
-          flex
-          items-center
-          justify-between
-          gap-2
-          
-          
-        "
+  box-border
+  w-full
+  h-[46px]
+  min-h-[46px]
+  max-h-[46px]
+  px-[12px]
+  py-[2px]
+  rounded-[14px]
+  border
+  border-slate-300
+  bg-white
+  text-[#0f172a]
+  text-[13px]
+  font-[850]
+  text-left
+  outline-none
+  transition
+  focus:border-[#cbd5e1]
+  focus:ring-2
+  focus:ring-[rgba(226,232,240,0.55)]
+  flex
+  items-center
+  justify-between
+  gap-2
+"
       >
         <div className="flex flex-wrap gap-1.5 flex-1">
           {value.length === 0 ? (
-            <span className="text-neutral-500 font-semibold ">
+            <span className="text-[#94a3b8] text-[13px] font-[850]">
               {placeholder}
             </span>
           ) : (
@@ -245,7 +249,7 @@ function MultiSelectDropdown({
 }
 function CsvBrandSection() {
 const [filterOptions, setFilterOptions] = useState({
-    prospects: [],
+    designation: [],
     ageOfCompany: [],
     dataType: [],
     status: [],
@@ -266,7 +270,7 @@ const [copiedMobile, setCopiedMobile] = useState(null);
 const [filters, setFilters] = useState({
   companyName: "",
   fullName: "",
-  prospects: [],
+  designation: [],
   email: "",
   officialEmail: "",
   mobileNumber: "",
@@ -327,7 +331,7 @@ useEffect(() => {
   companyName: filters.companyName,
   fullName: filters.fullName,
 
-  prospects: filters.prospects.join(","),
+  designation: filters.designation.join(","),
 
   email: filters.email,
   officialEmail: filters.officialEmail,
@@ -394,7 +398,7 @@ const resetFilters = () => {
   setFilters({
     companyName: "",
     fullName: "",
-    prospects: [],
+    designation: [],
     email: "",
     officialEmail: "",
     mobileNumber: "",
@@ -466,8 +470,8 @@ const downloadFilteredBrands = async () => {
       "Full Name":
         brand.fullName || "",
 
-      "ProsPects":
-        brand.prospects || "",
+      "designation":
+        brand.designation || "",
 
       "Email Id":
         brand.email || "",
@@ -626,7 +630,7 @@ const downloadMaskedFilteredBrands = async () => {
       "SL No.": index + 1,
       "Company Name": brand.companyName || "",
       "Full Name": brand.fullName || "",
-      "ProsPects": brand.prospects || "",
+      "designation": brand.designation || "",
       "Email Id": maskEmail(brand.email),
       "Official Email Id": maskEmail(brand.officialEmail),
       "Mobile Number": maskMobile(brand.mobileNumber),
@@ -1030,17 +1034,43 @@ const getReminder = (brand) => {
   };
 };
 
-
+const inputClass = `
+  box-border
+  w-full
+  h-[46px]
+  min-h-[46px]
+  max-h-[46px]
+  px-[12px]
+  py-[10px]
+  border
+  border-slate-300
+  rounded-[14px]
+  bg-white
+  text-[#0f172a]
+  text-[13px]
+  font-[850]
+  placeholder:text-[#94a3b8]
+  placeholder:text-[13px]
+  placeholder:font-[850]
+  placeholder:opacity-100
+  outline-none
+  transition
+  focus:border-[#cbd5e1]
+  focus:ring-2
+  focus:ring-[rgba(226,232,240,0.55)]
+`;
   return (
 
     <div
       className="
-        bg-white
-        border
-        border-slate-200
-        rounded-[24px]
-        shadow-sm
-        overflow-hidden
+       relative
+    z-0
+    bg-white
+    border
+    border-slate-200
+    rounded-[24px]
+    shadow-sm
+    overflow-visible
       "
     >
 
@@ -1148,16 +1178,19 @@ const getReminder = (brand) => {
     FILTER SECTION
 ======================================== */}
 
-<div className=" relative z-[100] px-7 pb-6">
+<div className=" relative z-[100] px-7 pb-6 w-full min-w-0 max-w-full ">
 
   <div className="
-   relative
-    z-[100]
-    rounded-[22px]
-    border
-    border-slate-200
-    bg-slate-50
-    p-5
+  relative
+      z-[100]
+      w-full
+      min-w-0
+      max-w-full
+      rounded-[22px]
+      border
+      border-slate-200
+      bg-slate-50
+      p-5
   ">
 
     {/* FILTER HEADER */}
@@ -1237,7 +1270,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+          text-[13px]
           font-bold
           tracking-wide
           text-slate-500
@@ -1255,21 +1288,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search company"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1282,7 +1301,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
           tracking-wide
           text-slate-500
@@ -1300,36 +1319,22 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search name"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
 
 
-      {/* PROSPECTS */}
+      {/* designation */}
 
 <MultiSelectDropdown
-  label="Prospects"
-  options={filterOptions.prospects}
-  value={filters.prospects}
+  label="Designation"
+  options={filterOptions.designation}
+  value={filters.designation}
   onChange={(value) =>
-    handleFilterChange("prospects", value)
+    handleFilterChange("designation", value)
   }
-  placeholder="Select prospects"
+  placeholder="Select Designation"
 />
 
 
@@ -1340,7 +1345,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+          text-[13px]
           font-bold
           tracking-wide
           text-slate-500
@@ -1358,21 +1363,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search email"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1385,7 +1376,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
           
           tracking-wide
@@ -1405,21 +1396,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search official email"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1432,7 +1409,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
           
           tracking-wide
@@ -1451,21 +1428,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search mobile"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1478,7 +1441,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
           
           tracking-wide
@@ -1497,21 +1460,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search LinkedIn"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1524,7 +1473,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
       
           tracking-wide
@@ -1543,21 +1492,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search city"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1570,7 +1505,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
         
           tracking-wide
@@ -1589,21 +1524,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search address"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1616,7 +1537,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+          text-[13px]
           font-bold
         
           tracking-wide
@@ -1635,21 +1556,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search directors"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1676,7 +1583,7 @@ const getReminder = (brand) => {
         <label className="
           block
           mb-2
-          text-sm
+           text-[13px]
           font-bold
           
           tracking-wide
@@ -1695,21 +1602,7 @@ const getReminder = (brand) => {
             )
           }
           placeholder="Search website"
-          className="
-            w-full
-            h-11
-            px-4
-            rounded-xl
-            border
-            border-slate-300
-            bg-white
-            text-sm
-            outline-none
-            focus:border-slate-500
-            focus:ring-2
-            focus:ring-slate-200
-            placeholder:font-semibold
-          "
+          className ={inputClass}
         />
 
       </div>
@@ -1865,46 +1758,61 @@ HEADER
     {/* SL NO */}
     <th
       className="
-        sticky
-        top-0
-        z-30
-        px-4
-        py-3
-        text-left
-        whitespace-nowrap
-        font-semibold
-        text-slate-500
-        bg-slate-50
-        border-b
-        border-slate-200
-      "
+           sticky
+    left-0
+    top-0
+    z-40
+    w-[310px]
+    min-w-[310px]
+    max-w-[310px]
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    
+    border-slate-200
+    whitespace-nowrap
+  "
     >
       SL No.
     </th>
 
     {/* COMPANY NAME - FIXED */}
     <th
-      className="
-        sticky
-        left-0
-        top-0
-        z-50
-        w-[220px]
-        min-w-[220px]
-        max-w-[220px]
-        px-4
-        py-4
-        text-left
-        text-[14px]
-        font-bold
-        tracking-wider
-        text-slate-500
-        bg-slate-50
-        border-r
-        border-b
-        border-slate-200
-        whitespace-nowrap
-      "
+    className="
+  sticky
+  left-0
+  top-0
+  z-50
+  relative
+  w-[310px]
+  min-w-[310px]
+  max-w-[310px]
+  px-4
+  py-4
+  text-left
+  text-sm
+  font-bold
+  tracking-wider
+  text-slate-500
+  bg-slate-50
+  border-b
+  border-slate-200
+  whitespace-nowrap
+
+  after:absolute
+  after:top-0
+  after:right-0
+  after:w-[1px]
+  after:h-full
+  after:bg-slate-200
+  after:content-['']
+"
     >
       Company Name
     </th>
@@ -1929,7 +1837,7 @@ HEADER
       Full Name
     </th>
 
-    {/* PROSPECTS */}
+    {/* designation */}
     <th
       className="
         sticky
@@ -1946,7 +1854,7 @@ HEADER
         border-slate-200
       "
     >
-      ProsPects
+      Designation
     </th>
 
     {/* EMAIL */}
@@ -2108,23 +2016,30 @@ HEADER
         {/* COMPANY */}
         <td
           className="
-    sticky
-    left-0
-    z-20
-    w-[220px]
-    min-w-[220px]
-    max-w-[220px]
-    px-4
-    py-3
-    text-left
-    whitespace-nowrap
-    align-middle
-    font-semibold
-    text-slate-800
-    bg-white
-    border-r
-    border-slate-200
-  "
+   sticky
+  left-0
+  z-40
+  relative
+  w-[310px]
+  min-w-[310px]
+  max-w-[310px]
+  px-4
+  py-3
+  text-left
+  whitespace-nowrap
+  align-middle
+  font-semibold
+  text-slate-800
+  bg-white
+
+  after:absolute
+  after:top-0
+  after:right-0
+  after:w-[1px]
+  after:h-full
+  after:bg-slate-200
+  after:content-['']
+"
         >
           {brand.companyName || "-"}
         </td>
@@ -2136,9 +2051,9 @@ HEADER
         </td>
 
 
-        {/* PROSPECTS */}
+        {/* designation */}
         <td className="w-[140px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.prospects || "-"}
+          {brand.designation || "-"}
         </td>
 
 

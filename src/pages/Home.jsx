@@ -24,7 +24,7 @@ const socialLinks = [
 ];
 
 const stats = [
-  ["10,000+", "Verified Creators"],
+  ["10,000+", "Creator Network"],
   ["50+", "Campaigns Delivered"],
   ["8+", "Countries Reached"],
   ["98%", "Client Satisfaction"],
