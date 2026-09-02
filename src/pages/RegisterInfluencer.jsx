@@ -97,7 +97,7 @@ const initialForm = {
   commercialsFor1DedicatedYouTubeShortsVideo: "",
   commercialsFor1IntegratedYouTubeShortsVideo: "",
 
-  whatKindOfDealDoYouParticipateIn:"",
+  whatKindOfDealDoYouParticipateIn:[],
   speakingVideoLink: "",
 
   areYouATvMoviesOttCelebrity: "No",
@@ -484,7 +484,6 @@ const isStepValid = (step) => {
     // BASIC INFORMATION
     // ==========================================
     fullName: text(form.fullName),
-     email:text(form.email),
     instagramUsername: text(form.instagramUsername),
 
     instagramProfileLink: text(form.instagramProfileLink),
@@ -600,7 +599,7 @@ const isStepValid = (step) => {
     // OTHER INFORMATION
     // ==========================================
     whatKindOfDealDoYouParticipateIn:
-      text(
+      array(
         form.whatKindOfDealDoYouParticipateIn
       ),
 
