@@ -48,7 +48,7 @@ const brandStatuses = [
   "Lost",
   "Closed",
 ];
-const influencerStatuses = ["new", "reviewing", "approved", "rejected"];
+const influencerStatuses = ["new", "Reviewing", "Approved", "Rejected"];
 const testimonialStatuses = ["Pending", "Approved", "Rejected"];
 const registrationPageSize = 25;
 
@@ -87,32 +87,50 @@ const brandDetailFields = [
 
 const influencerDetailFields = [
   ["Full Name", "fullName"],
-  ["Creator Name", "creatorName"],
-  ["Email", "email", "email"],
-  ["Phone", "phone"],
-  ["Country", "country"],
-  ["State", "state"],
-  ["City", "city"],
-  ["Languages", "languages"],
+  ["Instagram Username", "instagramUsername"],
+  ["Instagram Profile Link", "instagramProfileLink"],
+  ["Instagram Follower Range", "instagramFollowersRange"],
+  ["Exact Followers", "exactFollowers"],
+  ["Phone Number", "phoneNumber"],
+  ["Whatsapp Number", "whatsappNumber"],
+  ["Email", "email"],
   ["Categories", "categories"],
-  ["Primary Platform", "primaryPlatform"],
-  ["Primary Profile", "primaryProfile", "profiles"],
-  ["Other Profiles", "otherProfiles", "profiles"],
-  ["Followers", "followers","followers"],
-  ["Engagement Rate", "engagementRate"],
-  ["Average Views", "averageViews"],
-  ["Audience Countries", "audienceCountries"],
-  ["Content Types", "contentTypes"],
-  ["Past Brand Work", "pastBrandWork", "long"],
-  ["Rate Card", "rateCard"],
-  ["Shipping Address", "shippingAddress", "long"],
-  ["Portfolio URL", "portfolioUrl", "profiles"],
-  ["Notes", "notes", "long"],
-  ["Consent To Contact", "consentToContact", "boolean"],
-  ["Status", "status"],
-  ["Created", "createdAt", "date"],
-  ["Updated", "updatedAt", "date"],
+  ["Campaign Type", "campaignType"],
+  ["Influencer Type", "influencerType"],
+  ["Gender", "gender"],
+  ["Date of Birth", "dateOfBirth"],
+  ["Languages", "languages"],
+  ["Full Address", "fullAddress"],
+  ["Landmark", "landmark"],
+  ["City", "city"],
+  ["State", "state"],
+  ["Country", "country"],
+  ["Pincode", "pincode"],
+  ["Youtube Username", "youtubeUsername"],
+  ["Youtube Channel Link", "youtubeChannelLink"],
+  ["Youtube Subscribers Range", "youtubeSubscribersRange"],
+  ["Commercials For 1 Instagram Reel", "commercialsFor1InstagramReel"],
+  ["Photo Link", "photoLink"],
+  ["Commercials For 1 Instagram Story", "commercialsFor1InstagramStory"],
+  ["Commercials For 1 Instagram Post", "commercialsFor1InstagramPost"],
+  ["Commercials For 1 Dedicated YouTube Video", "commercialsFor1DedicatedYouTubeVideo"],
+  ["Commercials For 1 Integrated YouTube Video", "commercialsFor1IntegratedYouTubeVideo"],
+  ["Commercials For 1 Dedicated YouTube Shorts Video", "commercialsFor1DedicatedYouTubeShortsVideo"],
+  ["Commercials For 1 Integrated YouTube Shorts Video", "commercialsFor1IntegratedYouTubeShortsVideo"],
+  ["What Kind Of Deal Do You Participate In", "whatKindOfDealDoYouParticipateIn"],
+  ["Speaking Video Link", "speakingVideoLink"],
+  ["Are you a TV/movies/OTT celebrity", "areYouATvMoviesOttCelebrity"],
+  ["What all platforms are you available on", "whatAllPlatformsAreYouAvailableOn"],
+  ["Type Of Celebrity", "typeOfCeleb"],
+  ["How many Amazon reviews you do per month", "howManyAmazonReviewsYouDoPerMonth"],
+  ["Platform", "platform"],
+   ["Status", "status"],
+  ["Timestamp", "timestamp"],
+  ["Updated At", "updatedAt"],
+  ["Bio", "bio"],
+  ["InflunexaUserId", "InflunexaUserId"],
 ];
+
 const initialBlogForm = {
   title: "",
   category: "",
@@ -227,22 +245,22 @@ function getDaysAgo(value) {
 }
 
 
-function formatRelativeDate(value, label = "Latest activity") {
+function formatRelativeDate(value) {
   const days = getDaysAgo(value);
 
   if (days === null) {
-    return `${label}: No data`;
+    return "No data";
   }
 
   if (days === 0) {
-    return `${label}: Today`;
+    return "Today";
   }
 
   if (days === 1) {
-    return `${label}: 1 day ago`;
+    return "1 day ago";
   }
 
-  return `${label}: ${days} days ago`;
+  return `${days} days ago`;
 }
 function campaignDaysLeft(ticket) {
   if (ticket?.status !== "Active" || !ticket?.endDate) return null;
@@ -408,8 +426,10 @@ if (type === "profiles") {
   return value;
 }
 
-function RegistrationTableCell({ record, field }) {
+function RegistrationTableCell({ record, field}) {
   const [, key, type] = field;
+  const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 if (key === "__slNo") {
   return (
     <div className="w-[70px] text-left font-medium text-slate-700">
@@ -417,7 +437,327 @@ if (key === "__slNo") {
     </div>
   );
 }
+
+  if (key === "influencerType") {
+    const influencerType = getInfluencerType(
+      record?.exactFollowers
+    );
+
+    return (
+      <div className="whitespace-nowrap font-medium text-slate-700">
+        {influencerType}
+      </div>
+    );
+  }
+ // Platform
+  if (key === "platform") {
+    const platform = getInfluencerPlatform(record);
+
+    return (
+      <div className="whitespace-nowrap font-medium text-slate-700">
+        {platform || "Not provided"}
+      </div>
+    );
+  }
+
+if (key === "email") {
+  const value = String(record?.[key] || "").trim();
+  const isLongEmail = value.length > 30;
+
+  const handleCopy = async (event) => {
+    event.stopPropagation();
+
+    if (!value) return;
+
+    try {
+      await navigator.clipboard.writeText(value);
+
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    } catch (error) {
+      console.error("❌ Failed to copy:", error);
+    }
+  };
+
+  return (
+    <div className="group min-w-0">
+      {/* Email */}
+      <div className="min-w-0">
+       
+          {value || "Not provided"}
+        
+      </div>
+
+      {/* Short email → Copy beside email */}
+      {value && !isLongEmail && (
+        <div className="inline-flex ml-2 align-middle">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="
+              shrink-0
+              rounded-md
+              border border-slate-200
+              bg-white
+              px-2 py-1
+              text-xs
+              font-medium
+              text-slate-500
+              opacity-0
+              transition-opacity
+              duration-200
+              group-hover:opacity-100
+              hover:border-slate-300
+              hover:bg-slate-50
+              hover:text-slate-700
+            "
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      )}
+
+      {/* Long email → Full email + Copy below */}
+      {value && isLongEmail && (
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="
+              rounded-md
+              border border-slate-200
+              bg-white
+              px-2 py-1
+              text-xs
+              font-medium
+              text-slate-500
+              opacity-0
+              transition-opacity
+              duration-200
+              group-hover:opacity-100
+              hover:border-slate-300
+              hover:bg-slate-50
+              hover:text-slate-700
+            "
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+// PHONE NUMBER
+if (key === "phoneNumber") {
+  const value = String(record?.[key] || "").trim();
+
+  const handleCopy = async (event) => {
+    event.stopPropagation();
+
+    if (!value) return;
+
+    try {
+      await navigator.clipboard.writeText(value);
+
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    } catch (error) {
+      console.error("❌ Failed to copy:", error);
+    }
+  };
+
+  return (
+    <div className="group flex min-w-0 items-center gap-2">
+      
+        {value || "Not provided"}
+      
+
+      {value && (
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="
+            shrink-0
+            rounded-md
+            border border-slate-200
+            bg-white
+            px-2 py-1
+            text-xs
+            font-medium
+            text-slate-500
+            opacity-0
+            transition
+            group-hover:opacity-100
+            hover:border-slate-300
+            hover:bg-slate-50
+            hover:text-slate-700
+          "
+        >
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+
+
   const rawValue = record?.[key];
+    // Empty value
+  if (
+    rawValue === undefined ||
+    rawValue === null ||
+    rawValue === ""
+  ) {
+    return (
+      <div className="text-slate-600">
+        Not provided
+      </div>
+    );
+  }
+if (key === "instagramFollowersRange") {
+  const instagramRange = record.instagramFollowersRange;
+
+  // If Instagram Follower Range is present, show it unchanged
+  if (
+    instagramRange !== undefined &&
+    instagramRange !== null &&
+    String(instagramRange).trim() !== ""
+  ) {
+    return String(instagramRange).trim();
+  }
+
+  // If Instagram Follower Range is missing, use Exact Followers
+  const exactFollowers = Number(
+    String(record.exactFollowers || "0").replace(/,/g, "")
+  );
+
+  if (!exactFollowers) return "Not provided";
+
+  if (exactFollowers < 1000) return "Under 1K";
+  if (exactFollowers < 10000) return "1K - 10K";
+  if (exactFollowers < 50000) return "10K - 50K";
+  if (exactFollowers < 100000) return "50K - 100K";
+
+  return "100K+";
+}
+
+  // ==========================================
+  // CONVERT VALUE TO STRING
+  // ==========================================
+  const value = Array.isArray(rawValue)
+    ? rawValue.join(", ")
+    : String(rawValue).trim();
+
+const linkFields = [
+    "instagramProfileLink",
+    "youtubeChannelLink",
+    "photoLink",
+    "speakingVideoLink",
+     "productUrl",
+  "website",
+  ];
+
+  if (linkFields.includes(key)) {
+    let href = value;
+
+    // Add https:// if user stored only domain/path
+    if (
+      !href.startsWith("http://") &&
+      !href.startsWith("https://")
+    ) {
+      href = `https://${href}`;
+    }
+
+  const isBrandUrl =
+    key === "website" ||
+    key === "productUrl";
+
+  const urlCanExpand =
+    isBrandUrl && value.length >65;
+
+  return (
+    <div className="w-full min-w-0 max-w-full">
+
+      {/* URL */}
+      <div
+        className={`
+          w-full
+          min-w-0
+          max-w-full
+          whitespace-normal
+          break-all
+          leading-5
+          ${
+            urlCanExpand && !expanded
+              ? "max-h-10 overflow-hidden"
+              : ""
+          }
+        `}
+        style={{
+          overflowWrap: "anywhere",
+          wordBreak: "break-all",
+        }}
+      >
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+            block
+            w-full
+            min-w-0
+            max-w-full
+            font-medium
+            text-blue-600
+            underline
+            hover:text-blue-800
+          "
+          title={value}
+        >
+          {value}
+        </a>
+      </div>
+
+      {/* SEE MORE / SEE LESS */}
+      {urlCanExpand && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            setExpanded((prev) => !prev);
+          }}
+          className="
+            mt-1
+            block
+            w-fit
+            border-0
+            bg-transparent
+            p-0
+            text-xs
+            font-medium
+            leading-4
+            text-blue-600
+            hover:text-blue-800
+            hover:underline
+            whitespace-nowrap
+            cursor-pointer
+          "
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      )}
+    </div>
+  );
+}
 
   const textValue = Array.isArray(rawValue)
     ? rawValue.join(", ")
@@ -425,7 +765,7 @@ if (key === "__slNo") {
 
   const canExpand =textValue.length > 65;
 
-  const [expanded, setExpanded] = useState(false);
+  
   return (
     <div className="w-full min-w-0 max-w-full">
   <div
@@ -472,31 +812,257 @@ if (key === "__slNo") {
   )}
 </div>
   );
+
+
 }
-function RegistrationStatusButtons({ record, statusOptions, type, onUpdateStatus }) {
-  const currentStatus = type === "brands" ? formatStatus(record.status) : record.status;
+function RegistrationStatusButtons({
+  record,
+  statusOptions,
+  type,
+  onUpdateStatus,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, });
+  const currentStatus =
+    type === "brands"
+      ? formatStatus(record.status)
+      : record.status;
+
   const statusTone = (status) => {
     const label = formatStatus(status).toLowerCase();
-    if (["approved", "deal won", "campaign started", "campaign completed", "repeat client"].includes(label)) return "success";
-    if (["rejected", "lost", "no response", "closed"].includes(label)) return "danger";
+
+    if (
+      [
+        "approved",
+        "deal won",
+        "campaign started",
+        "campaign completed",
+        "repeat client",
+      ].includes(label)
+    ) {
+      return "success";
+    }
+
+    if (
+      [
+        "rejected",
+        "lost",
+        "no response",
+        "closed",
+      ].includes(label)
+    ) {
+      return "danger";
+    }
+
     return "warning";
   };
+
+  // ==========================================
+  // BRAND → DROPDOWN
+  // ==========================================
+  if (type === "brands") {
+const handleActionClick = (event) => {
+  event.stopPropagation();
+
+  const rect = event.currentTarget.getBoundingClientRect();
+
+  const menuHeight = 160;
+  const menuWidth = 192;
+  const gap = 6;
+  const screenPadding = 10;
+
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+
+  let top;
+
+  // Open upward if the dropdown would be cut at the bottom
+  if (spaceBelow < menuHeight + gap && spaceAbove >= menuHeight + gap) {
+    top = rect.top - menuHeight - gap;
+  } else {
+    top = rect.bottom + gap;
+  }
+
+  // Keep dropdown inside the screen horizontally
+  let left = rect.right - menuWidth;
+
+  if (left < screenPadding) {
+    left = screenPadding;
+  }
+
+  if (left + menuWidth > window.innerWidth - screenPadding) {
+    left = window.innerWidth - menuWidth - screenPadding;
+  }
+
+  setMenuPosition({
+    top,
+    left,
+  });
+
+  setIsOpen((prev) => !prev);
+};
+  return (
+    <>
+    
+      <button
+        type="button"
+        onClick={handleActionClick}
+        className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-md
+          border
+          border-slate-200
+          bg-white
+          px-3
+          py-2
+          text-sm
+          font-medium
+          text-slate-600
+          shadow-sm
+          transition
+          hover:border-slate-300
+          hover:bg-slate-50
+          hover:text-slate-800
+        "
+      >
+        Actions
+
+        <svg
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01-.02-1.06z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+
+     
+{isOpen && (
+  <div
+      className="
+    fixed
+    z-[99999]
+    w-[140px]
+    rounded-lg
+    border
+    border-slate-200
+    bg-white
+    shadow-xl
+  "
+    style={{
+      top: `${menuPosition.top}px`,
+      left: `${menuPosition.left}px`,
+    }}
+    onClick={(event) => event.stopPropagation()}
+  >
+    {/* SMALL SCROLLABLE OPTIONS AREA */}
+    <div
+      className="
+        max-h-40
+        overflow-y-auto
+        overflow-x-hidden
+        py-1
+      "
+    >
+      {statusOptions
+        .filter(
+          (status) =>
+            formatStatus(status).toLowerCase() !== "new"
+        )
+        .map((status) => {
+          const formattedStatus = formatStatus(status);
+
+          const isActive =
+            currentStatus === formattedStatus;
+
+          return (
+            <button
+              key={status}
+              type="button"
+              onClick={() => {
+                onUpdateStatus(
+                  type,
+                  record._id,
+                  status
+                );
+
+                setIsOpen(false);
+              }}
+              className={`
+                flex
+                w-full
+                items-center
+                justify-between
+                px-4
+                py-2.5
+                text-left
+                text-sm
+                ${
+                  isActive
+                    ? "bg-slate-100 font-semibold text-slate-800"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }
+              `}
+            >
+              <span>{formattedStatus}</span>
+
+              {isActive && (
+                <span className="text-xs text-slate-500">
+                  ✓
+                </span>
+              )}
+            </button>
+          );
+        })}
+    </div>
+  </div>
+)}
+
+
+    </>
+  );
+}
+  // ==========================================
+  // INFLUENCER → EXISTING BUTTONS
+  // ==========================================
   return (
     <div className="admin-registration-status-buttons">
-      {statusOptions.filter((status) => formatStatus(status).toLowerCase() !== "new").map((status) => (
-        <button
-          className={`${statusTone(status)} ${currentStatus === formatStatus(status) ? "is-active" : ""}`}
-          key={status}
-          onClick={() => onUpdateStatus(type, record._id, status)}
-          type="button"
-        >
-          {formatStatus(status)}
-        </button>
-      ))}
+      {statusOptions
+        .filter(
+          (status) =>
+            formatStatus(status).toLowerCase() !== "new"
+        )
+        .map((status) => (
+          <button
+            className={`${statusTone(status)} ${
+              currentStatus === formatStatus(status)
+                ? "is-active"
+                : "uppercase"
+            }`}
+            key={status}
+            onClick={() =>
+              onUpdateStatus(
+                type,
+                record._id,
+                status
+              )
+            }
+            type="button"
+          >
+            {formatStatus(status)}
+          </button>
+        ))}
     </div>
   );
 }
-
 function Pill({ children, tone = "default" }) {
   return <span className={`admin-pill ${tone}`}>{children}</span>;
 }
@@ -518,7 +1084,11 @@ function RegistrationDataTable({
 }) {
   return (
     <div className="admin-full-data-table-wrap">
-      <table className="admin-table admin-full-data-table">
+     <table
+  className={`admin-table admin-full-data-table ${
+    type === "influencers" ? "admin-influencer-table" : ""
+  }`}
+>
         <thead>
           
           <tr>
@@ -588,6 +1158,16 @@ function RegistrationDataTable({
 function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
+       <label>
+        Global Search
+        <input
+          name="search"
+          placeholder={searchPlaceholder}
+          type="search"
+          value={filters.search}
+          onChange={(event) => onFilterChange("search", event.target.value)}
+        />
+      </label>
        {type === "influencers" && (
         <>
       <label>
@@ -613,17 +1193,6 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     ))}
   </select>
 </label>
-
-      <label>
-        Global Search
-        <input
-          name="search"
-          placeholder={searchPlaceholder}
-          type="search"
-          value={filters.search}
-          onChange={(event) => onFilterChange("search", event.target.value)}
-        />
-      </label>
 
       <label>
             Location
@@ -654,10 +1223,11 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
           </label>
       <label>
         Status
-        <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)}>
+        <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)} >
           <option value="">All Statuses</option>
           {statusOptions.map((item) => (
-            <option key={item} value={item}>{formatStatus(item)}</option>
+            <option key={item} value={item}>{formatStatus(item).toUpperCase()}
+            </option>
           ))}
         </select>
       </label>
@@ -776,37 +1346,84 @@ function RegistrationPager({
     );
   }
 
-  const currentPage = cursorHistory.length + 1;
+ const currentPage = cursorHistory.length + 1;
 
-  return (
-    <div className="admin-registration-pager">
-      <div className="admin-pager-info">
-        <span>Cursor pagination</span>
-      </div>
+return (
+  <div
+    className="
+      flex
+      items-center
+      justify-center
+      gap-3
+      mt-6
+      pb-2
+    "
+  >
+    <button
+      type="button"
+      disabled={!cursorHistory.length}
+      onClick={onPrevious}
+      className="
+        h-11
+        px-5
+        rounded-xl
+        border
+        border-slate-300
+        bg-white
+        text-sm
+        font-semibold
+        text-slate-600
+        hover:bg-slate-50
+        disabled:opacity-40
+        disabled:cursor-not-allowed
+        transition
+      "
+    >
+      Previous
+    </button>
 
-      <div className="admin-pager-controls">
-        <button
-          type="button"
-          disabled={!cursorHistory.length}
-          onClick={onPrevious}
-        >
-          Previous
-        </button>
-
-        <span className="admin-pager-page">
-          Page <strong>{currentPage}</strong>
-        </span>
-
-        <button
-          type="button"
-          disabled={!hasMore}
-          onClick={onNext}
-        >
-          Next
-        </button>
-      </div>
+    <div
+      className="
+        h-11
+        px-5
+        flex
+        items-center
+        justify-center
+        rounded-xl
+        bg-slate-900
+        text-white
+        text-sm
+        font-semibold
+        min-w-[120px]
+      "
+    >
+      Page {currentPage}
     </div>
-  );
+
+    <button
+      type="button"
+      disabled={!hasMore}
+      onClick={onNext}
+      className="
+        h-11
+        px-5
+        rounded-xl
+        border
+        border-slate-300
+        bg-white
+        text-sm
+        font-semibold
+        text-slate-600
+        hover:bg-slate-50
+        disabled:opacity-40
+        disabled:cursor-not-allowed
+        transition
+      "
+    >
+      Next
+    </button>
+  </div>
+);
 }
 function AnalyticsChart({ title, items = [], emptyMessage }) {
   const total = items.reduce((sum, item) => sum + item.count, 0);
@@ -843,8 +1460,78 @@ function RelativeDate({ value, label = "Latest activity" }) {
     </span>
   );
 }
+
+
+const getInfluencerType = (followers) => {
+  followers = Number(followers) || 0;
+
+  if (followers >= 1000 && followers < 10000) {
+    return "Nano Influencer";
+  }
+
+  if (followers >= 10000 && followers < 100000) {
+    return "Micro Influencer";
+  }
+
+  if (followers >= 100000 && followers < 1000000) {
+    return "Macro Influencer";
+  }
+
+  if (followers >= 1000000) {
+    return "Mega Influencer";
+  }
+
+  return "Nano Influencer";
+};
+
+const getInfluencerPlatform = (creator) => {
+  const platformSet = new Set();
+
+  // Existing platform field
+  if (creator?.platform) {
+    String(creator.platform)
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .forEach((item) => {
+        const normalized = item.toLowerCase();
+
+        if (normalized === "instagram") {
+          platformSet.add("Instagram");
+        }
+
+        if (
+          normalized === "youtube" ||
+          normalized === "you tube"
+        ) {
+          platformSet.add("YouTube");
+        }
+      });
+  }
+
+  // Detect Instagram from Instagram details
+  if (
+    String(creator?.instagramUsername || "").trim() ||
+    String(creator?.instagramProfileLink || "").trim()
+  ) {
+    platformSet.add("Instagram");
+  }
+
+  // Detect YouTube from YouTube details
+  if (
+    String(creator?.youtubeUsername || "").trim() ||
+    String(creator?.youtubeChannelLink || "").trim()
+  ) {
+    platformSet.add("YouTube");
+  }
+
+  return Array.from(platformSet).join(", ");
+};
+
+
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
     return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
@@ -893,7 +1580,6 @@ export default function AdminDashboard() {
     ],
     [data]
   );
-
 
 const validateTicketForm = () => {
   const errors = {};
@@ -976,6 +1662,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   return false;
 }
 
+
   // ==============================
   // 4. EVERYTHING IS VALID
   // ==============================
@@ -998,6 +1685,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   );
 
   const loadDashboard = async ({ showLoading = true } = {}) => {
+    setIsRefreshing(true);
     if (showLoading) {
       setStatus({ type: "loading", message: "Loading dashboard..." });
     }
@@ -1012,7 +1700,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setIsAuthenticated(false);
       }
       setStatus({ type: "error", message: error.message });
-    }
+    }finally {
+    setIsRefreshing(false);
+  }
   };
 
 
@@ -1409,15 +2099,16 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             <small>Admin</small>
           </span>
           
-          <button
-           onMouseEnter={() => setSidebarOpen(false)}
-  className="admin-action-button refresh"
-  type="button"
-  onClick={loadDashboard}
-  title="Refresh dashboard"
+       <button 
+  onMouseEnter={() => setSidebarOpen(false)}
+  className={`admin-action-button refresh ${isRefreshing ? "is-refreshing" : ""}`} 
+  type="button" 
+  onClick={() => loadDashboard()} 
+  title="Refresh dashboard" 
   aria-label="Refresh dashboard"
+  disabled={isRefreshing}
 >
-<FaSyncAlt />
+  <FaSyncAlt />
 </button>
       </div>
       
@@ -1463,7 +2154,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           <div className="admin-overview">
             <section className="admin-overview-hero">
               <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
-              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, creators & candidates</small></div>
+              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, Influencer & candidates</small></div>
             </section>
             <section className="admin-overview-metrics">
   {/* 2. ACTIVE JOBS */}
@@ -1482,9 +2173,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       live opportunities
     </small>
 
-    <small>
-      Latest job: {formatDate(data.stats.latestJobDate)}
-    </small>
+   <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestJobDate)}
+</small>
   </article>
   {/* 4. CANDIDATES */}
   <article>
@@ -1498,9 +2189,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       {data.stats.reviewApplications || 0} awaiting review
     </small>
 
-    <small>
-      Latest application: {formatDate(data.stats.latestApplicationDate)}
-    </small>
+    <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestApplicationDate)}
+</small>
   </article>
 {/* 3. BRAND LEADS */}
   <article>
@@ -1514,10 +2205,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       {data.stats.newBrands || 0} new requests
     </small>
 
-    <small>
-      Latest registration:{" "}
-      {formatDate(data.stats.latestBrandDate)}
-    </small>
+    <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestBrandDate)}
+</small>
   </article>
               <article>
     <span>Active campaigns</span>
@@ -1530,13 +2220,13 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       {data.stats.tickets || 0} brand tickets
     </small>
 
-    <small>
-      Latest campaign: {formatDate(data.stats.latestTicketDate)}
-    </small>
+   <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestTicketDate)}
+</small>
   </article>
     {/* 1. CREATORS */}
   <article>
-    <span>Creators</span>
+    <span>Influencer</span>
 
     <strong>
       {data.stats.influencers || 0}
@@ -1546,9 +2236,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       {data.stats.newInfluencers || 0} new registrations
     </small>
 
-    <small>
-      Latest Registered: {formatDate(data.stats.latestInfluencerDate)}
-    </small>
+    <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestInfluencerDate)}
+</small>
   </article>
   {/* 6. CSV CREATORS */}
   <article>
@@ -1562,9 +2252,9 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       total CSV upload records
     </small>
 
-    <small>
-      Latest upload: {formatDate(data.stats.latestCsvUploadDate)}
-    </small>
+    <small className="admin-metric-latest">
+  {formatRelativeDate(data.stats.latestCsvUploadDate)}
+</small>
   </article>
   </section>
             <section className="admin-analytics-grid">
@@ -1589,7 +2279,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
               onFilterChange={updateBrandFilter}
               onSearch={applyRegistrationSearch}
               onReset={resetRegistrationFilters}
-              searchPlaceholder="Company, contact, email, industry..."
+              searchPlaceholder="Company, Contact, Email, Industry..."
               statusOptions={brandStatuses}
               type="brands"
             />
@@ -1848,7 +2538,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
               onFilterChange={updateInfluencerFilter}
               onSearch={applyRegistrationSearch}
               onReset={resetRegistrationFilters}
-              searchPlaceholder="Creator, email, country, platform..."
+              searchPlaceholder="Creator, Email, Country, Platform..."
               statusOptions={influencerStatuses}
               type="influencers"
             />
@@ -2053,7 +2743,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         )}
 
         {activeTab === "applications" && (
-          <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2><small>Review applications, open resumes, and update candidate status.</small></div><form className="admin-registration-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, email, mobile, role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
+          <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2></div><form className="admin-registration-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, Email, Mobile, Role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
         )}
 
         {activeTab === "testimonials" && (

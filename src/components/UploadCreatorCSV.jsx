@@ -404,10 +404,10 @@ const downloadFailedCSV = () => {
       "How many Amazon reviews you do per month":
         item.howManyAmazonReviewsYouDoPerMonth,
 
-      "Fetched from Brand Page": item.fetchedFromBrandPage,
-      "Fetched For Brand": item.fetchedForBrand,
+     
+     
       "Platform": item.platform,
-      "Fetched Date": item.fetchedDate,
+     
 
       "InflunexaUserId": item.InflunexaUserId,
 

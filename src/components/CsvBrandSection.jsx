@@ -272,7 +272,6 @@ const [filters, setFilters] = useState({
   fullName: "",
   designation: [],
   email: "",
-  officialEmail: "",
   mobileNumber: "",
   linkedinProfile: "",
   city: "",
@@ -334,7 +333,6 @@ useEffect(() => {
   designation: filters.designation.join(","),
 
   email: filters.email,
-  officialEmail: filters.officialEmail,
   mobileNumber: filters.mobileNumber,
   linkedinProfile: filters.linkedinProfile,
   city: filters.city,
@@ -1287,7 +1285,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search company"
+          placeholder="Company Name"
           className ={inputClass}
         />
 
@@ -1318,7 +1316,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search name"
+          placeholder=" Full Name"
           className ={inputClass}
         />
 
@@ -1334,72 +1332,36 @@ const inputClass = `
   onChange={(value) =>
     handleFilterChange("designation", value)
   }
-  placeholder="Select Designation"
+  placeholder="Designation"
 />
 
 
-      {/* EMAIL */}
+    {/* EMAIL / OFFICIAL EMAIL */}
 
-      <div>
+<div>
+  <label
+    className="
+      block
+      mb-2
+      text-[13px]
+      font-bold
+      tracking-wide
+      text-slate-500
+    "
+  >
+    Email Id / Official Email Id
+  </label>
 
-        <label className="
-          block
-          mb-2
-          text-[13px]
-          font-bold
-          tracking-wide
-          text-slate-500
-        ">
-          Email
-        </label>
-
-        <input
-          type="text"
-          value={filters.email}
-          onChange={(e) =>
-            handleFilterChange(
-              "email",
-              e.target.value
-            )
-          }
-          placeholder="Search email"
-          className ={inputClass}
-        />
-
-      </div>
-
-
-      {/* OFFICIAL EMAIL */}
-
-      <div>
-
-        <label className="
-          block
-          mb-2
-           text-[13px]
-          font-bold
-          
-          tracking-wide
-          text-slate-500
-          
-        ">
-          Official Email
-        </label>
-
-        <input
-          type="text"
-          value={filters.officialEmail}
-          onChange={(e) =>
-            handleFilterChange(
-              "officialEmail",
-              e.target.value
-            )
-          }
-          placeholder="Search official email"
-          className ={inputClass}
-        />
-
-      </div>
+  <input
+    type="text"
+    value={filters.email}
+    onChange={(e) =>
+      handleFilterChange("email", e.target.value)
+    }
+    placeholder="Email Id/Official Email Id"
+    className={inputClass}
+  />
+</div>
 
 
       {/* MOBILE */}
@@ -1427,7 +1389,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search mobile"
+          placeholder="Mobile Number"
           className ={inputClass}
         />
 
@@ -1459,7 +1421,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search LinkedIn"
+          placeholder="LinkedIn Profile"
           className ={inputClass}
         />
 
@@ -1491,7 +1453,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search city"
+          placeholder="City"
           className ={inputClass}
         />
 
@@ -1523,59 +1485,11 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search address"
+          placeholder="Address"
           className ={inputClass}
         />
 
       </div>
-
-
-      {/* DIRECTORS */}
-
-      <div>
-
-        <label className="
-          block
-          mb-2
-          text-[13px]
-          font-bold
-        
-          tracking-wide
-          text-slate-500
-        ">
-          Directors
-        </label>
-
-        <input
-          type="text"
-          value={filters.directors}
-          onChange={(e) =>
-            handleFilterChange(
-              "directors",
-              e.target.value
-            )
-          }
-          placeholder="Search directors"
-          className ={inputClass}
-        />
-
-      </div>
-
-
-      {/* AGE OF COMPANY */}
-
-<MultiSelectDropdown
-  label="Age Of Company"
-  options={filterOptions.ageOfCompany}
-  value={filters.ageOfCompany}
-  onChange={(value) =>
-    handleFilterChange("ageOfCompany", value)
-  }
-  placeholder="Select company age"
-/>
-
-
-
       {/* WEBSITE */}
 
       <div>
@@ -1601,7 +1515,7 @@ const inputClass = `
               e.target.value
             )
           }
-          placeholder="Search website"
+          placeholder="Website"
           className ={inputClass}
         />
 
@@ -1613,14 +1527,13 @@ const inputClass = `
       {/* DATA TYPE */}
 <MultiSelectDropdown
   label="Data Type"
-  options={filterOptions.dataType}
+  options={["LinkedIn", "Brand"]}
   value={filters.dataType}
   onChange={(value) =>
     handleFilterChange("dataType", value)
   }
-  placeholder="Select data type"
+  placeholder="Data Type"
 />
-
 
  {/* STATUS */}
 <MultiSelectDropdown
@@ -1630,7 +1543,7 @@ const inputClass = `
   onChange={(value) =>
     handleFilterChange("status", value)
   }
-  placeholder="Select status"
+  placeholder="Status"
 />
     </div>
 
@@ -2091,7 +2004,7 @@ HEADER
           font-medium
           cursor-pointer
         "
-        title="Copy official email"
+        title="Copy Official Email Id"
       >
         {copiedOfficialEmail === brand._id ? "Copied!" : "Copy"}
       </button>
@@ -2210,9 +2123,12 @@ HEADER
 
 
         {/* DATA TYPE */}
-        <td className="w-[150px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.dataType || "-"}
-        </td>
+        {/* DATA TYPE */}
+<td className="w-[150px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+  {brand.linkedinProfile?.trim()
+    ? "LinkedIn"
+    : "Brand"}
+</td>
 
 
         {/* STATUS */}

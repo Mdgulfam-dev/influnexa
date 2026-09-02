@@ -18,6 +18,8 @@ const [copiedPhone, setCopiedPhone] = useState(null);
 const [showEdit, setShowEdit] = useState(false);
 const adminEmail = localStorage.getItem("adminEmail") || "";
 const [expandedBios, setExpandedBios] = useState({});
+const [expandedCategories, setExpandedCategories] = useState(null);
+const [expandedCampaignTypes, setExpandedCampaignTypes] = useState({});
 const [copiedWhatsapp, setCopiedWhatsapp] = useState(null);
 const [page, setPage] = useState(1);
 const [limit] = useState(100);
@@ -415,15 +417,18 @@ const formattedData = allCreators.map((creator) => ({
   "How many Amazon reviews you do per month":
     creator.howManyAmazonReviewsYouDoPerMonth || "",
 
-  "Fetched from Brand Page":
-    creator.fetchedFromBrandPage || "",
+ 
 
-  "Fetched For Brand":
-    creator.fetchedForBrand || "",
+  
 
-  "Platform": creator.platform || "",
-
-  "Fetched Date": creator.fetchedDate || "",
+ "Platform":
+  creator.instagramProfileLink && creator.youtubeChannelLink
+    ? "Instagram, YouTube"
+    : creator.instagramProfileLink
+      ? "Instagram"
+      : creator.youtubeChannelLink
+        ? "YouTube"
+        : "",
 
   "InflunexaUserId": creator.InflunexaUserId || "",
 }));
@@ -976,8 +981,8 @@ placeholder:"Email"
 {
 name:"phoneNumber",
 type:"text",
-label:"Phone",
-placeholder:"Phone"
+label:"Phone Number",
+placeholder:"Phone Number"
 },
 
 // {
@@ -990,8 +995,8 @@ placeholder:"Phone"
 {
 name:"instagramFollowersRange",
 type:"select",
-label:"Followers Range",
-placeholder:"Followers Range",
+label:"Instagram Followers Range",
+placeholder:" Instagram Followers Range",
 options:filterOptions.instagramFollowersRange
 },
 
@@ -1004,8 +1009,8 @@ options:filterOptions.instagramFollowersRange
 {
 name:"categories",
 type:"select",
-placeholder:"Category",
-label:"Category",
+placeholder:"Categories",
+label:"Categories",
 options:filterOptions.categories
 },
 
@@ -1051,13 +1056,6 @@ label:"Country",
 placeholder:"Country",
 options:filterOptions.country
 },
-{
-  name: "pincode",
-  type: "text",
-  label:"Pincode",
-  placeholder: "Pincode",
-},
-
 // {
 // name:"youtubeUsername",
 // type:"text",
@@ -1068,8 +1066,8 @@ options:filterOptions.country
 {
 name:"youtubeSubscribersRange",
 type:"select",
-label:"Youtube Subscribers",
-placeholder:"Youtube Subscribers",
+label:"Youtube Subscribers Range",
+placeholder:"Youtube Subscribers Range",
 options:filterOptions.youtubeSubscribersRange
 },
 
@@ -1086,8 +1084,8 @@ options:filterOptions.platform
 {
 name:"typeOfCeleb",
 type:"select",
-label:"Celebrity Type",
-placeholder:"Celebrity Type",
+label:"Type Of Celebrity",
+placeholder:"Type Of Celebrity",
 options:filterOptions.typeOfCeleb
 
 },
@@ -1096,8 +1094,8 @@ options:filterOptions.typeOfCeleb
 {
 name:"languages",
 type:"select",
-label:"Language",
-placeholder:"Language",
+label:"Languages",
+placeholder:"Languages",
 options:filterOptions.languages
 },
 
@@ -1178,6 +1176,7 @@ options:filterOptions.languages
       { value: "1M - 5M", label: "1M - 5M" },
       { value: "5M+", label: "5M+" },
     ]
+   
     : (field.options || []).map(option => ({
         value: option,
         label: option,
@@ -1400,9 +1399,9 @@ Loading CSV creators...
     left-0
     top-0
     z-40
-    w-[310px]
-    min-w-[310px]
-    max-w-[310px]
+    w-[220px]
+    min-w-[220px]
+    max-w-[220px]
     px-4
     py-4
     text-left
@@ -1454,7 +1453,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Instagram Link
+Instagram Profile Link
 </th>
 
 
@@ -1473,7 +1472,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Followers Range
+ Instagram Follower Range
 </th>
 
 
@@ -1509,7 +1508,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Phone
+Phone Number
 </th>
 
 <th  className="
@@ -1527,7 +1526,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Whatsapp
+Whatsapp Number
 </th>
 <th  className="
 sticky top-0 z-30
@@ -1632,7 +1631,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-DOB
+Date of Birth
 </th>
 
 <th  className="
@@ -1797,7 +1796,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Youtube Channel
+Youtube Channel Link
 </th>
 
 
@@ -1816,7 +1815,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Youtube Subscribers
+Youtube Subscribers Range
 </th>
 
 <th  className="
@@ -1834,7 +1833,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Instagram Reel Price
+Commercials For 1 Instagram Reel
 </th>
 
 <th  className="
@@ -1869,7 +1868,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Instagram Story Price
+Commercials For 1 Instagram Story
 </th>
 
 <th  className="
@@ -1887,7 +1886,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Instagram Post Price
+Commercials For 1 Instagram Post
 </th>
 
 <th  className="
@@ -1905,7 +1904,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Dedicated Youtube Video
+Commercials For 1 Dedicated YouTube Video
 </th>
 
 <th  className="
@@ -1923,7 +1922,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Integrated Youtube Video
+Commercials For 1 Integrated YouTube Video
 </th>
 
 <th  className="
@@ -1941,7 +1940,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Dedicated Shorts
+Commercials For 1 Dedicated YouTube Shorts Video
 </th>
 
 <th  className="
@@ -1959,7 +1958,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Integrated Shorts
+Commercials For 1 Integrated YouTube Shorts Video
 </th>
 <th  className="
 sticky top-0 z-30
@@ -1976,7 +1975,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Deal Type
+What Kind Of Deal Do You Participate In
 </th>
 <th  className="
 sticky top-0 z-30
@@ -1993,25 +1992,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Speaking Video
-</th>
-
-<th  className="
-sticky top-0 z-30
-    px-4
-    py-4
-    text-left
-    text-sm
-    font-bold
-    
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-TV/Movies Celebrity
+Speaking Video Link
 </th>
 
 <th  className="
@@ -2029,7 +2010,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Available Platforms
+Are you a TV/movies/OTT celebrity
 </th>
 
 <th  className="
@@ -2047,7 +2028,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Celebrity Type
+What all platforms are you avilable on
 </th>
 
 <th  className="
@@ -2065,7 +2046,25 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Amazon Reviews
+Type Of Celebrity 
+</th>
+
+<th  className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+How many Amazon reviews you do per month
 </th>
 
 <th  className="
@@ -2085,58 +2084,8 @@ sticky top-0 z-30
 ">
 Platform
 </th>
-<th  className="
-sticky top-0 z-30
-    px-4
-    py-4
-    text-left
-    text-sm
-    font-bold
-    
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Fetched For Brand
-</th>
 
-<th  className="
-sticky top-0 z-30
-    px-4
-    py-4
-    text-left
-    text-sm
-    font-bold
-    
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Fetched Date
-</th>
-<th  className="
-sticky top-0 z-30
-    px-4
-    py-4
-    text-left
-    text-sm
-    font-bold
-    
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    border-slate-200
-    whitespace-nowrap
-">
-Fetched From Brand
-</th>
+
 
 <th  className="
 sticky top-0 z-30
@@ -2155,7 +2104,24 @@ sticky top-0 z-30
 ">
 Timestamp
 </th>
-
+<th
+  className="
+    sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+  "
+>
+  Updated At
+</th>
 
 <th  className="
 sticky top-0 z-30
@@ -2290,9 +2256,9 @@ key={creator._id}
     sticky
     left-0
     z-20
-    w-[310px]
-    min-w-[310px]
-    max-w-[310px]
+    w-[220px]
+    min-w-[220px]
+    max-w-[220px]
     px-4
     py-5
     text-sm
@@ -2301,7 +2267,9 @@ key={creator._id}
     border-b
     border-r
     border-slate-200
-    whitespace-nowrap
+     whitespace-normal
+    break-words
+    overflow-wrap-anywhere
     align-middle
   "
 >
@@ -2523,28 +2491,83 @@ key={creator._id}
 </td>
 
 <td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
+  px-4
+  py-5
+  text-sm
+  text-slate-700
+  border-b
+  border-slate-200
+  align-middle
+  min-w-[250px]
+  max-w-[350px]
 ">
-  {creator.categories?.join(", ") || "-"}
+  {creator.categories?.length ? (
+    <div>
+      <div className={expandedCategories ? "" : "line-clamp-2"}>
+        {creator.categories.join(", ")}
+      </div>
+
+      {creator.categories.join(", ").length > 100 && (
+        <button
+          type="button"
+         onClick={() =>
+  setExpandedCategories(
+    expandedCategories === creator._id ? null : creator._id
+  )
+}
+          className="mt-1 text-blue-600 hover:text-blue-800 font-medium text-xs"
+        >
+          {expandedCategories ? "See Less" : "See More"}
+        </button>
+      )}
+    </div>
+  ) : (
+    "-"
+  )}
 </td>
 <td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
+  px-4
+  py-5
+  text-sm
+  text-slate-700
+  border-b
+  border-slate-200
+  align-middle
+  min-w-[250px]
+  max-w-[350px]
 ">
-  {creator.campaignType?.join(", ") || "-"}
+  {creator.campaignType?.length ? (
+    <div>
+      <div
+        className={
+          expandedCampaignTypes[creator._id]
+            ? ""
+            : "line-clamp-2"
+        }
+      >
+        {creator.campaignType.join(", ")}
+      </div>
+
+      {creator.campaignType.join(", ").length > 100 && (
+        <button
+          type="button"
+          onClick={() =>
+            setExpandedCampaignTypes((prev) => ({
+              ...prev,
+              [creator._id]: !prev[creator._id],
+            }))
+          }
+          className="mt-1 text-blue-600 hover:text-blue-800 font-medium text-xs"
+        >
+          {expandedCampaignTypes[creator._id]
+            ? "See Less"
+            : "See More"}
+        </button>
+      )}
+    </div>
+  ) : (
+    "-"
+  )}
 </td>
 
 <td className="
@@ -2940,54 +2963,38 @@ key={creator._id}
   {creator.howManyAmazonReviewsYouDoPerMonth || "-"}
 </td>
 <td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
+    px-4 
+    py-5 
+    text-sm 
+    text-slate-700 
+    border-b 
+    border-slate-200 
+    whitespace-nowrap 
+    align-middle 
 ">
-  {creator.platform || "-"}
-</td>
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.fetchedForBrand || "-"}
-</td>
+  {(() => {
+    const hasInstagram = Boolean(
+      creator.instagramProfileLink?.trim()
+    );
 
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.fetchedDate || "-"}
-</td>
+    const hasYoutube = Boolean(
+      creator.youtubeChannelLink?.trim()
+    );
 
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.fetchedFromBrandPage || "-"}
+    if (hasInstagram && hasYoutube) {
+      return "Instagram, YouTube";
+    }
+
+    if (hasInstagram) {
+      return "Instagram";
+    }
+
+    if (hasYoutube) {
+      return "YouTube";
+    }
+
+    return "-";
+  })()}
 </td>
 
 <td className="
@@ -3001,6 +3008,21 @@ key={creator._id}
     align-middle
 ">
   {creator.timestamp || "-"}
+</td>
+
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.updatedAt
+    ? new Date(creator.updatedAt).toLocaleString("en-IN")
+    : "-"}
 </td>
 <td
   className="
