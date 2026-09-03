@@ -7,19 +7,108 @@ import SEO, { breadcrumbSchema, pageSchema } from "../lib/seo";
 import { applyTheme, getInitialTheme } from "../lib/theme";
 
 const categories = [
-  "Fashion & Lifestyle",
-  "Beauty",
+  "Fashion",
+  "Beauty and Makeup",
+  "Personal Care",
+  "UGC Creators",
+  "Tech Reviews",
+  "Body Care",
+  "Skin Care",
+  "LifeStyle",
   "Food",
-  "Travel",
-  "Fitness & Health",
-  "Tech & Gadgets",
-  "Comedy & Entertainment",
-  "Finance",
-  "Gaming",
-  "Parenting",
+  "Housewife",
+  "Podcasters",
+  "Cooking and Recipes",
+  "Health & Wellness",
+  "Gym",
+  "Fitness",
+  "Moms",
+  "Pets",
+  "Travel & Adventure",
+  "Celebrity",
+  "Film, OTT and TV Series",
+  "Memes",
+  "Models",
+  "Yoga",
+  "Hair Care",
+  "Student",
+  "Family/Parenting",
+  "Home & Decor",
+  "Baby Care",
   "Education",
+  "Dogs",
+  "Diet & Nutrition",
+  "Dermatologist",
+  "Doctors",
+  "Crypto and NFTs",
+  "Personal Finance",
+  "Luxury Goods",
+  "Motivation",
+  "Working class",
+  "Ethnic Wear",
+  "Stock Market",
+  "Comedy",
+  "Forex",
+  "Esports",
+  "Finance",
+  "Dance",
+  "Cats",
+  "Crypto & NFT",
+  "Sports",
+  "Software Development",
+  "Vegan",
+  "Dentists",
+  "Gadgets",
+  "Electronics and Technology",
+  "Entertainment",
+  "Higher Education",
+  "Entrepreneurship",
+  "DIY",
+  "Footwear",
+  "Gaming",
+  "Home & Garden",
+  "Home & Kitchen",
+  "Athletes",
+  "Automotive",
+  "Mental Health Care",
+  "Motorcycles",
+  "Religious",
+  "Seniority (Old Age)",
+  "Sexual Wellness & Sensuality",
+  "Sneakers",
+  "Music",
+  "Arts and Crafts",
+  "Business/Making Money",
+  "Coffee, Tea & Beverages",
+  "Computer Software",
+  "Nails",
+  "Veterinary",
+  "Fan Accounts",
+  "Lingeries",
+  "Architecture & Interior",
+  "Banking",
+  "Cars",
+  "Hospitality",
+  "Love & Romance",
+  "Medical Practice",
+  "Photography",
+  "Plus Size Fashion",
+  "Professional Training & Coaching",
+  "Public Safety",
+  "Wine and Spirits",
+  "Farming",
+  "Animals",
+  "Automation & Robotics",
+  "Quotes & Texts",
+  "Politics",
+  "Activism & Social Causes",
+  "Books and Movies",
+  "Gambling & Casinos",
+  "Recreational Facilities and Services",
+  "Alternative Medicine",
+  "Tobacco",
+  "Airlines/Aviation",
 ];
-
 const languages = [
   "Hindi",
   "English",
@@ -68,6 +157,8 @@ const initialForm = {
   email: "",
 
   categories: [],
+    engagementRate: "",
+
   campaignType: [],
 
   influencerType: "",
@@ -75,6 +166,9 @@ const initialForm = {
   gender: "",
   dateOfBirth: "",
   languages: [],
+   audienceCountry: "",
+
+  pastWorkWithBrands: "",
 
   fullAddress: "",
   landmark: "",
@@ -154,8 +248,11 @@ function toggleValue(values, value) {
 }
 
 export default function RegisterInfluencer() {
-  const [theme, setTheme] = useState(getInitialTheme);
 
+  const [theme, setTheme] = useState(getInitialTheme);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showOtherLanguage, setShowOtherLanguage] = useState(false);
+const [otherLanguage, setOtherLanguage] = useState("");
   const [form, setForm] = useState(initialForm);
 
   const [status, setStatus] = useState({
@@ -301,6 +398,9 @@ const isStepValid = (step) => {
 
     3: [
       "categories",
+       "engagementRate",
+  "audienceCountry",
+  "pastWorkWithBrands",
     ],
 
     4: [
@@ -375,8 +475,8 @@ const isStepValid = (step) => {
     if (selectedPlatforms.includes("Instagram")) {
       if (
         !form.instagramUsername.trim() ||
-        !form.instagramProfileLink.trim() ||
-        !form.instagramFollowersRange.trim()
+        !form.instagramProfileLink.trim()
+        
       ) {
         return false;
       }
@@ -509,7 +609,11 @@ const isStepValid = (step) => {
     // CATEGORIES
     // ==========================================
     categories: array(form.categories),
+engagementRate: text(form.engagementRate),
 
+audienceCountry: text(form.audienceCountry),
+
+pastWorkWithBrands: text(form.pastWorkWithBrands),
     campaignType: array(form.campaignType),
 
     influencerType: text(
@@ -911,7 +1015,7 @@ onClick={() => {
                     />
 
                     <Input
-                      label="Whatsapp Number"
+                      label="WhatsApp Number"
                       type="tel"
                       inputMode="numeric"
                       name="whatsappNumber"
@@ -930,7 +1034,7 @@ onClick={() => {
                       pattern="[0-9]{10}"
                       minLength={10}
                       maxLength={10}
-                      placeholder="Same as phone? Leave blank"
+                      placeholder="Same as phone number? Leave blank if same"
                     />
 
                     <SelectInput
@@ -939,10 +1043,10 @@ onClick={() => {
                       value={form.gender}
                       onChange={updateField}
                       options={[
+                         "Male",
                         "Female",
-                        "Male",
                         "Other",
-                        "Prefer not to say",
+                        
                       ]}
                     />
 
@@ -953,22 +1057,18 @@ onClick={() => {
                       name="dateOfBirth"
                       value={form.dateOfBirth}
                       onChange={updateField}
+                     
                     />
 
                     <div className="md:col-span-2">
                       <Input
-                        label="Photo Link"
+                        label="Profile Photo URL"
                         type="url"
                         name="photoLink"
                         value={form.photoLink}
                         onChange={updateField}
-                        placeholder="Link to a hosted photo (Drive, Dropbox...)"
+                        placeholder="Paste a shareable photo link (Goggle Drive, Dropbox,etc.)"
                       />
-
-                      <p className="mt-1 text-xs text-[#8A8578]">
-                        Paste a shareable link to your
-                        profile photo.
-                      </p>
                     </div>
 
                   </div>
@@ -999,7 +1099,7 @@ onClick={() => {
                         name="fullAddress"
                         value={form.fullAddress}
                         onChange={updateField}
-                        placeholder="House no., street, area"
+                        placeholder="House no., Street, Area"
                         rows={2}
                       />
                     </div>
@@ -1009,7 +1109,7 @@ onClick={() => {
                       name="landmark"
                       value={form.landmark}
                       onChange={updateField}
-                      placeholder="Nearby landmark"
+                      placeholder="Nearby Landmark"
                     />
 
                     <Input
@@ -1018,7 +1118,7 @@ onClick={() => {
                       name="city"
                       value={form.city}
                       onChange={updateField}
-                      placeholder="City"
+                      placeholder="Enter City"
                     />
 
                     <Input
@@ -1027,7 +1127,7 @@ onClick={() => {
                       name="state"
                       value={form.state}
                       onChange={updateField}
-                      placeholder="State"
+                      placeholder="Enter State"
                     />
 
                     <Input
@@ -1036,7 +1136,7 @@ onClick={() => {
                       name="pincode"
                       value={form.pincode}
                       onChange={updateField}
-                      placeholder="6-digit PIN"
+                      placeholder="6-Digit PIN Code"
                       inputMode="numeric"
                     />
 
@@ -1069,38 +1169,214 @@ onClick={() => {
                     hint="Tell brands what you create, in which languages, and who you are."
                   />
 
-                  <ChipField
-                    label="Categories"
-                    required
-                    values={form.categories}
-                    options={categories}
-                    onToggle={(value) =>
-                      updateMulti(
-                        "categories",
-                        value
-                      )
-                    }
-                  />
+                  <div>
+  <p className="mb-2.5 text-[13px] font-semibold">
+    Categories{" "}
+    <span className="text-red-500">*</span>
+  </p>
 
-                  <ChipField
-                    label="Languages"
-                    values={form.languages}
-                    options={languages}
-                    onToggle={(value) =>
-                      updateMulti(
-                        "languages",
-                        value
-                      )
-                    }
-                  />
+  <div className="flex flex-wrap gap-2">
+    {(showAllCategories
+      ? categories
+      : categories.slice(0, 15)
+    ).map((category) => {
+      const active =
+        form.categories.includes(category);
 
+      return (
+        <button
+          type="button"
+          key={category}
+          onClick={() =>
+            updateMulti("categories", category)
+          }
+          className={`
+            rounded-full border-[1.5px]
+            px-3.5 py-2 text-[13.5px]
+            transition
+            ${
+              active
+                ? "border-[#17161C] bg-[#17161C] text-white"
+                : "border-[#E7E3DA] bg-white text-[#17161C] hover:border-[#d8d2c4]"
+            }
+          `}
+        >
+          {category}
+        </button>
+      );
+    })}
+  </div>
+
+  <button
+    type="button"
+    onClick={() =>
+      setShowAllCategories(
+        (current) => !current
+      )
+    }
+    className="mt-3 rounded-lg border border-[#E7E3DA] bg-white px-4 py-2 text-[13.5px] font-semibold text-[#17161C] transition hover:border-[#d8d2c4] hover:bg-[#FAF9F6]"
+  >
+    {showAllCategories
+      ? "View Less"
+      : "View More"}
+  </button>
+</div>
+<div className="mt-6">
+      <Input
+        label="Engagement Rate"
+        name="engagementRate"
+        value={form.engagementRate}
+        onChange={updateField}
+        placeholder="e.g. 4.5%"
+        required
+      />
+    </div>
+
+               <div className="mt-6">
+  <p className="mb-2.5 text-[13px] font-semibold">
+    Languages
+  </p>
+
+  <div className="flex flex-wrap gap-2">
+    {/* Default languages */}
+    {languages.map((language) => {
+      const active = form.languages.includes(language);
+
+      return (
+        <button
+          type="button"
+          key={language}
+          onClick={() =>
+            updateMulti("languages", language)
+          }
+          className={`
+            rounded-full border-[1.5px]
+            px-3.5 py-2 text-[13.5px]
+            transition
+            ${
+              active
+                ? "border-[#17161C] bg-[#17161C] text-white"
+                : "border-[#E7E3DA] bg-white text-[#17161C] hover:border-[#d8d2c4]"
+            }
+          `}
+        >
+          {language}
+        </button>
+      );
+    })}
+
+    {/* Custom languages */}
+    {form.languages
+      .filter(
+        (language) => !languages.includes(language)
+      )
+      .map((language) => (
+        <button
+          type="button"
+          key={language}
+          onClick={() =>
+            updateMulti("languages", language)
+          }
+          className="rounded-full border-[1.5px] border-[#17161C] bg-[#17161C] px-3.5 py-2 text-[13.5px] text-white transition"
+        >
+          {language} <span className="ml-1">×</span>
+        </button>
+      ))}
+
+    {/* Other */}
+    <button
+      type="button"
+      onClick={() =>
+        setShowOtherLanguage((current) => !current)
+      }
+      className={`
+        rounded-full border-[1.5px]
+        px-3.5 py-2 text-[13.5px]
+        transition
+        ${
+          showOtherLanguage
+            ? "border-[#17161C] bg-[#17161C] text-white"
+            : "border-[#E7E3DA] bg-white text-[#17161C] hover:border-[#d8d2c4]"
+        }
+      `}
+    >
+      + Other
+    </button>
+  </div>
+
+  {/* Other language input */}
+  {showOtherLanguage && (
+    <div className="mt-4">
+      <input
+        type="text"
+        value={otherLanguage}
+        onChange={(e) =>
+          setOtherLanguage(e.target.value)
+        }
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+
+          e.preventDefault();
+
+          const language = otherLanguage.trim();
+
+          if (!language) return;
+
+          const alreadyExists = form.languages.some(
+            (item) =>
+              item.toLowerCase() === language.toLowerCase()
+          );
+
+          if (!alreadyExists) {
+            setForm((current) => ({
+              ...current,
+              languages: [
+                ...current.languages,
+                language,
+              ],
+            }));
+          }
+
+          setOtherLanguage("");
+        }}
+        placeholder="Enter another language and press Enter"
+        className="w-full rounded-[9px] border-[1.5px] border-[#E7E3DA] bg-white px-[13px] py-[11px] text-[14.5px] text-[#17161C] outline-none transition focus:border-[#E8A33D] focus:ring-4 focus:ring-[#E8A33D]/20"
+      />
+    </div>
+  )}
+</div>
+<div className="mt-6">
+      <Input
+        label="Audience Country"
+        name="audienceCountry"
+        value={form.audienceCountry}
+        onChange={updateField}
+        placeholder="e.g. India, USA, UK"
+        required
+      />
+
+      
+    </div>
+
+    {/* Past Work With Brands */}
+    <div className="mt-6">
+      <TextArea
+        label="Past Work with Brands"
+        name="pastWorkWithBrands"
+        value={form.pastWorkWithBrands}
+        onChange={updateField}
+        placeholder="Mention some brands you have previously worked with"
+        rows={3}
+        required
+      />
+    </div>
                   <div className="mt-6">
                     <TextArea
                       label="Bio"
                       name="bio"
                       value={form.bio}
                       onChange={updateField}
-                      placeholder="A short intro brands will see first"
+                      placeholder="Write a short introduction that brands will see first."
                       rows={3}
                     />
                   </div>
@@ -1108,12 +1384,13 @@ onClick={() => {
                   <div className="mt-5 grid gap-[18px] md:grid-cols-2">
 
                     <SelectInput
-                      label="Are you a TV/movies/OTT celebrity?"
+                      label="Are you a TV/Film/OTT celebrity?"
                       name="areYouATvMoviesOttCelebrity"
                       value={
                         form.areYouATvMoviesOttCelebrity
                       }
                       onChange={updateField}
+                      
                       options={[
                         "No",
                         "Yes",
@@ -1205,6 +1482,7 @@ onClick={() => {
                           }
                           onChange={updateField}
                           placeholder="@username"
+                          required
                         />
 
                         <Input
@@ -1216,6 +1494,7 @@ onClick={() => {
                           }
                           onChange={updateField}
                           placeholder="instagram.com/..."
+                          required
                         />
 
                         <SelectInput
@@ -1226,12 +1505,14 @@ onClick={() => {
                           }
                           onChange={updateField}
                           options={[
-                            "Under 10K",
-                            "10K–50K",
-                            "50K–100K",
-                            "100K–500K",
-                            "500K–1M",
-                            "1M+",
+                             "Under 1K",
+                              "1K - 10K",
+                              "10K - 50K",
+                               "50K - 100K",
+                               "100K - 500K",
+                                "500K - 1M",
+                                 "1M - 5M",
+                                    "5M+",
                           ]}
                         />
 
@@ -1245,6 +1526,7 @@ onClick={() => {
                           }
                           onChange={updateField}
                           placeholder="e.g. 84210"
+                          required
                         />
 
                       </div>
@@ -1306,6 +1588,7 @@ onClick={() => {
                           }
                           onChange={updateField}
                           placeholder="@handle"
+                          required
                         />
 
                         <Input
@@ -1317,6 +1600,7 @@ onClick={() => {
                           }
                           onChange={updateField}
                           placeholder="youtube.com/..."
+                          required
                         />
 
                         <SelectInput
@@ -1327,13 +1611,16 @@ onClick={() => {
                           }
                           onChange={updateField}
                           options={[
-                            "Under 10K",
-                            "10K–50K",
-                            "50K–100K",
-                            "100K–500K",
-                            "500K–1M",
-                            "1M+",
+                             "Under 1K",
+                             "1K - 10K",
+                               "10K - 50K",
+                               "50K - 100K",
+                                "100K - 500K",
+                                  "500K - 1M",
+                                   "1M - 5M",
+                                       "5M+",
                           ]}
+                          required
                         />
 
                       </div>
@@ -1584,7 +1871,7 @@ onClick={() => {
         onClose={closeSuccessModal}
       />
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 text-center flex -translate-y-20 justify-center md:translate-x-31">
         <Button
           className="registration-switch-button"
           href="/register/brand"
