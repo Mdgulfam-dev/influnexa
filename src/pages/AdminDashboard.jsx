@@ -1048,7 +1048,7 @@ const handleActionClick = (event) => {
             className={`${statusTone(status)} ${
               currentStatus === formatStatus(status)
                 ? "is-active"
-                : "uppercase"
+                : ""
             }`}
             key={status}
             onClick={() =>
@@ -1229,7 +1229,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
         <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)} >
           <option value="">All Statuses</option>
           {statusOptions.map((item) => (
-            <option key={item} value={item}>{formatStatus(item).toUpperCase()}
+            <option key={item} value={item}>{formatStatus(item)}
             </option>
           ))}
         </select>
@@ -1687,58 +1687,104 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     [candidateFilters]
   );
 
-  const loadDashboard = async ({ showLoading = true } = {}) => {
+const loadDashboard = async ({ showLoading = true } = {}) => {
+  if (showLoading) {
     setIsRefreshing(true);
-    if (showLoading) {
-      setStatus({ type: "loading", message: "Loading dashboard..." });
+    setStatus({
+      type: "loading",
+      message: "Loading dashboard...",
+    });
+  }
+
+  try {
+    const dashboard = await getAdminDashboard(dashboardParams);
+
+    setData(normalizeDashboardData(dashboard));
+    setIsAuthenticated(true);
+
+    return dashboard;
+  } catch (error) {
+    if (error.message === "Admin token is required.") {
+      setIsAuthenticated(false);
     }
 
-    try {
-      const dashboard = await getAdminDashboard(dashboardParams);
-      setData(normalizeDashboardData(dashboard));
-      setIsAuthenticated(true);
-      setStatus({ type: "success", message: "" });
-    } catch (error) {
-      if (error.message === "Admin token is required.") {
-        setIsAuthenticated(false);
-      }
-      setStatus({ type: "error", message: error.message });
-    }finally {
+    throw error;
+  } finally {
+    if (showLoading) {
+      setIsRefreshing(false);
+    }
+  }
+};
+
+const refreshEverything = async () => {
+  if (isRefreshing) return;
+
+  setIsRefreshing(true);
+  setStatus({
+    type: "loading",
+    message: "Loading Dashboard...",
+  });
+
+  try {
+    await Promise.all([
+      // Main dashboard
+      loadDashboard({ showLoading: false }),
+
+      // Brands
+      loadRegistrationTable("brands", brandQuery),
+
+      // Influencers
+      loadRegistrationTable("influencers", influencerQuery),
+    ]);
+
+    setStatus({
+      type: "success",
+      message: "",
+    });
+  } catch (error) {
+    if (error.message === "Admin token is required.") {
+      setIsAuthenticated(false);
+    }
+
+    setStatus({
+      type: "error",
+      message: error.message,
+    });
+  } finally {
     setIsRefreshing(false);
   }
-  };
+};
 
+ useEffect(() => {
+  if (!isAuthenticated) {
+    return undefined;
+  }
 
+  let active = true;
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      return undefined;
-    }
+  const timer = window.setTimeout(() => {
+    loadDashboard({ showLoading: false })
+      .catch((error) => {
+        if (!active) return;
 
-    let active = true;
-    const timer = window.setTimeout(() => {
-      getAdminDashboard(dashboardParams)
-        .then((dashboard) => {
-          if (active) {
-            setData(normalizeDashboardData(dashboard));
-            setStatus({ type: "success", message: "" });
-          }
-        })
-        .catch((error) => {
-          if (active) {
-            if (error.message === "Admin token is required.") {
-              setIsAuthenticated(false);
-            }
-            setStatus({ type: "error", message: error.message });
-          }
+        if (error.message === "Admin token is required.") {
+          setIsAuthenticated(false);
+        }
+
+        setStatus({
+          type: "error",
+          message: error.message,
         });
-    }, 300);
+      });
+  }, 300);
 
-    return () => {
-      active = false;
-      window.clearTimeout(timer);
-    };
-  }, [dashboardParams, isAuthenticated]);
+  return () => {
+    active = false;
+    window.clearTimeout(timer);
+  };
+}, [dashboardParams, isAuthenticated]);
+
+
 
   const loadRegistrationTable = async (type, filters, after = null, history = []) => {
     try {
@@ -2106,7 +2152,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   onMouseEnter={() => setSidebarOpen(false)}
   className={`admin-action-button refresh ${isRefreshing ? "is-refreshing" : ""}`} 
   type="button" 
-  onClick={() => loadDashboard()} 
+onClick={refreshEverything}
   title="Refresh dashboard" 
   aria-label="Refresh dashboard"
   disabled={isRefreshing}
@@ -2157,7 +2203,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           <div className="admin-overview">
             <section className="admin-overview-hero">
               <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
-              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>new brands, Influencer & candidates</small></div>
+              <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>New Brands, Influencers & Candidates</small></div>
             </section>
             <section className="admin-overview-metrics">
   {/* 2. ACTIVE JOBS */}
@@ -2229,7 +2275,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
   </article>
     {/* 1. CREATORS */}
   <article>
-    <span>Influencer</span>
+    <span>Influencers</span>
 
     <strong>
       {data.stats.influencers || 0}

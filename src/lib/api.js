@@ -126,7 +126,10 @@ export async function getAdminDashboard(params = {}) {
 
   const queryString = query.toString() ? `?${query.toString()}` : "";
   const response = await fetch(`${API_BASE_URL}/admin/dashboard${queryString}`, {
-    headers: adminHeaders(),
+    headers:{ ...adminHeaders(),
+     "Cache-Control": "no-cache",
+    },
+     cache: "no-store",
   });
   const data = await response.json().catch(() => ({}));
 
