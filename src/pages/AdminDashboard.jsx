@@ -49,7 +49,7 @@ const brandStatuses = [
   "Closed",
 ];
 const influencerStatuses = ["new", "Reviewing", "Approved", "Rejected"];
-const testimonialStatuses = ["Pending", "Approved", "Rejected"];
+const testimonialStatuses = ["pending", "approved", "rejected"];
 const registrationPageSize = 25;
 
 const legacyBrandStatusLabels = {
@@ -162,7 +162,7 @@ const initialJobForm = { jobId: "", title: "", department: "", type: "Full-time"
 const applicationStatuses = ["Review", "Shortlisted", "Selected", "Rejected", "On Hold"];
 const candidatePageSize = 25;
 const ticketStatuses = ["Draft", "Planned", "Active", "On Hold", "Completed", "Cancelled"];
-const initialTicketForm = { brandName: "", campaignName: "", contactName: "", contactEmail: "", objective: "", platforms: "", startDate: "", endDate: "", budget: "", currency: "USD", status: "Draft", notes: "", metrics: { creators: "", posts: "", reach: "", impressions: "", engagements: "", clicks: "", conversions: "", spend: "" } };
+const initialTicketForm = { brandName: "", campaignName: "", fullName: "", contactEmail: "", objective: "", platforms: "", startDate: "", endDate: "", budget: "", currency: "USD", status: "Draft", notes: "", metrics: { creators: "", posts: "", reach: "", impressions: "", engagements: "", clicks: "", conversions: "", spend: "" } };
 
 const emptyDashboardData = {
   stats: {},
@@ -1535,6 +1535,7 @@ const getInfluencerPlatform = (creator) => {
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+ 
   const [activeTab, setActiveTab] = useState(() => {
     const requestedTab = window.location.hash.replace("#", "");
     return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
@@ -1565,6 +1566,19 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 
+
+useEffect(() => {
+  if (!status.message) return;
+
+  const timer = setTimeout(() => {
+    setStatus({
+      type: "idle",
+      message: "",
+    });
+  },1000); // disappears after 2 seconds
+
+  return () => clearTimeout(timer);
+}, [status.message]);
   const tabs = useMemo(
     () => [
       ["overview", "Dashboard"],
@@ -1599,8 +1613,8 @@ const validateTicketForm = () => {
     errors.campaignName = "Campaign name is required";
   }
 
-  if (!ticketForm.contactName?.trim()) {
-    errors.contactName = "Full name is required";
+  if (!ticketForm.fullName?.trim()) {
+    errors.fullName = "Full name is required";
   }
 
   if (!ticketForm.contactEmail?.trim()) {
@@ -1716,73 +1730,73 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
   }
 };
 
-const refreshEverything = async () => {
-  if (isRefreshing) return;
+// const refreshEverything = async () => {
+//   if (isRefreshing) return;
 
-  setIsRefreshing(true);
-  setStatus({
-    type: "loading",
-    message: "Loading Dashboard...",
-  });
+//   setIsRefreshing(true);
+//   setStatus({
+//     type: "loading",
+//     message: "Loading Dashboard...",
+//   });
 
-  try {
-    await Promise.all([
-      // Main dashboard
-      loadDashboard({ showLoading: false }),
+//   try {
+//     await Promise.all([
+//       // Main dashboard
+//       loadDashboard({ showLoading: false }),
 
-      // Brands
-      loadRegistrationTable("brands", brandQuery),
+//       // Brands
+//       loadRegistrationTable("brands", brandQuery),
 
-      // Influencers
-      loadRegistrationTable("influencers", influencerQuery),
-    ]);
+//       // Influencers
+//       loadRegistrationTable("influencers", influencerQuery),
+//     ]);
 
-    setStatus({
-      type: "success",
-      message: "",
-    });
-  } catch (error) {
-    if (error.message === "Admin token is required.") {
-      setIsAuthenticated(false);
-    }
+//     setStatus({
+//       type: "success",
+//       message: "",
+//     });
+//   } catch (error) {
+//     if (error.message === "Admin token is required.") {
+//       setIsAuthenticated(false);
+//     }
 
-    setStatus({
-      type: "error",
-      message: error.message,
-    });
-  } finally {
-    setIsRefreshing(false);
-  }
-};
+//     setStatus({
+//       type: "error",
+//       message: error.message,
+//     });
+//   } finally {
+//     setIsRefreshing(false);
+//   }
+// };
 
- useEffect(() => {
-  if (!isAuthenticated) {
-    return undefined;
-  }
+//  useEffect(() => {
+//   if (!isAuthenticated) {
+//     return undefined;
+//   }
 
-  let active = true;
+//   let active = true;
 
-  const timer = window.setTimeout(() => {
-    loadDashboard({ showLoading: false })
-      .catch((error) => {
-        if (!active) return;
+//   const timer = window.setTimeout(() => {
+//     loadDashboard({ showLoading: false })
+//       .catch((error) => {
+//         if (!active) return;
 
-        if (error.message === "Admin token is required.") {
-          setIsAuthenticated(false);
-        }
+//         if (error.message === "Admin token is required.") {
+//           setIsAuthenticated(false);
+//         }
 
-        setStatus({
-          type: "error",
-          message: error.message,
-        });
-      });
-  }, 300);
+//         setStatus({
+//           type: "error",
+//           message: error.message,
+//         });
+//       });
+//   }, 300);
 
-  return () => {
-    active = false;
-    window.clearTimeout(timer);
-  };
-}, [dashboardParams, isAuthenticated]);
+//   return () => {
+//     active = false;
+//     window.clearTimeout(timer);
+//   };
+// }, [dashboardParams, isAuthenticated]);
 
 
 
@@ -1860,7 +1874,7 @@ const refreshEverything = async () => {
 
   const submitLogin = async (event) => {
     event.preventDefault();
-    setStatus({ type: "loading", message: "Signing in..." });
+    setStatus({ type: "loading", message:"" });
 
     try {
       await loginAdmin({ email: loginEmail, password });
@@ -2121,6 +2135,7 @@ const refreshEverything = async () => {
   }
 
   return (
+    
     <main className={`admin-shell ${sidebarOpen ? "sidebar-open" : ""}`}>
       <button
   type="button"
@@ -2152,7 +2167,18 @@ const refreshEverything = async () => {
   onMouseEnter={() => setSidebarOpen(false)}
   className={`admin-action-button refresh ${isRefreshing ? "is-refreshing" : ""}`} 
   type="button" 
-onClick={refreshEverything}
+   onClick={async () => {
+  setStatus({ type: "idle", message: "" });
+
+  try {
+    await loadDashboard();
+  } catch (error) {
+    setStatus({
+      type: "error",
+      message:""
+    });
+  }
+}}
   title="Refresh dashboard" 
   aria-label="Refresh dashboard"
   disabled={isRefreshing}
@@ -2189,6 +2215,7 @@ onClick={refreshEverything}
 
       <section className="admin-content">
         <div className="admin-heading">
+          
           <div>
             <p>Influnexa workspace</p>
             <h1>{activeTab === "overview" ? "Operations overview" : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}</h1>
@@ -2219,7 +2246,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      live opportunities
+      Live Opportunities
     </small>
 
    <small className="admin-metric-latest">
@@ -2235,7 +2262,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      {data.stats.reviewApplications || 0} awaiting review
+      {data.stats.reviewApplications || 0} Awaiting Review
     </small>
 
     <small className="admin-metric-latest">
@@ -2251,7 +2278,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      {data.stats.newBrands || 0} new requests
+      {data.stats.newBrands || 0} New Requests
     </small>
 
     <small className="admin-metric-latest">
@@ -2266,7 +2293,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      {data.stats.tickets || 0} brand tickets
+      {data.stats.tickets || 0} Brand Tickets
     </small>
 
    <small className="admin-metric-latest">
@@ -2282,7 +2309,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      {data.stats.newInfluencers || 0} new registrations
+      {data.stats.newInfluencers || 0} New Registrations
     </small>
 
     <small className="admin-metric-latest">
@@ -2298,7 +2325,7 @@ onClick={refreshEverything}
     </strong>
 
     <small>
-      total CSV upload records
+      Total CSV Upload Records
     </small>
 
     <small className="admin-metric-latest">
@@ -2378,14 +2405,14 @@ onClick={refreshEverything}
   <label>
     Full name <span className="admin-required">*</span>
     <input
-      name="contactName"
-      value={ticketForm.contactName}
+      name="fullName"
+      value={ticketForm.fullName}
       onChange={updateTicketField}
       
     />
-    {ticketErrors.contactName && (
+    {ticketErrors.fullName && (
   <small className="admin-inline-error">
-    {ticketErrors.contactName}
+    {ticketErrors.fullName}
   </small>
 )}
 
@@ -2813,12 +2840,31 @@ onClick={refreshEverything}
                   </div>
                   <div className="admin-row-actions">
                     <select
-                      value={testimonial.status}
-                      onChange={(event) => updateReviewStatus(testimonial._id, event.target.value)}
-                    >
-                      {testimonialStatuses.map((item) => <option key={item}>{item}</option>)}
-                    </select>
-                    <button type="button" onClick={() => removeTestimonial(testimonial._id)}>Delete</button>
+  value={testimonial.status}
+  onChange={(event) =>
+    updateReviewStatus(testimonial._id, event.target.value)
+  }
+>
+  {testimonialStatuses.map((item) => (
+    <option key={item} value={item}>
+      {item.charAt(0).toUpperCase() + item.slice(1)}
+    </option>
+  ))}
+</select>
+                   <button
+  type="button"
+  onClick={() => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this testimonial?"
+    );
+
+    if (confirmed) {
+      removeTestimonial(testimonial._id);
+    }
+  }}
+>
+  Delete
+</button>
                   </div>
                 </article>
               ))}

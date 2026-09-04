@@ -16,16 +16,18 @@ const [copiedPhone, setCopiedPhone] = useState(null);
   const [isFiltered,setIsFiltered] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState(null);
 const [showEdit, setShowEdit] = useState(false);
-const adminEmail = localStorage.getItem("adminEmail") || "";
 const [expandedBios, setExpandedBios] = useState({});
 const [expandedCategories, setExpandedCategories] = useState(null);
 const [expandedCampaignTypes, setExpandedCampaignTypes] = useState({});
+
 const [copiedWhatsapp, setCopiedWhatsapp] = useState(null);
 const [page, setPage] = useState(1);
 const [limit] = useState(100);
 const [totalPages, setTotalPages] = useState(1);
 const [totalRecords, setTotalRecords] = useState(0);
 const handleEdit = (creator) => {
+  console.log("CREATOR FROM TABLE:", creator);
+  console.log("UPDATED BY:", creator?.updatedBy);
   setSelectedCreator(creator);
   setShowEdit(true);
 };
@@ -125,7 +127,6 @@ const updateCsvCreator = async () => {
       `${Config.API_URL}/csv-creators/${selectedCreator._id}`,
       {
       ...selectedCreator,
-    updatedBy: adminEmail,
     updatedAt: new Date(),
   }
     );
@@ -3403,7 +3404,7 @@ key={creator._id}
 
   <input
     type="text"
-    value={adminEmail}
+   value={selectedCreator?.updatedBy || ""}
     readOnly
     className="
   w-full
@@ -3435,6 +3436,7 @@ key={creator._id}
   <input
     type="text"
     value={selectedCreator?.editStatus ||"Not Edited"}
+    readOnly
     className="
   w-full
   h-12

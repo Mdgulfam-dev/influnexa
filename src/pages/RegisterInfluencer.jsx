@@ -758,13 +758,27 @@ pastWorkWithBrands: text(form.pastWorkWithBrands),
 
     setShowSuccessModal(true);
   } catch (error) {
+  console.error("Influencer registration error:", error);
+
+  if (error?.response?.status === 409) {
     setStatus({
       type: "error",
       message:
-        error?.message ||
-        "Something went wrong while submitting the registration.",
+        error?.response?.data?.message ||
+        "This email is already registered.",
     });
+
+    return;
   }
+
+  setStatus({
+    type: "error",
+    message:
+      error?.response?.data?.message ||
+      error?.message ||
+      "Something went wrong while submitting the registration.",
+  });
+}
 };
   const closeSuccessModal = () => {
     setForm(initialForm);
@@ -953,7 +967,12 @@ onClick={() => {
                   : ""
               }`}
             >
-
+ {/* ERROR MESSAGE */}
+  {status.type === "error" && status.message && (
+    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+      {status.message}
+    </div>
+  )}
               {/* STEP 1 */}
 
               {currentStep === 1 && (
