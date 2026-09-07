@@ -470,7 +470,13 @@ const isStepValid = (step) => {
   if (step === 4) {
     const selectedPlatforms =
       form.whatAllPlatformsAreYouAvailableOn;
-
+// At least Instagram OR YouTube is mandatory
+if (
+  !selectedPlatforms.includes("Instagram") &&
+  !selectedPlatforms.includes("YouTube")
+) {
+  return false;
+}
     // Instagram selected
     if (selectedPlatforms.includes("Instagram")) {
       if (

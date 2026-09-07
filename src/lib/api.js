@@ -53,7 +53,9 @@ export async function loginAdmin({ email, password }) {
     localStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
     sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, data.token);
   }
-
+if (data.user?.email) {
+  localStorage.setItem("Email", data.user.email);
+}
   return data;
 }
 

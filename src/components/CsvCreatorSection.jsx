@@ -26,8 +26,7 @@ const [limit] = useState(100);
 const [totalPages, setTotalPages] = useState(1);
 const [totalRecords, setTotalRecords] = useState(0);
 const handleEdit = (creator) => {
-  console.log("CREATOR FROM TABLE:", creator);
-  console.log("UPDATED BY:", creator?.updatedBy);
+ 
   setSelectedCreator(creator);
   setShowEdit(true);
 };
@@ -121,15 +120,21 @@ const fetchFilterOptions = async () => {
 useEffect(() => {
   fetchFilterOptions();
 }, []);
+
+
 const updateCsvCreator = async () => {
   try {
+    const adminEmail = localStorage.getItem("adminEmail");
     const res = await axios.put(
       `${Config.API_URL}/csv-creators/${selectedCreator._id}`,
+      
       {
       ...selectedCreator,
+      updatedBy:adminEmail,
     updatedAt: new Date(),
   }
     );
+     console.log("SERVER UPDATED BY:", adminEmail);
 
     alert("Creator updated successfully");
 
@@ -508,35 +513,47 @@ const downloadMaskedCSV = async () => {
       return;
     }
 
-    const maskedCreators = allCreators.map((creator) => ({
-      ...creator,
+        const maskedCreators = allCreators.map((creator) => ({
+      "Instagram Username": creator.instagramUsername || "",
 
-      email: creator.email
-        ? creator.email.replace(/(.{2}).+(@.+)/, "$1****$2")
-        : "",
+      "Instagram Profile Link": creator.instagramProfileLink || "",
 
-      phoneNumber: creator.phoneNumber
-        ? "******" + creator.phoneNumber.slice(-4)
-        : "",
+      "Exact Followers": creator.exactFollowers || "",
 
-      whatsappNumber: creator.whatsappNumber
-        ? "******" + creator.whatsappNumber.slice(-4)
-        : "",
+      "Categories": Array.isArray(creator.categories)
+        ? creator.categories.join(", ")
+        : creator.categories || "",
 
-      fullAddress: creator.fullAddress
+      "Full Name": creator.fullName || "",
+
+      "Gender": creator.gender || "",
+
+      "Date of Birth": creator.dateOfBirth || "",
+
+      "Campaign type": Array.isArray(creator.campaignType)
+        ? creator.campaignType.join(", ")
+        : creator.campaignType || "",
+
+      "Languages": Array.isArray(creator.languages)
+        ? creator.languages.join(", ")
+        : creator.languages || "",
+
+      "Full Address": creator.fullAddress
         ? "********"
         : "",
 
-      pincode: creator.pincode
+      "Landmark": creator.landmark || "",
+
+      "City": creator.city || "",
+
+      "State": creator.state || "",
+
+      "Country": creator.country || "",
+
+      "Pincode": creator.pincode
         ? "*****"
         : "",
-
-      InflunexaUserId: creator.InflunexaUserId
-        ? "******"
-        : "",
-
     }));
-
     const csv = Papa.unparse(maskedCreators, {
       header: true,
       skipEmptyLines: true,
@@ -1002,10 +1019,10 @@ options:filterOptions.instagramFollowersRange
 },
 
 {
-  name: "exactFollowers",
-  type: "number",
-  label:"Exact Followers",
-  placeholder: "Exact Followers",
+  name: "instagramUsername",
+  type: "text",
+  label: "Instagram Username",
+  placeholder: "Instagram Username",
 },
 {
 name:"categories",
@@ -2160,6 +2177,24 @@ sticky top-0 z-30
 InflunexaUserId
 </th>
 
+<th className="
+sticky top-0 z-30
+    px-4
+    py-4
+    text-left
+    text-sm
+    font-bold
+    
+    tracking-wider
+    text-slate-500
+    bg-slate-50
+    border-b
+    border-slate-200
+    whitespace-nowrap
+">
+  Rating
+</th>
+
  <th  className="
  sticky top-0 z-30
     px-4
@@ -3085,6 +3120,26 @@ key={creator._id}
   {creator.InflunexaUserId || "-"}
 </td>
 
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.creatorRating != null ? (
+    <span className="font-bold text-slate-700">
+      {creator.creatorRating}/10
+    </span>
+  ) : (
+    <span className="text-slate-700">
+      Not Rated
+    </span>
+  )}
+</td>
 
 {/* Action */}
 <td className="
@@ -3203,252 +3258,1944 @@ key={creator._id}
 
       {/* EDIT MODAL */}
    
-    {showEdit && (
-      <div className="
-    fixed
-    inset-0
-    z-50
-    flex
-    items-center
-    justify-center
-    bg-slate-900/50
-    backdrop-blur-sm
-    p-4
-  ">
-
-    <div className="
-      bg-white
-      w-full
-      max-w-[700px]
-      max-h-[90vh]
-      overflow-y-auto
-      rounded-[24px]
-      shadow-2xl
-      border
-      border-slate-200
-      p-7
-    ">
-          <h2 className="
-  text-2xl
-  font-bold
-  text-slate-900
-  mb-6
-">
-            Edit Creator
-          </h2>
-             
-             <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-            Full Name:
-          </label>
-          <input
-            className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-300
-  bg-white
-  text-slate-700
-  outline-none
-  focus:border-slate-500
-  focus:ring-2
-  focus:ring-slate-200
-"
-            value={selectedCreator?.fullName || ""}
-            onChange={(e) =>
-              setSelectedCreator({
-                ...selectedCreator,
-                fullName: e.target.value,
-              })
-            }
-          />
-
-         <div>
-          <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-            Mobile Number:
-          </label>
-          <input
-            type="text"
-            className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-300
-  bg-white
-  text-slate-700
-  outline-none
-  focus:border-slate-500
-  focus:ring-2
-  focus:ring-slate-200
-"
-            value={selectedCreator?.phoneNumber || ""}
-            onChange={(e) =>
-              setSelectedCreator({
-                ...selectedCreator,
-                phoneNumber: e.target.value,
-              })
-            }
-          />
-        </div>
-
-          {/* Email */}
-        <div>
-          <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-            Email:
-          </label>
-          <input
-            type="email"
-            className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-300
-  bg-white
-  text-slate-700
-  outline-none
-  focus:border-slate-500
-  focus:ring-2
-  focus:ring-slate-200
-"
-            value={selectedCreator?.email || ""}
-            onChange={(e) =>
-              setSelectedCreator({
-                ...selectedCreator,
-                email: e.target.value,
-              })
-            }
-          />
-        </div>
-
-
-        {/* Instagram Username */}
-        <div>
-          <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-            Instagram Username:
-          </label>
-          <input
-            type="text"
-            className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-300
-  bg-white
-  text-slate-700
-  outline-none
-  focus:border-slate-500
-  focus:ring-2
-  focus:ring-slate-200
-"
-            value={selectedCreator?.instagramUsername || ""}
-            onChange={(e) =>
-              setSelectedCreator({
-                ...selectedCreator,
-                instagramUsername: e.target.value,
-              })
-            }
-          />
-        </div>
-
-<div className="mt-4">
-  <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-    Updated By:
-  </label>
-
-  <input
-    type="text"
-   value={selectedCreator?.updatedBy || ""}
-    readOnly
+{showEdit && (
+  <div
     className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-200
-  bg-slate-100
-  text-slate-500
-  cursor-not-allowed
-"
-  />
-</div>
+      fixed
+      inset-0
+      z-50
+      flex
+      items-center
+      justify-center
+      bg-slate-900/50
+      backdrop-blur-sm
+      p-4
+    "
+  >
+    <div
+      className="
+        bg-white
+        w-full
+        max-w-[700px]
+        max-h-[90vh]
+        overflow-y-auto
+        rounded-[24px]
+        shadow-2xl
+        border
+        border-slate-200
+        p-7
+      "
+    >
+      <h2
+        className="
+          text-2xl
+          font-bold
+          text-slate-900
+          mb-6
+        "
+      >
+        Edit Creator
+      </h2>
 
-<div className="mt-4">
-  <label className="
-  block
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-slate-500
-  mb-2
-">
-    Edited Manually
-  </label>
+      {/* ================= BASIC INFORMATION ================= */}
 
-  <input
-    type="text"
-    value={selectedCreator?.editStatus ||"Not Edited"}
-    readOnly
-    className="
-  w-full
-  h-12
-  px-4
-  rounded-xl
-  border
-  border-slate-200
-  bg-slate-100
-  text-slate-500
-"
-  />
-</div>
+      {/* Full Name */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Full Name:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.fullName || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              fullName: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Mobile Number */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Mobile Number:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.phoneNumber || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              phoneNumber: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* WhatsApp Number */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          WhatsApp Number:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.whatsappNumber || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              whatsappNumber: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Email */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Email:
+        </label>
+
+        <input
+          type="email"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.email || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              email: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Gender */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Gender:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.gender || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              gender: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Date of Birth */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Date of Birth:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.dateOfBirth || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              dateOfBirth: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Influencer Type */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Influencer Type:
+        </label>
+
+        <select
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.influencerType || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              influencerType: e.target.value,
+            })
+          }
+        >
+          <option value="">Select Influencer Type</option>
+          <option value="Nano Influencer">Nano Influencer</option>
+          <option value="Micro Influencer">Micro Influencer</option>
+          <option value="Macro Influencer">Macro Influencer</option>
+          <option value="Mega Influencer">Mega Influencer</option>
+        </select>
+      </div>
+
+      {/* ================= INSTAGRAM ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          Instagram Details
+        </h3>
+      </div>
+
+      {/* Instagram Username */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Instagram Username:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.instagramUsername || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              instagramUsername: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Instagram Profile Link */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Instagram Profile Link:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.instagramProfileLink || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              instagramProfileLink: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Instagram Followers Range */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Instagram Followers Range:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.instagramFollowersRange || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              instagramFollowersRange: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Exact Followers */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Exact Followers:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.exactFollowers ?? 0}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              exactFollowers:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Categories */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Categories:
+        </label>
+
+        <input
+          type="text"
+          placeholder="Fashion, Beauty, Travel"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={Array.isArray(selectedCreator?.categories)
+            ? selectedCreator.categories.join(", ")
+            : selectedCreator?.categories || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              categories: e.target.value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            })
+          }
+        />
+      </div>
+
+      {/* ================= CAMPAIGN ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          Campaign Details
+        </h3>
+      </div>
+
+      {/* Campaign Type */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Campaign Type:
+        </label>
+
+        <input
+          type="text"
+          placeholder="Paid Promotion, Barter"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={Array.isArray(selectedCreator?.campaignType)
+            ? selectedCreator.campaignType.join(", ")
+            : selectedCreator?.campaignType || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              campaignType: e.target.value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            })
+          }
+        />
+      </div>
+
+      {/* Deal Type */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          What Kind Of Deal Do You Participate In:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.whatKindOfDealDoYouParticipateIn || ""
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              whatKindOfDealDoYouParticipateIn: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Languages */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Languages:
+        </label>
+
+        <input
+          type="text"
+          placeholder="Hindi, Bengali, English"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={Array.isArray(selectedCreator?.languages)
+            ? selectedCreator.languages.join(", ")
+            : selectedCreator?.languages || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              languages: e.target.value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            })
+          }
+        />
+      </div>
+
+      {/* Speaking Video Link */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Speaking Video Link:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.speakingVideoLink || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              speakingVideoLink: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* ================= YOUTUBE ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          YouTube Details
+        </h3>
+      </div>
+
+      {/* YouTube Username */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          YouTube Username:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.youtubeUsername || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              youtubeUsername: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* YouTube Channel Link */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          YouTube Channel Link:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.youtubeChannelLink || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              youtubeChannelLink: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* YouTube Subscribers Range */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          YouTube Subscribers Range:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.youtubeSubscribersRange || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              youtubeSubscribersRange: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* ================= COMMERCIAL RATES ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          Commercial Rates
+        </h3>
+      </div>
+
+      {/* Instagram Reel */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Instagram Reel:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.commercialsFor1InstagramReel ?? 0}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1InstagramReel:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Instagram Story */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Instagram Story:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.commercialsFor1InstagramStory ?? 0}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1InstagramStory:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Instagram Post */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Instagram Post:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.commercialsFor1InstagramPost ?? 0}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1InstagramPost:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Dedicated YouTube Video */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Dedicated YouTube Video:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.commercialsFor1DedicatedYouTubeVideo ?? 0
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1DedicatedYouTubeVideo:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Integrated YouTube Video */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Integrated YouTube Video:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.commercialsFor1IntegratedYouTubeVideo ?? 0
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1IntegratedYouTubeVideo:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Dedicated YouTube Shorts */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Dedicated YouTube Shorts Video:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.commercialsFor1DedicatedYouTubeShortsVideo ?? 0
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1DedicatedYouTubeShortsVideo:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Integrated YouTube Shorts */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Commercials For 1 Integrated YouTube Shorts Video:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.commercialsFor1IntegratedYouTubeShortsVideo ?? 0
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              commercialsFor1IntegratedYouTubeShortsVideo:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* Amazon Reviews */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Amazon Reviews Per Month:
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            selectedCreator?.howManyAmazonReviewsYouDoPerMonth ?? 0
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              howManyAmazonReviewsYouDoPerMonth:
+                e.target.value === ""
+                  ? 0
+                  : Number(e.target.value),
+            })
+          }
+        />
+      </div>
+
+      {/* ================= LOCATION ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          Location Details
+        </h3>
+      </div>
+
+      {/* Full Address */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Full Address:
+        </label>
+
+        <textarea
+          rows="3"
+          className="
+            w-full
+            px-4
+            py-3
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.fullAddress || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              fullAddress: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Landmark */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Landmark:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.landmark || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              landmark: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* City */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          City:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.city || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              city: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* State */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          State:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.state || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              state: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Country */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Country:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.country || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              country: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Pincode */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Pincode:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.pincode || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              pincode: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* ================= OTHER ================= */}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4">
+          Other Details
+        </h3>
+      </div>
+
+      {/* Photo Link */}
+      <div>
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Photo Link:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.photoLink || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              photoLink: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Bio */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Bio:
+        </label>
+
+        <textarea
+          rows="4"
+          className="
+            w-full
+            px-4
+            py-3
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.bio || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              bio: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* TV Movies OTT Celebrity */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Are You A TV / Movies / OTT Celebrity:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.areYouATvMoviesOttCelebrity || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              areYouATvMoviesOttCelebrity: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Type Of Celebrity */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Type Of Celebrity:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.typeOfCeleb || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              typeOfCeleb: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* Available Platforms */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Available Platforms:
+        </label>
+
+        <input
+          type="text"
+          placeholder="Instagram, YouTube, Facebook"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={
+            Array.isArray(
+              selectedCreator?.whatAllPlatformsAreYouAvailableOn
+            )
+              ? selectedCreator.whatAllPlatformsAreYouAvailableOn.join(", ")
+              : selectedCreator?.whatAllPlatformsAreYouAvailableOn || ""
+          }
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              whatAllPlatformsAreYouAvailableOn:
+                e.target.value
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter(Boolean),
+            })
+          }
+        />
+      </div>
+
+      {/* Platform */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Platform:
+        </label>
+
+        <input
+          type="text"
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-300
+            bg-white
+            text-slate-700
+            outline-none
+            focus:border-slate-500
+            focus:ring-2
+            focus:ring-slate-200
+          "
+          value={selectedCreator?.platform || ""}
+          onChange={(e) =>
+            setSelectedCreator({
+              ...selectedCreator,
+              platform: e.target.value,
+            })
+          }
+        />
+      </div>
+
+      {/* ================= CREATOR RATING ================= */}
+
+      <div className="mt-4">
+        <label
+          className="
+            block
+            text-xs
+            font-bold
+            uppercase
+            tracking-wide
+            text-slate-500
+            mb-2
+          "
+        >
+          Creator Rating
+        </label>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="number"
+            min="1"
+            max="10"
+            step="1"
+            placeholder="Rate from 1 to 10"
+            value={selectedCreator?.creatorRating ?? ""}
+            readOnly={selectedCreator?.creatorRating != null}
+            onChange={(e) => {
+              if (selectedCreator?.creatorRating != null) return;
+
+              let value = e.target.value;
+
+              if (value === "") {
+                setSelectedCreator({
+                  ...selectedCreator,
+                  creatorRating: "",
+                });
+                return;
+              }
+
+              value = Math.min(
+                10,
+                Math.max(1, Number(value))
+              );
+
+              setSelectedCreator({
+                ...selectedCreator,
+                creatorRating: value,
+              });
+            }}
+            className="
+              w-full
+              h-12
+              px-4
+              rounded-xl
+              border
+              border-slate-300
+              bg-white
+              text-slate-700
+              outline-none
+              focus:border-slate-500
+              focus:ring-2
+              focus:ring-slate-200
+            "
+          />
+
+          <span className="text-lg font-bold text-slate-700 whitespace-nowrap">
+            / 10
+          </span>
+        </div>
+
+        <p className="mt-1 text-xs text-slate-400">
+          Team rating for this creator (1–10)
+        </p>
+      </div>
+
+      {/* ================= SYSTEM INFORMATION ================= */}
+
+      {/* Influnexa User ID */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Influnexa User ID:
+        </label>
+
+        <input
+          type="text"
+          value={selectedCreator?.InflunexaUserId ?? ""}
+          readOnly
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-200
+            bg-slate-100
+            text-slate-500
+            cursor-not-allowed
+          "
+        />
+      </div>
+
+      {/* Updated By */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Updated By:
+        </label>
+
+        <input
+          type="text"
+          value={localStorage.getItem("adminEmail") || ""}
+          readOnly
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-200
+            bg-slate-100
+            text-slate-500
+            cursor-not-allowed
+          "
+        />
+      </div>
+
+      {/* Edit Status */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Edited Manually
+        </label>
+
+        <input
+          type="text"
+          value={selectedCreator?.editStatus || "Not Edited"}
+          readOnly
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-200
+            bg-slate-100
+            text-slate-500
+          "
+        />
+      </div>
+
+      {/* Updated At */}
+      <div className="mt-4">
+        <label className="
+          block
+          text-xs
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+          mb-2
+        ">
+          Updated At:
+        </label>
+
+        <input
+          type="text"
+          value={
+            selectedCreator?.updatedAt
+              ? new Date(selectedCreator.updatedAt).toLocaleString()
+              : ""
+          }
+          readOnly
+          className="
+            w-full
+            h-12
+            px-4
+            rounded-xl
+            border
+            border-slate-200
+            bg-slate-100
+            text-slate-500
+            cursor-not-allowed
+          "
+        />
+      </div>
           <div className="
   flex
   justify-end

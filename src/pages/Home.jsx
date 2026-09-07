@@ -5,6 +5,7 @@ import influnexaLogo from "../assets/influnexa-logo.png";
 import { getBlogPosts, getTestimonials, submitTestimonial } from "../lib/api";
 import SEO, { breadcrumbSchema, pageSchema, SITE_URL } from "../lib/seo";
 import { applyTheme, getInitialTheme } from "../lib/theme";
+import heroImage from "../assets/hero-image.png";
 
 const logos = ["BEAUTY", "FASHION", "TECH", "DTC", "FITNESS", "LIFESTYLE", "FOOD", "FINANCE"];
 
@@ -569,18 +570,15 @@ export default function Home() {
           <div className="hero-layout mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
             <div className="hero-copy relative z-10">
               <div className="hero-kicker">
-                🚀 AI-Powered Influencer & Creator Marketing Company
+                ✨ AI-POWERED INFLUENCER & CREATOR MARKETING
               </div>
 
               <h1>
-                AI-Powered Influencer & Creator Marketing Company in India
+              Turn Creator Influence Into Real Brand Growth.
               </h1>
 
               <p>
-                Influnexa helps brands discover verified Instagram, YouTube,
-                LinkedIn, and UGC creators, launch high-performing influencer
-                marketing campaigns, manage creator collaborations, and measure
-                campaign performance through AI-powered campaign management.
+                Influnexa connects brands with the right Instagram, YouTube, LinkedIn, and UGC creators to build authentic campaigns that reach the right audience, drive engagement, and deliver measurable results.
               </p>
 
               <div className="hero-actions">
@@ -613,76 +611,76 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <span className="hero-tag">AI Creator Discovery</span>
+            {/* Brand Tagline */}
+<div className="brand-tagline">
+  <span className="brand-tagline-script">
+    Creators
+  </span>
 
-                <span className="hero-tag">Verified Influencers</span>
+  <span className="brand-tagline-main">
+    Build Brighter Brands
+  </span>
 
-                <span className="hero-tag">UGC Campaigns</span>
-
-                <span className="hero-tag">Brand Collaborations</span>
-
-                <span className="hero-tag">Campaign Reporting</span>
-              </div>
+  <span className="brand-tagline-underline" />
+</div>
             </div>
 
             <div className="hero-visual production-hero-visual relative z-10">
-              <div className="production-panel">
-                <div className="production-panel-head">
-                  <div>
-                    <span>Live campaign desk</span>
-
-                    <strong>Product Review Launch</strong>
-                  </div>
-
-                  <small>India / Creator Network</small>
-                </div>
-
-                <div className="production-status-grid">
-                  {heroCampaignFlow.map(([title, copy], index) => (
-                    <div key={title}>
-                      <small>{String(index + 1).padStart(2, "0")}</small>
-
-                      <strong>{title}</strong>
-
-                      <span>{copy}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="production-review-band">
-                  <div>
-                    <span>Creator shortlist</span>
-
-                    <strong>42</strong>
-                  </div>
-
-                  <div>
-                    <span>Approval stage</span>
-
-                    <strong>Brand review</strong>
-                  </div>
-
-                  <div>
-                    <span>Reporting</span>
-
-                    <strong>Proof-led</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="production-side-note">
-                <span>Agency team</span>
-
-                <strong>
-                  Strategy, sourcing, logistics, creator communication, content
-                  checks, and final campaign reporting.
-                </strong>
-              </div>
+              
+<img
+    src={heroImage}
+    alt="Influnexa campaign"
+    className="production-hero-image"
+  />
+            
             </div>
           </div>
         </section>
+<section className="feature-strip">
+  <div className="feature-grid">
 
+    <div className="feature-item">
+      <span className="feature-icon">◎</span>
+      <div>
+        <strong>Right Creators</strong>
+        <span>for Your Brand</span>
+      </div>
+    </div>
+
+    <div className="feature-item">
+      <span className="feature-icon">ϟ</span>
+      <div>
+        <strong>Faster Campaign</strong>
+        <span>Execution</span>
+      </div>
+    </div>
+
+    <div className="feature-item">
+      <span className="feature-icon">▥</span>
+      <div>
+        <strong>Data-Driven</strong>
+        <span>Decisions</span>
+      </div>
+    </div>
+
+    <div className="feature-item">
+      <span className="feature-icon">♢</span>
+      <div>
+        <strong>Safe & Verified</strong>
+        <span>Creators</span>
+      </div>
+    </div>
+
+    <div className="feature-item">
+      <span className="feature-icon">♧</span>
+      <div>
+        <strong>Real Engagement</strong>
+        <span>Real Growth</span>
+      </div>
+    </div>
+
+  </div>
+</section>
         <section className="border-y border-slate-200 bg-white/70 py-8 backdrop-blur dark:border-white/10 dark:bg-white/5">
           <div className="mx-auto max-w-7xl overflow-hidden px-4">
             <div className="logo-track">

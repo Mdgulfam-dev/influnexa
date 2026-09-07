@@ -1196,9 +1196,44 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     ))}
   </select>
 </label>
+ <label>
+            Campaign Type
+            <select
+              value={filters.campaignType || ""}
+              onChange={(event) =>
+                onFilterChange("campaignType", event.target.value)
+              }
+            >
+              <option value="">All Campaign Types</option>
+              <option value="Barter Collaboration">Barter Collaboration</option>
+              <option value="Paid Collaboration">Paid Promotion</option>
+              <option value="Affiliate">Affiliate</option>
+              <option value="Paid Collaboration + Barter Collaboration">Paid Collaboration + Barter Collaboration</option>
+              <option value="Brand Collaboration">
+                Brand Collaboration
+              </option>
+            </select>
+          </label>
+
+          {/* Influencer Type */}
+          <label>
+            Influencer Type
+            <select
+              value={filters.influencerType || ""}
+              onChange={(event) =>
+                onFilterChange("influencerType", event.target.value)
+              }
+            >
+    <option value="">All Influencer Types</option>
+    <option value="Nano Influencer">Nano Influencer</option>
+    <option value="Micro Influencer">Micro Influencer</option>
+    <option value="Macro Influencer">Macro Influencer</option>
+    <option value="Mega Influencer">Mega Influencer</option>
+            </select>
+          </label>
 
       <label>
-            Location
+            City
             <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
           </label>
            <label>
@@ -1236,17 +1271,9 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
       </label>
      </>
        )}
-      {type === "brands" ? (
-        <label>
-          Industry
-          <input placeholder="Industry" value={filters.industry} onChange={(event) => onFilterChange("industry", event.target.value)} />
-        </label>
-      ) : (
-        <>
-       </>
-      )}
-
-       <label>
+      {type === "brands" && (
+  <>
+    <label>
       Country
       <input
         placeholder="Country"
@@ -1258,7 +1285,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     </label>
 
     <label>
-      Location
+      City
       <input
         placeholder="City"
         value={filters.location}
@@ -1267,14 +1294,42 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
         }
       />
     </label>
-      <label>
-        From
-        <input type="date" value={filters.from} onChange={(event) => onFilterChange("from", event.target.value)} />
-      </label>
-      <label>
-        To
-        <input type="date" value={filters.to} onChange={(event) => onFilterChange("to", event.target.value)} />
-      </label>
+
+    <label>
+      Industry
+      <input
+        placeholder="Industry"
+        value={filters.industry}
+        onChange={(event) =>
+          onFilterChange("industry", event.target.value)
+        }
+      />
+    </label>
+  </>
+)}
+
+<label>
+  From
+  <input
+    type="date"
+    value={filters.from}
+    onChange={(event) =>
+      onFilterChange("from", event.target.value)
+    }
+  />
+</label>
+
+<label>
+  To
+  <input
+    type="date"
+    value={filters.to}
+    onChange={(event) =>
+      onFilterChange("to", event.target.value)
+    }
+  />
+</label>
+
       <div className="admin-filter-actions">
       <button type="submit" className="admin-filter-btn">Apply</button>
       {Object.values(filters).some((value) =>
@@ -1555,7 +1610,7 @@ export default function AdminDashboard() {
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
   const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
@@ -1729,76 +1784,6 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
     }
   }
 };
-
-// const refreshEverything = async () => {
-//   if (isRefreshing) return;
-
-//   setIsRefreshing(true);
-//   setStatus({
-//     type: "loading",
-//     message: "Loading Dashboard...",
-//   });
-
-//   try {
-//     await Promise.all([
-//       // Main dashboard
-//       loadDashboard({ showLoading: false }),
-
-//       // Brands
-//       loadRegistrationTable("brands", brandQuery),
-
-//       // Influencers
-//       loadRegistrationTable("influencers", influencerQuery),
-//     ]);
-
-//     setStatus({
-//       type: "success",
-//       message: "",
-//     });
-//   } catch (error) {
-//     if (error.message === "Admin token is required.") {
-//       setIsAuthenticated(false);
-//     }
-
-//     setStatus({
-//       type: "error",
-//       message: error.message,
-//     });
-//   } finally {
-//     setIsRefreshing(false);
-//   }
-// };
-
-//  useEffect(() => {
-//   if (!isAuthenticated) {
-//     return undefined;
-//   }
-
-//   let active = true;
-
-//   const timer = window.setTimeout(() => {
-//     loadDashboard({ showLoading: false })
-//       .catch((error) => {
-//         if (!active) return;
-
-//         if (error.message === "Admin token is required.") {
-//           setIsAuthenticated(false);
-//         }
-
-//         setStatus({
-//           type: "error",
-//           message: error.message,
-//         });
-//       });
-//   }, 300);
-
-//   return () => {
-//     active = false;
-//     window.clearTimeout(timer);
-//   };
-// }, [dashboardParams, isAuthenticated]);
-
-
 
   const loadRegistrationTable = async (type, filters, after = null, history = []) => {
     try {
@@ -2334,11 +2319,11 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
   </article>
   </section>
             <section className="admin-analytics-grid">
-              <AnalyticsChart title="Candidate pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
-              <AnalyticsChart title="Open job management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
-              <AnalyticsChart title="Brand pipeline" items={data.analytics.brandStatuses} emptyMessage="Brand registrations will appear here." />
-              <AnalyticsChart title="Brand campaign tickets" items={data.analytics.ticketStatuses} emptyMessage="Create a brand ticket to see campaign analysis." />
-              <AnalyticsChart title="Creator pipeline" items={data.analytics.influencerStatuses} emptyMessage="Creator registrations will appear here." />
+              <AnalyticsChart title="Candidate Pipeline" items={data.analytics.applicationStatuses} emptyMessage="Candidate activity will appear here." />
+              <AnalyticsChart title="Open Job Management" items={data.analytics.jobStatuses} emptyMessage="Create a job post to see its status." />
+              <AnalyticsChart title="Brand Pipeline" items={data.analytics.brandStatuses} emptyMessage="Brand registrations will appear here." />
+              <AnalyticsChart title="Brand Campaign Tickets" items={data.analytics.ticketStatuses} emptyMessage="Create a brand ticket to see campaign analysis." />
+              <AnalyticsChart title="Creator Pipeline" items={data.analytics.influencerStatuses} emptyMessage="Creator registrations will appear here." />
             </section>
             <section className="admin-panel admin-overview-quick-actions"><div><h2>Quick actions</h2><p>Jump directly to your most common tasks.</p></div><div><button type="button" onClick={() => selectTab("tickets")}>Manage campaigns</button><button type="button" onClick={() => selectTab("applications")}>Review candidates</button><button type="button" onClick={() => selectTab("brands")}>View brand leads</button></div></section>
           </div>

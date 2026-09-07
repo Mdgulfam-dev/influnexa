@@ -20,11 +20,14 @@ const campaignTypes = [
 
 const platforms = [
   "Instagram",
-  "TikTok",
   "YouTube",
+  "Facebook",
+  "Twitter/X",
+  "TikTok",
   "LinkedIn",
-  "X",
+  "Snapchat",
   "Blog",
+  "Pinterest"
 ];
 
 const budgetOptionsByCurrency = {
