@@ -1,0 +1,1435 @@
+/* =========================================================
+   INDUSTRY SHOWCASE
+   Completely isolated class names
+   ========================================================= */
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.industry-showcase-section {
+  position: relative;
+
+  width: 100%;
+
+  padding: 30px 40px 38px;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+  
+}
+
+
+.industry-showcase-container {
+  width: 100%;
+
+  max-width: 1480px;
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.industry-showcase-eyebrow {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  margin: 0 0 12px;
+
+  box-sizing: border-box;
+}
+
+.industry-showcase-line {
+  display: block;
+
+  width: 28px;
+  height: 1px;
+
+  flex: 0 0 28px;
+
+  background: #738095;
+}
+
+
+.industry-showcase-eyebrow-pill {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+
+  padding: 5px 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: #f4f6f6;
+
+  color: #15223b;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  line-height: 1;
+
+  letter-spacing: 1.35px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   MAIN TITLE
+   ========================================================= */
+
+.industry-showcase-title {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  text-align: center;
+
+  color: #101b34;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: clamp(32px, 3vw, 42px);
+
+  font-weight: 800;
+
+  line-height: 1.12;
+
+  letter-spacing: -1.5px;
+
+  box-sizing: border-box;
+}
+/* LEFT + RIGHT LINES */
+
+.industry-showcase-eyebrow > span {
+  display: block;
+
+  width: 29px;
+  height: 1px;
+
+  flex: 0 0 29px;
+
+  background: #7b8797;
+
+  opacity: 0.9;
+}
+
+
+/* CENTER LABEL */
+
+.industry-showcase-eyebrow > p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 25px;
+
+  margin: 0;
+  padding: 0 15px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: #f5f6f6;
+
+  color: #16223a;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 11.5px;
+
+  font-weight: 800;
+
+  line-height: 1;
+
+  letter-spacing: 1.25px;
+
+  white-space: nowrap;
+
+  text-transform: uppercase;
+}
+
+.industry-showcase-title span {
+  color: #087c6b;
+
+  position: relative;
+}
+
+
+/* =========================================================
+   OPTIONAL TEAL UNDERLINE
+   ========================================================= */
+
+.industry-showcase-title span::after {
+  content: "";
+
+  position: absolute;
+
+  left: 8%;
+
+  right: 0;
+
+  bottom: -7px;
+
+  height: 2px;
+
+  background: #087c6b;
+
+  border-radius: 50%;
+
+  transform: rotate(-1deg);
+
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.industry-showcase-subtitle {
+  width: min(760px, 100%);
+
+  margin: 11px auto 21px;
+
+  padding: 0;
+
+  text-align: center;
+
+  color: #50627f;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 15.5px;
+
+  font-weight: 400;
+
+  line-height: 1.45;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.industry-showcase-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  grid-auto-rows: 229px;
+
+  gap: 10px;
+
+  align-items: stretch;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.industry-showcase-card {
+  position: relative;
+
+  width: 100%;
+
+  height: 169px;
+
+  min-width: 0;
+  min-height:230px;
+
+  max-height: 179px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: 10px 15px 11px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #edf0f0;
+
+  border-radius: 11px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 2px 8px rgba(16, 27, 52, 0.035),
+    0 8px 22px rgba(16, 27, 52, 0.025);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.industry-showcase-card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(8, 124, 107, 0.2);
+
+  box-shadow:
+    0 8px 22px rgba(16, 27, 52, 0.08),
+    0 16px 35px rgba(8, 124, 107, 0.06);
+}
+
+
+/* =========================================================
+   IMAGE AREA
+   IMPORTANT:
+   Every card gets exactly the same image height.
+   ========================================================= */
+
+.industry-showcase-image {
+  position: relative;
+
+  width: 100%;
+
+  height: 78px;
+
+  min-height: 78px;
+
+  max-height: 78px;
+
+  flex: 0 0 78px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin: 0 0 5px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   REAL IMAGE
+   ========================================================= */
+
+.industry-showcase-image img {
+  display: block;
+
+  width: 150px;
+
+  height: 76px;
+
+  max-width: 100%;
+  max-height: 76px;
+
+  object-fit: contain;
+
+  flex: 0 0 auto;
+
+  transform: translateZ(0);
+
+  transition:
+    transform 0.3s ease;
+}
+
+
+.industry-showcase-card:hover
+.industry-showcase-image img {
+  transform: scale(1.04);
+}
+
+
+/* =========================================================
+   IMAGE PLACEHOLDER
+   Only used when no image is supplied.
+   ========================================================= */
+
+.industry-showcase-image-placeholder {
+  position: relative;
+
+  width: 135px;
+
+  height: 62px;
+
+  border-radius: 45%;
+
+  opacity: 0.85;
+
+  transform: rotate(-3deg);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Soft visual backgrounds */
+
+.industry-placeholder-1 {
+  background: #f4dfe7;
+}
+
+.industry-placeholder-2 {
+  background: #e9e3fa;
+}
+
+.industry-placeholder-3 {
+  background: #dff1e9;
+}
+
+.industry-placeholder-4 {
+  background: #dfe9fa;
+}
+
+.industry-placeholder-5 {
+  background: #fae5dc;
+}
+
+.industry-placeholder-6 {
+  background: #e0f0f5;
+}
+
+.industry-placeholder-7 {
+  background: #e6f1d9;
+}
+
+.industry-placeholder-8 {
+  background: #e1edf5;
+}
+
+.industry-placeholder-9 {
+  background: #eee4f6;
+}
+
+.industry-placeholder-10 {
+  background: #e5e5f5;
+}
+
+.industry-placeholder-11 {
+  background: #f2e2d9;
+}
+
+.industry-placeholder-12 {
+  background: #f5e9d8;
+}
+
+
+.industry-showcase-image-placeholder span {
+  width: 42px;
+
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.industry-showcase-content h3 {
+  margin: 0;
+
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+
+  color: #101d35;
+}
+
+.industry-showcase-content p {
+  margin: 0;
+
+  font-size:14px;
+  font-weight:10;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+
+  color:#536582;
+}
+/* =========================================================
+   CONTENT
+   IMPORTANT:
+   Fixed content area prevents different text lengths
+   from moving the arrows.
+   ========================================================= */
+
+.industry-showcase-content {
+  position: relative;
+
+  width: 100%;
+
+  height: 65px;
+
+  min-height: 65px;
+
+  max-height: 65px;
+
+  flex: 0 0 65px;
+
+  padding: 0 39px 0 0;
+
+  margin: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CARD TITLE
+   ========================================================= */
+
+.industry-showcase-card-title {
+  width: 100%;
+
+  height: 18px;
+
+  min-height: 18px;
+
+  max-height: 36px;
+
+  margin: 0 0 5px;
+
+  padding: 0;
+
+  color: #101b34;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 14.5px;
+
+  font-weight: 800;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.25px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/*
+ * Allow two-line titles where necessary,
+ * without changing the card height.
+ */
+
+.industry-showcase-card-title {
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+
+  -webkit-line-clamp: 2;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.industry-showcase-card-description {
+  width: 100%;
+
+  max-width: 180px;
+
+  height: 34px;
+
+  min-height: 34px;
+
+  max-height: 34px;
+
+  margin: 0;
+
+  padding: 0;
+
+  color: #536582;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 12.5px;
+
+  font-weight: 400;
+
+  line-height: 1.35;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+
+  -webkit-line-clamp: 2;
+}
+
+
+/* =========================================================
+   FIXED ARROW
+   ========================================================= */
+
+.industry-showcase-arrow {
+  position: absolute;
+
+  right: 0;
+
+  bottom: -50px;
+
+  width: 30px;
+
+  height: 30px;
+
+  min-width: 30px;
+
+  min-height: 30px;
+
+  max-width: 30px;
+
+  max-height: 30px;
+
+  padding: 0;
+
+  margin: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: #e3f4f0;
+
+  color: #087c6b;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 18px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  appearance: none;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.industry-showcase-arrow span {
+  display: block;
+
+  transform: translateY(-1px);
+}
+
+
+.industry-showcase-arrow:hover {
+  background: #087c6b;
+
+  color: #ffffff;
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   BOTTOM CTA
+   ========================================================= */
+
+.industry-showcase-cta-wrap {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-top: 11px;
+}
+
+
+.industry-showcase-cta {
+  min-width: 232px;
+
+  height: 46px;
+
+  padding: 0 25px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #075f58 0%,
+      #087c6b 100%
+    );
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  box-shadow:
+    0 7px 18px rgba(8, 124, 107, 0.17);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.industry-showcase-cta:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 24px rgba(8, 124, 107, 0.24);
+}
+
+
+.industry-showcase-cta-arrow {
+  font-size: 19px;
+
+  line-height: 1;
+
+  transform: translateY(-1px);
+}
+
+
+
+/* =========================================================
+   SMALL DESKTOP / LAPTOP
+   1051px - 1199px
+
+   4 columns prevents cards becoming too narrow.
+   ========================================================= */
+
+@media (min-width: 1051px) and (max-width: 1199px) {
+
+  .industry-showcase-section {
+    padding: 28px 22px 36px;
+  }
+
+  .industry-showcase-title {
+    font-size: 36px;
+  }
+
+  .industry-showcase-subtitle {
+    max-width: 700px;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+  }
+
+  .industry-showcase-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+
+    grid-auto-rows: 172px;
+
+    gap: 10px;
+  }
+
+  .industry-showcase-card {
+    height: 172px;
+
+    min-height: 172px;
+
+    max-height: 172px;
+
+    padding: 10px 14px;
+  }
+
+  .industry-showcase-image {
+    height: 78px;
+
+    min-height: 78px;
+
+    max-height: 78px;
+
+    flex-basis: 78px;
+  }
+
+  .industry-showcase-image img {
+    width: 145px;
+
+    height: 74px;
+  }
+
+  .industry-showcase-content {
+    height: 68px;
+
+    min-height: 68px;
+
+    max-height: 68px;
+
+    flex-basis: 68px;
+  }
+
+  .industry-showcase-card-title {
+    font-size: 14px;
+  }
+
+  .industry-showcase-card-description {
+    font-size: 12px;
+
+    max-width: 190px;
+  }
+}
+
+
+/* =========================================================
+   TABLET LANDSCAPE
+   901px - 1050px
+   ========================================================= */
+
+@media (min-width: 901px) and (max-width: 1050px) {
+
+  .industry-showcase-section {
+    padding: 26px 20px 34px;
+  }
+
+  .industry-showcase-title {
+    font-size: 33px;
+  }
+
+  .industry-showcase-subtitle {
+    font-size: 14px;
+
+    max-width: 680px;
+  }
+
+  .industry-showcase-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    grid-auto-rows: 174px;
+
+    gap: 10px;
+  }
+
+  .industry-showcase-card {
+    height: 174px;
+
+    min-height: 174px;
+
+    max-height: 174px;
+  }
+
+  .industry-showcase-image {
+    height: 80px;
+
+    min-height: 80px;
+
+    max-height: 80px;
+
+    flex-basis: 80px;
+  }
+
+  .industry-showcase-image img {
+    width: 150px;
+
+    height: 77px;
+  }
+
+  .industry-showcase-card-title {
+    font-size: 14.5px;
+  }
+
+  .industry-showcase-card-description {
+    font-size: 12.5px;
+
+    max-width: 190px;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   601px - 900px
+   ========================================================= */
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+  .industry-showcase-section {
+    padding: 26px 18px 34px;
+  }
+
+  .industry-showcase-eyebrow {
+    margin-bottom: 9px;
+  }
+
+  .industry-showcase-title {
+    font-size: clamp(29px, 4vw, 34px);
+
+    letter-spacing: -1px;
+  }
+
+  .industry-showcase-title span::after {
+    bottom: -5px;
+  }
+
+  .industry-showcase-subtitle {
+    max-width: 650px;
+
+    margin-top: 9px;
+
+    margin-bottom: 19px;
+
+    font-size: 14px;
+  }
+
+  .industry-showcase-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    grid-auto-rows: 175px;
+
+    gap: 10px;
+  }
+
+  .industry-showcase-card {
+    height: 175px;
+
+    min-height: 175px;
+
+    max-height: 175px;
+
+    padding: 11px 15px;
+  }
+
+  .industry-showcase-image {
+    height: 82px;
+
+    min-height: 82px;
+
+    max-height: 82px;
+
+    flex-basis: 82px;
+  }
+
+  .industry-showcase-image img {
+    width: 155px;
+
+    height: 80px;
+  }
+
+  .industry-showcase-content {
+    height: 66px;
+
+    min-height: 66px;
+
+    max-height: 66px;
+
+    flex-basis: 66px;
+  }
+
+  .industry-showcase-card-title {
+    font-size: 15px;
+  }
+
+  .industry-showcase-card-description {
+    font-size: 12.5px;
+
+    max-width: 210px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   0 - 600px
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .industry-showcase-section {
+    padding: 25px 14px 32px;
+  }
+
+
+  /* -------------------------
+     Eyebrow
+     ------------------------- */
+
+  .industry-showcase-eyebrow {
+    gap: 8px;
+
+    margin-bottom: 9px;
+  }
+
+  .industry-showcase-line {
+    width: 20px;
+
+    flex-basis: 20px;
+  }
+
+  .industry-showcase-eyebrow-pill {
+    min-height: 22px;
+
+    padding: 5px 10px;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+  }
+
+
+  /* -------------------------
+     Title
+     ------------------------- */
+
+  .industry-showcase-title {
+    font-size: clamp(27px, 8vw, 34px);
+
+    line-height: 1.14;
+
+    letter-spacing: -0.8px;
+  }
+
+  .industry-showcase-title span::after {
+    bottom: -5px;
+
+    height: 1.5px;
+  }
+
+
+  /* -------------------------
+     Subtitle
+     ------------------------- */
+
+  .industry-showcase-subtitle {
+    width: 100%;
+
+    margin: 9px auto 19px;
+
+    font-size: 13.5px;
+
+    line-height: 1.45;
+  }
+
+
+  /* -------------------------
+     Grid
+     ------------------------- */
+
+  .industry-showcase-grid {
+    grid-template-columns: 1fr;
+
+    grid-auto-rows: 166px;
+
+    gap: 10px;
+  }
+
+
+  /* -------------------------
+     Card
+     ------------------------- */
+
+  .industry-showcase-card {
+    width: 100%;
+
+    height: 166px;
+
+    min-height: 166px;
+
+    max-height: 166px;
+
+    padding: 10px 15px 11px;
+  }
+
+
+  /* -------------------------
+     Image
+     ------------------------- */
+
+  .industry-showcase-image {
+    height: 76px;
+
+    min-height: 76px;
+
+    max-height: 76px;
+
+    flex-basis: 76px;
+  }
+
+  .industry-showcase-image img {
+    width: 150px;
+
+    height: 74px;
+  }
+
+
+  /* -------------------------
+     Content
+     ------------------------- */
+
+  .industry-showcase-content {
+    height: 64px;
+
+    min-height: 64px;
+
+    max-height: 64px;
+
+    flex-basis: 64px;
+
+    padding-right: 43px;
+  }
+
+  .industry-showcase-card-title {
+    height: 19px;
+
+    min-height: 19px;
+
+    margin-bottom: 5px;
+
+    font-size: 15px;
+
+    line-height: 1.25;
+  }
+
+  .industry-showcase-card-description {
+    height: 35px;
+
+    min-height: 35px;
+
+    max-height: 35px;
+
+    max-width: 270px;
+
+    font-size: 12.5px;
+
+    line-height: 1.4;
+  }
+
+
+  /* -------------------------
+     Arrow
+     ------------------------- */
+
+  .industry-showcase-arrow {
+    width: 31px;
+
+    height: 31px;
+
+    min-width: 31px;
+
+    min-height: 31px;
+
+    max-width: 31px;
+
+    max-height: 31px;
+  }
+
+
+  /* -------------------------
+     CTA
+     ------------------------- */
+
+  .industry-showcase-cta-wrap {
+    margin-top: 12px;
+  }
+
+  .industry-showcase-cta {
+    width: 100%;
+
+    max-width: 270px;
+
+    height: 45px;
+
+    min-width: 0;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   381px - 480px
+   ========================================================= */
+
+@media (min-width: 381px) and (max-width: 480px) {
+
+  .industry-showcase-section {
+    padding-left: 13px;
+
+    padding-right: 13px;
+  }
+
+  .industry-showcase-card {
+    height: 166px;
+
+    min-height: 166px;
+
+    max-height: 166px;
+  }
+
+  .industry-showcase-image img {
+    width: 145px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   0 - 380px
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .industry-showcase-section {
+    padding-left: 11px;
+
+    padding-right: 11px;
+  }
+
+  .industry-showcase-title {
+    font-size: 26px;
+  }
+
+  .industry-showcase-subtitle {
+    font-size: 12.5px;
+  }
+
+  .industry-showcase-grid {
+    grid-auto-rows: 160px;
+  }
+
+  .industry-showcase-card {
+    height: 160px;
+
+    min-height: 160px;
+
+    max-height: 160px;
+
+    padding-left: 13px;
+
+    padding-right: 13px;
+  }
+
+  .industry-showcase-image {
+    height: 72px;
+
+    min-height: 72px;
+
+    max-height: 72px;
+
+    flex-basis: 72px;
+  }
+
+  .industry-showcase-image img {
+    width: 138px;
+
+    height: 69px;
+  }
+
+  .industry-showcase-content {
+    height: 63px;
+
+    min-height: 63px;
+
+    max-height: 63px;
+
+    flex-basis: 63px;
+  }
+
+  .industry-showcase-card-title {
+    font-size: 14px;
+  }
+
+  .industry-showcase-card-description {
+    font-size: 12px;
+  }
+
+  .industry-showcase-arrow {
+    width: 30px;
+
+    height: 30px;
+
+    min-width: 30px;
+
+    min-height: 30px;
+  }
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.dark .industry-showcase-section {
+  background: #071411;
+}
+
+
+.dark .industry-showcase-eyebrow-pill {
+  background: #10231f;
+
+  color: #e9f8f4;
+}
+
+
+.dark .industry-showcase-line {
+  background: #49615c;
+}
+
+
+.dark .industry-showcase-title {
+  color: #f3f8f6;
+}
+
+
+.dark .industry-showcase-title span {
+  color: #42c9aa;
+}
+
+
+.dark .industry-showcase-title span::after {
+  background: #42c9aa;
+}
+
+
+.dark .industry-showcase-subtitle {
+  color: #a9bbb7;
+}
+
+
+.dark .industry-showcase-card {
+  background: #0d1d19;
+
+  border-color: #1a302a;
+
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+
+.dark .industry-showcase-card:hover {
+  border-color: rgba(66, 201, 170, 0.3);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+
+.dark .industry-showcase-card-title {
+  color: #f1f8f5;
+}
+
+
+.dark .industry-showcase-card-description {
+  color: #a8bbb6;
+}
+
+
+.dark .industry-showcase-arrow {
+  background: #173d34;
+
+  color: #42c9aa;
+}
+
+
+.dark .industry-showcase-arrow:hover {
+  background: #42c9aa;
+
+  color: #071411;
+}
+
+
+.dark .industry-showcase-cta {
+  background:
+    linear-gradient(
+      135deg,
+      #0c6d60 0%,
+      #14927f 100%
+    );
+}

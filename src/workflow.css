@@ -1,0 +1,1496 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+/* =========================================================
+   INFLUNEXA — HOW IT WORKS
+   Standalone CSS
+   ========================================================= */
+
+.howitworks-section {
+  --wf-bg: #f8faf7;
+  --wf-card: #ffffff;
+  --wf-card-border: #e7ece8;
+
+  --wf-navy: #101e34;
+  --wf-navy-soft: #172941;
+
+  --wf-green: #087d6b;
+  --wf-green-dark: #056b5c;
+  --wf-green-light: #d9f7eb;
+  --wf-green-soft: #edf8f4;
+
+  --wf-text: #66748a;
+  --wf-text-dark: #23354b;
+
+  --wf-tag: #f1f6f4;
+  --wf-tag-blue: #edf7f9;
+
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  min-height: 700px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  padding: 72px 40px 54px;
+
+  background: #f8faf7;
+
+  color: var(--wf-navy);
+
+  font-family: "Manrope", sans-serif;
+}
+
+/* =========================================================
+   BOX SIZING
+   ========================================================= */
+
+.howitworks-section *,
+.howitworks-section *::before,
+.howitworks-section *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.dark .howitworks-section,
+[data-theme="dark"] .howitworks-section {
+  --wf-bg: #071512;
+  --wf-card: #0d201b;
+  --wf-card-border: rgba(91, 170, 148, 0.17);
+
+  --wf-navy: #f0f8f5;
+  --wf-navy-soft: #e4f1ed;
+
+  --wf-green: #42c7a9;
+  --wf-green-dark: #31aa90;
+
+  --wf-green-light: rgba(66, 199, 169, 0.15);
+  --wf-green-soft: rgba(66, 199, 169, 0.09);
+
+  --wf-text: #a5b9b3;
+  --wf-text-dark: #d8e8e3;
+
+  --wf-tag: rgba(61, 122, 106, 0.17);
+  --wf-tag-blue: rgba(55, 125, 148, 0.15);
+
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(31, 126, 103, 0.16),
+      transparent 38%
+    ),
+    #071512;
+}
+
+/* =========================================================
+   TOP GLOW
+   ========================================================= */
+
+.howitworks-section::before {
+  content: "";
+
+  position: absolute;
+
+  width: 520px;
+  height: 300px;
+
+  top: -180px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(27, 155, 128, 0.055);
+
+  filter: blur(50px);
+
+  pointer-events: none;
+
+  z-index: -1;
+}
+
+.dark .howitworks-section::before,
+[data-theme="dark"] .howitworks-section::before {
+  background: rgba(39, 159, 132, 0.08);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.howitworks-header {
+  position: relative;
+
+  z-index: 5;
+
+  width: 100%;
+  max-width: 1050px;
+
+  margin: 0 auto 38px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.howitworks-eyebrow {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  min-height: 38px;
+
+  padding: 7px 20px;
+
+  border-radius: 999px;
+
+  background: rgba(238, 245, 242, 0.82);
+
+  color: #087968;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  letter-spacing: 5px;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.howitworks-eyebrow span {
+  display: block;
+
+  width: 30px;
+  height: 1px;
+
+  flex-shrink: 0;
+
+  background: #168b79;
+}
+
+.dark .howitworks-eyebrow,
+[data-theme="dark"] .howitworks-eyebrow {
+  background: rgba(43, 120, 101, 0.16);
+
+  color: #58d5b8;
+}
+
+.dark .howitworks-eyebrow span,
+[data-theme="dark"] .howitworks-eyebrow span {
+  background: #46c7aa;
+}
+
+/* =========================================================
+   HEADER TITLE
+   ========================================================= */
+
+.howitworks-header h2 {
+  position: relative;
+
+  margin: 25px 0 11px;
+
+  color: #101e34;
+
+  font-size: clamp(42px, 4.25vw, 64px);
+
+  font-weight: 800;
+
+  line-height: 1.05;
+
+  letter-spacing: -2.7px;
+}
+
+.dark .howitworks-header h2,
+[data-theme="dark"] .howitworks-header h2 {
+  color: #f0f8f5;
+}
+
+/* =========================================================
+   GREEN TITLE PART
+   ========================================================= */
+
+.howitworks-highlight {
+  position: relative;
+
+  display: inline-block;
+
+  color: #087d6b;
+}
+
+.dark .howitworks-highlight,
+[data-theme="dark"] .howitworks-highlight {
+  color: #42c7a9;
+}
+
+/* =========================================================
+   TITLE UNDERLINE
+   ========================================================= */
+
+.howitworks-highlight i {
+  position: absolute;
+
+  left: 2%;
+  right: -2%;
+
+  bottom: -11px;
+
+  display: block;
+
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #087d6b;
+
+  transform: rotate(1deg);
+
+  opacity: 0.95;
+}
+
+.howitworks-highlight i::after {
+  content: "";
+
+  position: absolute;
+
+  left: 8%;
+  right: 12%;
+
+  top: 1px;
+
+  height: 1px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.4);
+
+  transform: rotate(-1deg);
+}
+
+.dark .howitworks-highlight i,
+[data-theme="dark"] .howitworks-highlight i {
+  background: #42c7a9;
+}
+
+/* =========================================================
+   HEADER DESCRIPTION
+   ========================================================= */
+
+.howitworks-header > p {
+  max-width: 790px;
+
+  margin: 0 auto;
+
+  color: #68758b;
+
+  font-size: 19px;
+
+  font-weight: 500;
+
+  line-height: 1.5;
+}
+
+.dark .howitworks-header > p,
+[data-theme="dark"] .howitworks-header > p {
+  color: #a5b9b3;
+}
+
+/* =========================================================
+   WORKFLOW GRID
+   ========================================================= */
+
+.howitworks-container {
+  position: relative;
+
+  z-index: 5;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    48px
+    minmax(0, 1fr)
+    48px
+    minmax(0, 1fr)
+    48px
+    minmax(0, 1fr)
+    48px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  width: 100%;
+
+  max-width: 1815px;
+
+  margin: 0 auto;
+}
+
+/* =========================================================
+   WORKFLOW CARD
+   ========================================================= */
+
+.howitworks-card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 396px;
+
+  padding: 30px 28px 20px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--wf-card-border);
+
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 28px rgba(22, 44, 58, 0.045),
+    0 1px 3px rgba(22, 44, 58, 0.025);
+
+ 
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.howitworks-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  pointer-events: none;
+}
+
+.dark .howitworks-card,
+[data-theme="dark"] .howitworks-card {
+  background:
+    linear-gradient(
+      145deg,
+      #10251f,
+      #0b1b17
+    );
+
+  border-color: rgba(91, 170, 148, 0.17);
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+/* =========================================================
+   CARD HOVER
+   ========================================================= */
+
+.howitworks-card:hover {
+  transform: translateY(-5px);
+
+  border-color: rgba(8, 125, 107, 0.23);
+
+  box-shadow:
+    0 16px 36px rgba(24, 50, 64, 0.085);
+}
+
+.dark .howitworks-card:hover,
+[data-theme="dark"] .howitworks-card:hover {
+  border-color: rgba(66, 199, 170, 0.25);
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.32);
+}
+
+/* =========================================================
+   CARD ANIMATION
+   ========================================================= */
+
+@keyframes howitworksCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   CARD NUMBER
+   ========================================================= */
+
+.howitworks-number {
+  position: absolute;
+
+  top: 15px;
+  left: 19px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 51px;
+  height: 51px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ddfff2,
+      #c8f4e4
+    );
+
+  color: #102139;
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  line-height: 1;
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    0 3px 8px rgba(16, 100, 83, 0.07);
+}
+
+.dark .howitworks-number,
+[data-theme="dark"] .howitworks-number {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(69, 210, 174, 0.2),
+      rgba(45, 152, 126, 0.15)
+    );
+
+  color: #8de6d0;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* =========================================================
+   ICON BOX
+   ========================================================= */
+
+.howitworks-icon-box {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 112px;
+  height: 106px;
+
+  margin: 0 auto 14px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+    #d7ebe7,
+    #c5dfda
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.howitworks-icon-box > * {
+  max-width: 76px;
+  max-height: 76px;
+}
+
+.howitworks-icon-box svg {
+  width: 70px;
+  height: 70px;
+
+  display: block;
+}
+
+.dark .howitworks-icon-box,
+[data-theme="dark"] .howitworks-icon-box {
+  background:
+    linear-gradient(
+      145deg,
+      #19352e,
+      #132a24
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* =========================================================
+   CARD TITLE
+   ========================================================= */
+
+.howitworks-card h3 {
+  margin: 0 0 6px;
+
+  color: #101e34;
+
+  font-size: 24px;
+
+  font-weight: 800;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.5px;
+}
+
+.dark .howitworks-card h3,
+[data-theme="dark"] .howitworks-card h3 {
+  color: #f0f8f5;
+}
+
+/* =========================================================
+   CARD DESCRIPTION
+   ========================================================= */
+
+.howitworks-card p {
+  min-height: 125px;
+
+  margin: 0;
+
+  color: #68758b;
+
+  font-size: 16.5px;
+
+  font-weight: 500;
+
+  line-height: 1.52;
+}
+
+.dark .howitworks-card p,
+[data-theme="dark"] .howitworks-card p {
+  color: #a5b9b3;
+}
+
+/* =========================================================
+   TAG CONTAINER
+   ========================================================= */
+
+.howitworks-tags {
+  display: flex;
+
+
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-top: 10px;
+  margin-left:-16px;
+
+  
+
+}
+
+.howitworks-tags::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
+   TAG
+   ========================================================= */
+
+.howitworks-tags span {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  min-height: 36px;
+
+  padding: 7px 15px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f4f8f7,
+      #edf4f3
+    );
+
+  color: #173b45;
+
+  font-size: 13.5px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+.dark .howitworks-tags span,
+[data-theme="dark"] .howitworks-tags span {
+  background: rgba(61, 122, 106, 0.17);
+
+  color: #b7dcd3;
+}
+
+/* =========================================================
+   BLUE TAG
+   ========================================================= */
+
+.howitworks-card:nth-child(5) .howitworks-tags span:last-child,
+.howitworks-card:nth-child(9) .howitworks-tags span:last-child {
+  background: #edf7f9;
+}
+
+.dark .howitworks-card:nth-child(5) .howitworks-tags span:last-child,
+.dark .howitworks-card:nth-child(9) .howitworks-tags span:last-child,
+[data-theme="dark"] .howitworks-card:nth-child(5) .howitworks-tags span:last-child,
+[data-theme="dark"] .howitworks-card:nth-child(9) .howitworks-tags span:last-child {
+  background: rgba(55, 132, 154, 0.16);
+}
+
+/* =========================================================
+   CONNECTOR
+   ========================================================= */
+
+.howitworks-connector {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 100%;
+  height:30px;
+}
+
+.howitworks-connector span {
+  position: absolute;
+
+  left: 0;
+  right: 2px;
+
+  top: 50%;
+
+  height: 0;
+
+  border-top: 2px dashed #0a8975;
+
+  transform: translateY(-50%);
+}
+
+.dark .howitworks-connector span,
+[data-theme="dark"] .howitworks-connector span {
+  border-color: #35b99c;
+}
+
+.howitworks-connector b {
+  position: absolute;
+
+  right: -2px;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 19px;
+  height: 30px;
+
+  background: #f8faf7;
+
+  color: #0a8975;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 37px;
+
+  font-weight: 300;
+
+  line-height: 1;
+}
+
+.dark .howitworks-connector b,
+[data-theme="dark"] .howitworks-connector b {
+  background: #071512;
+
+  color: #40c9aa;
+}
+
+/* =========================================================
+   CTA AREA
+   ========================================================= */
+
+.howitworks-actions {
+  position: relative;
+
+  z-index: 10;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  margin-top: 38px;
+}
+
+/* =========================================================
+   BUTTON BASE
+   ========================================================= */
+
+.howitworks-primary-btn,
+.howitworks-secondary-btn {
+  height: 70px;
+
+  min-width: 280px;
+
+  padding: 0 34px;
+
+  border-radius: 13px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.howitworks-primary-btn {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  border: 1px solid #08796a;
+
+  background:
+    linear-gradient(
+      135deg,
+      #087d6b,
+      #056b5c
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 20px rgba(5, 108, 93, 0.16);
+}
+
+.howitworks-primary-btn span {
+  font-size: 25px;
+
+  line-height: 1;
+}
+
+.howitworks-primary-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 26px rgba(5, 108, 93, 0.25);
+}
+
+.howitworks-primary-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+.howitworks-secondary-btn {
+  border: 1px solid #9bd2ca;
+
+  background: #ffffff;
+
+  color: #102139;
+
+  box-shadow:
+    0 3px 10px rgba(20, 50, 55, 0.03);
+}
+
+.howitworks-secondary-btn:hover {
+  transform: translateY(-2px);
+
+  background: #f5fbf9;
+
+  border-color: #5bb5a7;
+}
+
+.dark .howitworks-secondary-btn,
+[data-theme="dark"] .howitworks-secondary-btn {
+  border-color: rgba(78, 180, 157, 0.45);
+
+  background: #10241f;
+
+  color: #e8f7f3;
+
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dark .howitworks-secondary-btn:hover,
+[data-theme="dark"] .howitworks-secondary-btn:hover {
+  background: #143028;
+
+  border-color: #4bc6a7;
+}
+
+/* =========================================================
+   HANDWRITTEN DOODLES
+   ========================================================= */
+
+.howitworks-doodle {
+  position: absolute;
+
+  z-index: 2;
+
+  color: #162b45;
+
+  font-family:
+    "Comic Sans MS",
+    "Segoe Print",
+    "Bradley Hand",
+    cursive;
+
+  font-size: 21px;
+
+  font-weight: 500;
+
+  line-height: 1.35;
+
+  pointer-events: none;
+
+  user-select: none;
+}
+
+.howitworks-doodle span {
+  display: block;
+}
+
+.dark .howitworks-doodle,
+[data-theme="dark"] .howitworks-doodle {
+  color: #b7d0cb;
+}
+
+/* =========================================================
+   TOP LEFT DOODLE
+   ========================================================= */
+
+.howitworks-doodle-left {
+  top: 43px;
+
+  left: 53px;
+
+  transform: rotate(-7deg);
+}
+
+.howitworks-doodle-left .doodle-underline {
+  width: 104px;
+
+  height: 4px;
+
+  margin: 6px 0 0 45px;
+
+  border-radius: 50%;
+
+  background: #078d76;
+
+  transform: rotate(-6deg);
+}
+
+/* =========================================================
+   TOP RIGHT DOODLE
+   ========================================================= */
+
+.howitworks-doodle-right {
+  top: 51px;
+
+  right: 61px;
+
+  transform: rotate(-7deg);
+}
+
+.howitworks-doodle-right .doodle-arrow {
+  position: absolute;
+
+  right: -26px;
+
+  bottom: -28px;
+
+  color: #079378;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 55px;
+
+  font-weight: 300;
+
+  transform: rotate(-10deg);
+}
+
+/* =========================================================
+   BOTTOM LEFT DOODLE
+   ========================================================= */
+
+.howitworks-doodle-bottom-left {
+  bottom: 18px;
+
+  left: 104px;
+
+  transform: rotate(-7deg);
+}
+
+.bottom-doodle-arrow {
+  position: absolute;
+
+  right: -44px;
+
+  bottom: -2px;
+
+  color: #087f70;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 43px;
+
+  transform: rotate(7deg);
+}
+
+/* =========================================================
+   BOTTOM RIGHT DOODLE
+   ========================================================= */
+
+.howitworks-doodle-bottom-right {
+  right: 53px;
+
+  bottom: 22px;
+
+  transform: rotate(-7deg);
+}
+
+.howitworks-doodle-bottom-right .doodle-underline {
+  width: 108px;
+
+  height: 4px;
+
+  margin: 3px 0 0 38px;
+
+  border-radius: 50%;
+
+  background: #087f70;
+
+  transform: rotate(-4deg);
+}
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (max-width: 1600px) {
+  .howitworks-section {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .howitworks-container {
+    grid-template-columns:
+      minmax(0, 1fr)
+      38px
+      minmax(0, 1fr)
+      38px
+      minmax(0, 1fr)
+      38px
+      minmax(0, 1fr)
+      38px
+      minmax(0, 1fr);
+  }
+
+  .howitworks-card {
+    padding-left: 23px;
+    padding-right: 23px;
+  }
+
+  .howitworks-card h3 {
+    font-size: 22px;
+  }
+
+  .howitworks-card p {
+    font-size: 15px;
+  }
+
+  .howitworks-tags {
+    gap: 6px;
+  }
+
+  .howitworks-tags span {
+    padding-left: 11px;
+    padding-right: 11px;
+
+    font-size: 12.5px;
+  }
+
+  .howitworks-doodle-left {
+    left: 25px;
+  }
+
+  .howitworks-doodle-right {
+    right: 25px;
+  }
+}
+
+/* =========================================================
+   LAPTOP
+   ========================================================= */
+
+@media (max-width: 1250px) {
+  .howitworks-section {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .howitworks-container {
+    grid-template-columns:
+      minmax(0, 1fr)
+      28px
+      minmax(0, 1fr)
+      28px
+      minmax(0, 1fr)
+      28px
+      minmax(0, 1fr)
+      28px
+      minmax(0, 1fr);
+  }
+
+  .howitworks-card {
+    min-height: 405px;
+
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .howitworks-number {
+    left: 14px;
+  }
+
+  .howitworks-card h3 {
+    font-size: 20px;
+  }
+
+  .howitworks-card p {
+    font-size: 14px;
+  }
+
+  .howitworks-tags span {
+    min-height: 33px;
+
+    padding: 6px 9px;
+
+    font-size: 11.5px;
+  }
+
+  .howitworks-icon-box {
+    width: 100px;
+    height: 96px;
+  }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .howitworks-section {
+    padding-top: 58px;
+    padding-bottom: 48px;
+  }
+
+  .howitworks-doodle {
+    display: none;
+  }
+
+  .howitworks-header {
+    margin-bottom: 32px;
+  }
+
+  .howitworks-header h2 {
+    font-size: clamp(40px, 6vw, 55px);
+
+    letter-spacing: -2px;
+  }
+
+  .howitworks-header > p {
+    font-size: 17px;
+  }
+
+  .howitworks-container {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+  }
+
+  .howitworks-connector {
+    display: none;
+  }
+
+  .howitworks-card {
+    min-height: 375px;
+
+    padding: 50px 24px 21px;
+  }
+
+  .howitworks-card h3 {
+    font-size: 23px;
+  }
+
+  .howitworks-card p {
+    min-height: 108px;
+
+    font-size: 15px;
+  }
+
+  .howitworks-tags span {
+    font-size: 13px;
+
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .howitworks-actions {
+    margin-top: 30px;
+  }
+}
+
+/* =========================================================
+   TABLET PORTRAIT
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .howitworks-section {
+    padding: 50px 18px 45px;
+  }
+
+  .howitworks-header {
+    margin-bottom: 27px;
+  }
+
+  .howitworks-eyebrow {
+    gap: 8px;
+
+    min-height: 34px;
+
+    padding: 7px 13px;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+  }
+
+  .howitworks-eyebrow span {
+    width: 20px;
+  }
+
+  .howitworks-header h2 {
+    margin-top: 20px;
+
+    font-size: 39px;
+
+    letter-spacing: -1.6px;
+  }
+
+  .howitworks-highlight i {
+    bottom: -7px;
+
+    height: 3px;
+  }
+
+  .howitworks-header > p {
+    padding: 0 8px;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+  }
+
+  .howitworks-container {
+    grid-template-columns: 1fr;
+
+    gap: 17px;
+  }
+
+  .howitworks-card {
+    min-height: auto;
+
+    padding: 52px 22px 21px;
+  }
+
+  .howitworks-number {
+    top: 14px;
+    left: 17px;
+
+    width: 47px;
+    height: 47px;
+
+    font-size: 17px;
+  }
+
+  .howitworks-icon-box {
+    width: 100px;
+    height: 94px;
+
+    margin-bottom: 15px;
+  }
+
+  .howitworks-card h3 {
+    font-size: 23px;
+  }
+
+  .howitworks-card p {
+    min-height: auto;
+
+    margin-top: 5px;
+
+    font-size: 15.5px;
+
+    line-height: 1.52;
+  }
+
+  .howitworks-tags {
+    margin-top: 17px;
+
+    gap: 7px;
+  }
+
+  .howitworks-tags span {
+    min-height: 34px;
+
+    padding: 6px 13px;
+
+    font-size: 12.5px;
+  }
+
+  .howitworks-actions {
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 12px;
+
+    margin-top: 28px;
+  }
+
+  .howitworks-primary-btn,
+  .howitworks-secondary-btn {
+    width: 100%;
+
+    min-width: 0;
+
+    height: 62px;
+
+    font-size: 17px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .howitworks-section {
+    padding: 43px 14px 38px;
+  }
+
+  .howitworks-eyebrow {
+    font-size: 9px;
+
+    letter-spacing: 2.5px;
+  }
+
+  .howitworks-header h2 {
+    font-size: 34px;
+
+    letter-spacing: -1.3px;
+  }
+
+  .howitworks-header > p {
+    padding: 0 5px;
+
+    font-size: 15px;
+  }
+
+  .howitworks-card {
+    padding: 50px 18px 19px;
+
+    border-radius: 15px;
+  }
+
+  .howitworks-number {
+    width: 45px;
+    height: 45px;
+
+    font-size: 16px;
+  }
+
+  .howitworks-icon-box {
+    width: 94px;
+    height: 90px;
+
+    border-radius: 16px;
+  }
+
+  .howitworks-card h3 {
+    font-size: 21px;
+  }
+
+  .howitworks-card p {
+    font-size: 14.5px;
+  }
+
+  .howitworks-tags span {
+    font-size: 12px;
+
+    padding: 6px 11px;
+  }
+
+  .howitworks-primary-btn,
+  .howitworks-secondary-btn {
+    height: 59px;
+
+    font-size: 16px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .howitworks-section {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  .howitworks-header h2 {
+    font-size: 31px;
+  }
+
+  .howitworks-card {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .howitworks-tags span {
+    font-size: 11px;
+
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.howitworks-primary-btn:focus-visible,
+.howitworks-secondary-btn:focus-visible {
+  outline: 3px solid rgba(8, 125, 107, 0.3);
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .howitworks-card {
+    animation: none;
+
+    transition: none;
+  }
+
+  .howitworks-primary-btn,
+  .howitworks-secondary-btn {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+  .howitworks-section {
+    background: #ffffff !important;
+
+    color: #101e34 !important;
+  }
+
+  .howitworks-doodle {
+    display: none;
+  }
+
+  .howitworks-card {
+    animation: none;
+
+    box-shadow: none;
+
+    break-inside: avoid;
+  }
+
+  .howitworks-primary-btn,
+  .howitworks-secondary-btn {
+    box-shadow: none;
+  }
+}

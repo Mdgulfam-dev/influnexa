@@ -5014,10 +5014,8 @@ key={creator._id}
             step="1"
             placeholder="Rate from 1 to 10"
             value={selectedCreator?.creatorRating ?? ""}
-            readOnly={selectedCreator?.creatorRating != null}
             onChange={(e) => {
-              if (selectedCreator?.creatorRating != null) return;
-
+            
               let value = e.target.value;
 
               if (value === "") {

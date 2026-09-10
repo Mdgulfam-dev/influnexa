@@ -1,0 +1,1227 @@
+/* =========================================================
+   INFLUNEXA CREATOR SHOWCASE
+   Independent CSS
+   New class names
+   Light + Dark + Responsive
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT SECTION
+   ========================================================= */
+
+.creator-showcase {
+  --creator-bg: #fafbf8;
+  --creator-card: #ffffff;
+  --creator-heading: #101a35;
+  --creator-text: #536481;
+  --creator-muted: #64728b;
+  --creator-border: #e7ebe8;
+  --creator-teal: #087c6b;
+  --creator-teal-dark: #06675b;
+  --creator-soft-teal: #eaf7f3;
+  --creator-shadow:
+    0 12px 30px rgba(16, 34, 51, 0.07);
+
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  padding: 30px 0 48px;
+
+  background:
+    radial-gradient(
+      circle at 8% 20%,
+      rgba(8, 124, 107, 0.035),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 92% 70%,
+      rgba(8, 124, 107, 0.035),
+      transparent 24%
+    ),
+    var(--creator-bg);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.creator-showcase-header {
+  position: relative;
+  width: min(100%, 1420px);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.creator-showcase-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  margin-bottom: 10px;
+
+  color: var(--creator-heading);
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  line-height: 1;
+}
+
+.creator-showcase-eyebrow > span:not(.creator-eyebrow-line) {
+  padding: 7px 13px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.8);
+
+  box-shadow:
+    0 2px 8px rgba(15, 30, 45, 0.04);
+}
+
+.creator-eyebrow-line {
+  display: block;
+
+  width: 28px;
+  height: 1px;
+
+  background: #7c8998;
+}
+
+
+/* =========================================================
+   HEADING ROW
+   ========================================================= */
+
+.creator-heading-row {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 82px;
+}
+
+
+/* =========================================================
+   HEADING
+   ========================================================= */
+
+.creator-heading-content {
+  width: 100%;
+  max-width: 980px;
+
+  text-align: center;
+}
+
+.creator-heading-content h2 {
+  margin: 0;
+
+  color: var(--creator-heading);
+
+  font-size: clamp(30px, 3vw, 35px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.12;
+}
+
+.creator-heading-content h2 span {
+  position: relative;
+
+  color: var(--creator-teal);
+}
+
+
+/* Underline beneath Real Audiences */
+
+.creator-heading-content h2 span::after {
+  content: "";
+
+  position: absolute;
+
+  left: 5%;
+  right: 0;
+
+  bottom: -8px;
+
+  height: 3px;
+
+  border-radius: 50%;
+
+  background: var(--creator-teal);
+
+  transform: rotate(-1deg);
+}
+
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.creator-heading-content p {
+  margin: 10px auto 0;
+
+  max-width: 850px;
+
+  color: var(--creator-text);
+
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   VIEW ALL BUTTON
+   ========================================================= */
+
+.creator-view-all-btn {
+  position: absolute;
+
+  right: 0;
+  top: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-width: 170px;
+  height: 46px;
+
+  padding: 0 18px;
+
+  color: #16243b;
+
+  background: #ffffff;
+
+  border: 1px solid #e6ebe8;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 7px 20px rgba(20, 35, 50, 0.08);
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.creator-view-all-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 26px rgba(20, 35, 50, 0.13);
+
+  background: #f8fcfa;
+}
+
+.creator-view-all-btn .creator-arrow {
+  font-size: 20px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   SLIDER AREA
+   ========================================================= */
+
+.creator-slider-area {
+  position: relative;
+
+  width: 100%;
+
+  margin-top: 18px;
+}
+
+
+/* =========================================================
+   TRACK
+   ========================================================= */
+
+.creator-showcase-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(245px, 1fr);
+
+  grid-template-rows: 1fr;
+
+  gap: 20px;
+
+  width: min(100%, 1372px);
+
+  margin: 0 auto;
+
+  padding: 0 12px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+
+  scrollbar-width: none;
+}
+
+.creator-showcase-track::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.creator-profile-card {
+  position: relative;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: var(--creator-card);
+
+  border: 1px solid rgba(225, 231, 228, 0.9);
+
+  border-radius: 10px;
+
+  box-shadow: var(--creator-shadow);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.creator-profile-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 18px 38px rgba(16, 34, 51, 0.12);
+}
+
+
+/* =========================================================
+   CREATOR IMAGE — FIXED & PROPERLY VISIBLE
+   ========================================================= */
+/* =========================================================
+   CREATOR IMAGE — FIXED & PROPERLY VISIBLE
+   ========================================================= */
+
+.creator-card-image {
+  position: relative;
+
+  width: 100%;
+  height: 205px;
+
+  overflow: hidden;
+
+  background: #eef2ef;
+
+  border-radius: 10px 10px 0 0;
+}
+
+.creator-card-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  /*
+   * Keep the complete image area visible as much as possible.
+   */
+  object-fit: cover;
+
+  /*
+   * Start from the top so faces are not cut off.
+   */
+  object-position: center 20%;
+
+  transition: transform 0.45s ease;
+}
+
+.creator-profile-card:hover
+.creator-card-image img {
+  transform: scale(1.025);
+}
+
+/* =========================================================
+   CATEGORY BADGE
+   ========================================================= */
+
+.creator-category-badge {
+  position: absolute;
+
+  left: 10px;
+  top: 10px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 5px 9px;
+
+  color: #1d2940;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid rgba(220, 226, 224, 0.8);
+
+  border-radius: 7px;
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.08);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+.creator-category-badge svg {
+  width: 14px;
+  height: 14px;
+
+  color: var(--creator-teal);
+}
+
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+
+.creator-card-body {
+  padding: 10px 13px 12px;
+}
+
+
+/* =========================================================
+   CREATOR NAME
+   ========================================================= */
+
+.creator-name-block {
+  margin-bottom: 10px;
+}
+
+.creator-name-block h3 {
+  margin: 0;
+
+  color: var(--creator-heading);
+
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+
+  line-height: 1.2;
+}
+
+.creator-name-block p {
+  margin: 3px 0 0;
+
+  color: var(--creator-text);
+
+  font-size: 10.5px;
+  font-weight: 500;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+   STATS ROW
+   ========================================================= */
+
+.creator-stats-row {
+  display: flex;
+  align-items: center;
+
+  min-height: 37px;
+
+  gap: 8px;
+
+  padding-bottom: 9px;
+
+  border-bottom: 1px solid #edf0ee;
+}
+
+
+/* =========================================================
+   PLATFORM ICONS
+   ========================================================= */
+
+.creator-platforms {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-right: auto;
+}
+
+.creator-platform-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+}
+
+.creator-platform-icon svg {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+
+  stroke-width: 1.8;
+}
+
+
+/* Instagram */
+
+.instagram-icon svg {
+  color: #e1306c;
+}
+
+
+/* YouTube */
+
+.youtube-icon svg {
+  color: #ff0000;
+}
+
+
+/* TikTok */
+
+.tiktok-icon svg {
+  color: #111111;
+}
+
+
+/* =========================================================
+   METRIC
+   ========================================================= */
+
+.creator-metric {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 53px;
+}
+
+.creator-metric strong {
+  color: var(--creator-heading);
+
+  font-size: 14px;
+  font-weight: 900;
+
+  line-height: 1;
+}
+
+.creator-metric span {
+  margin-top: 3px;
+
+  color: var(--creator-muted);
+
+  font-size: 8.5px;
+  font-weight: 500;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   BOTTOM
+   ========================================================= */
+
+.creator-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding-top: 9px;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+.creator-location {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  gap: 5px;
+
+  color: var(--creator-muted);
+
+  font-size: 9.5px;
+  font-weight: 500;
+}
+
+.creator-location svg {
+  flex: 0 0 auto;
+
+  width: 14px;
+  height: 14px;
+
+  color: var(--creator-heading);
+}
+
+
+/* =========================================================
+   VIEW PROFILE
+   ========================================================= */
+
+.creator-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  gap: 7px;
+
+  min-width: 103px;
+  height: 27px;
+
+  padding: 0 10px;
+
+  color: #075f56;
+
+  background: var(--creator-soft-teal);
+
+  border-radius: 9px;
+
+  text-decoration: none;
+
+  font-size: 9.5px;
+  font-weight: 800;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.creator-profile-btn:hover {
+  background: #dff2ec;
+
+  transform: translateX(2px);
+}
+
+.creator-profile-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+
+/* =========================================================
+   SLIDER ARROWS
+   ========================================================= */
+
+.creator-slider-arrow {
+  position: absolute;
+
+  top: 50%;
+
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  padding: 0;
+
+  color: #16243b;
+
+  background: rgba(255, 255, 255, 0.97);
+
+  border: 1px solid #edf0ef;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 8px 20px rgba(18, 34, 48, 0.09);
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.creator-slider-arrow:hover {
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 25px rgba(18, 34, 48, 0.14);
+
+  transform: translateY(-50%) scale(1.05);
+}
+
+.creator-slider-arrow svg {
+  width: 19px;
+  height: 19px;
+}
+
+.creator-slider-prev {
+  left: 22px;
+}
+
+.creator-slider-next {
+  right: 22px;
+}
+
+
+/* =========================================================
+   HANDWRITTEN NOTE
+   ========================================================= */
+
+.creator-showcase-note {
+  position: absolute;
+
+  right: 14px;
+  bottom: 4px;
+
+  display: flex;
+  flex-direction: column;
+
+  color: #16243b;
+
+  font-family:
+    "Comic Sans MS",
+    "Segoe Print",
+    cursive;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  line-height: 1.05;
+
+  transform: rotate(-8deg);
+}
+
+.creator-showcase-note span:nth-child(3) {
+  margin-left: 5px;
+}
+
+.creator-showcase-note i {
+  display: block;
+
+  width: 55px;
+  height: 2px;
+
+  margin-top: 5px;
+  margin-left: 8px;
+
+  background: var(--creator-teal);
+
+  border-radius: 50%;
+
+  transform: rotate(-4deg);
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.dark .creator-showcase,
+.dark-mode .creator-showcase {
+  --creator-bg: #071411;
+  --creator-card: #0e1d19;
+  --creator-heading: #f3f8f6;
+  --creator-text: #a7bbb5;
+  --creator-muted: #8da49d;
+  --creator-border: #20352f;
+  --creator-teal: #42c9aa;
+  --creator-teal-dark: #32ae92;
+  --creator-soft-teal: #12372f;
+
+  background:
+    radial-gradient(
+      circle at 8% 20%,
+      rgba(66, 201, 170, 0.08),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 92% 70%,
+      rgba(66, 201, 170, 0.06),
+      transparent 24%
+    ),
+    var(--creator-bg);
+}
+
+
+/* Dark eyebrow */
+
+.dark .creator-showcase-eyebrow > span:not(.creator-eyebrow-line),
+.dark-mode .creator-showcase-eyebrow > span:not(.creator-eyebrow-line) {
+  color: #edf7f3;
+
+  background: #10231f;
+
+  box-shadow: none;
+}
+
+
+/* Dark lines */
+
+.dark .creator-eyebrow-line,
+.dark-mode .creator-eyebrow-line {
+  background: #58726b;
+}
+
+
+/* Dark heading */
+
+.dark .creator-heading-content h2,
+.dark-mode .creator-heading-content h2 {
+  color: #f3f8f6;
+}
+
+.dark .creator-heading-content h2 span,
+.dark-mode .creator-heading-content h2 span {
+  color: #42c9aa;
+}
+
+
+/* Dark subtitle */
+
+.dark .creator-heading-content p,
+.dark-mode .creator-heading-content p {
+  color: #9db4ad;
+}
+
+
+/* Dark all creators */
+
+.dark .creator-view-all-btn,
+.dark-mode .creator-view-all-btn {
+  color: #eaf6f2;
+
+  background: #10231f;
+
+  border-color: #29423a;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.dark .creator-view-all-btn:hover,
+.dark-mode .creator-view-all-btn:hover {
+  background: #153029;
+}
+
+
+/* Dark cards */
+
+.dark .creator-profile-card,
+.dark-mode .creator-profile-card {
+  border-color: #20352f;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Dark image badge */
+
+.dark .creator-category-badge,
+.dark-mode .creator-category-badge {
+  color: #e9f5f1;
+
+  background: rgba(14, 29, 25, 0.94);
+
+  border-color: rgba(77, 109, 99, 0.7);
+}
+
+
+/* Dark divider */
+
+.dark .creator-stats-row,
+.dark-mode .creator-stats-row {
+  border-color: #213730;
+}
+
+
+/* Dark arrow */
+
+.dark .creator-slider-arrow,
+.dark-mode .creator-slider-arrow {
+  color: #eaf7f3;
+
+  background: #10231f;
+
+  border-color: #29423a;
+}
+
+
+/* Dark profile button */
+
+.dark .creator-profile-btn,
+.dark-mode .creator-profile-btn {
+  color: #67d5ba;
+
+  background: #12372f;
+}
+
+.dark .creator-profile-btn:hover,
+.dark-mode .creator-profile-btn:hover {
+  background: #17473d;
+}
+
+
+/* Dark TikTok */
+
+.dark .tiktok-icon svg,
+.dark-mode .tiktok-icon svg {
+  color: #ffffff;
+}
+
+
+/* Dark handwritten note */
+
+.dark .creator-showcase-note,
+.dark-mode .creator-showcase-note {
+  color: #dbece7;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1500px) {
+
+  .creator-showcase-header {
+    width: min(100%, 1450px);
+  }
+
+  .creator-showcase-track {
+    width: min(100%, 1380px);
+  }
+
+  .creator-slider-arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .creator-slider-prev {
+    left: 22px;
+  }
+
+  .creator-slider-next {
+    right: 22px;
+  }
+}
+
+
+/* =========================================================
+   LAPTOP
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .creator-showcase-header {
+    padding: 0 45px;
+  }
+
+  .creator-heading-content h2 {
+    font-size: 32px;
+  }
+
+  .creator-heading-content p {
+    font-size: 14px;
+  }
+
+  .creator-showcase-track {
+    grid-auto-columns: 265px;
+
+    padding-left: 55px;
+    padding-right: 55px;
+  }
+
+  .creator-slider-prev {
+    left: 15px;
+  }
+
+  .creator-slider-next {
+    right: 15px;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .creator-showcase {
+    padding-top: 35px;
+    padding-bottom: 55px;
+  }
+
+  .creator-heading-row {
+    display: block;
+  }
+
+  .creator-heading-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .creator-view-all-btn {
+    position: static;
+
+    margin: 16px auto 0;
+
+    width: fit-content;
+  }
+
+  .creator-showcase-track {
+    grid-auto-columns: 280px;
+
+    gap: 16px;
+
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+
+  .creator-slider-arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .creator-slider-prev {
+    left: 13px;
+  }
+
+  .creator-slider-next {
+    right: 13px;
+  }
+
+  .creator-showcase-note {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .creator-showcase {
+    padding: 35px 0 42px;
+  }
+
+  .creator-showcase-header {
+    padding: 0 18px;
+  }
+
+  .creator-showcase-eyebrow {
+    gap: 8px;
+
+    margin-bottom: 12px;
+
+    font-size: 10px;
+    letter-spacing: 1.1px;
+  }
+
+  .creator-showcase-eyebrow > span:not(.creator-eyebrow-line) {
+    padding: 6px 10px;
+  }
+
+  .creator-eyebrow-line {
+    width: 20px;
+  }
+
+  .creator-heading-content h2 {
+    font-size: clamp(26px, 7.5vw, 31px);
+
+    line-height: 1.15;
+
+    letter-spacing: -0.7px;
+  }
+
+  .creator-heading-content h2 span::after {
+    bottom: -5px;
+
+    height: 2px;
+  }
+
+  .creator-heading-content p {
+    max-width: 420px;
+
+    margin-top: 11px;
+
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .creator-view-all-btn {
+    min-width: 155px;
+    height: 42px;
+
+    font-size: 12px;
+  }
+
+  .creator-slider-area {
+    margin-top: 18px;
+  }
+
+  .creator-showcase-track {
+    grid-auto-columns: calc(100vw - 65px);
+
+    gap: 14px;
+
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .creator-card-image {
+    aspect-ratio: 1.8 / 1;
+  }
+
+  .creator-card-body {
+    padding: 12px 13px 13px;
+  }
+
+  .creator-name-block h3 {
+    font-size: 15px;
+  }
+
+  .creator-name-block p {
+    font-size: 10px;
+  }
+
+  .creator-stats-row {
+    gap: 6px;
+  }
+
+  .creator-metric {
+    min-width: 52px;
+  }
+
+  .creator-metric strong {
+    font-size: 13px;
+  }
+
+  .creator-metric span {
+    font-size: 8px;
+  }
+
+  .creator-location {
+    font-size: 9px;
+  }
+
+  .creator-profile-btn {
+    min-width: 100px;
+
+    font-size: 9px;
+  }
+
+  .creator-slider-arrow {
+    width: 34px;
+    height: 34px;
+  }
+
+  .creator-slider-arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .creator-slider-prev {
+    left: 7px;
+  }
+
+  .creator-slider-next {
+    right: 7px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .creator-showcase-header {
+    padding: 0 14px;
+  }
+
+  .creator-heading-content h2 {
+    font-size: 25px;
+  }
+
+  .creator-heading-content p {
+    font-size: 12px;
+  }
+
+  .creator-showcase-track {
+    grid-auto-columns: calc(100vw - 48px);
+
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .creator-slider-arrow {
+    width: 31px;
+    height: 31px;
+  }
+
+  .creator-slider-prev {
+    left: 4px;
+  }
+
+  .creator-slider-next {
+    right: 4px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .creator-showcase-track {
+    scroll-behavior: auto;
+  }
+
+  .creator-profile-card,
+  .creator-card-image img,
+  .creator-view-all-btn,
+  .creator-slider-arrow,
+  .creator-profile-btn {
+    transition: none;
+  }
+}
