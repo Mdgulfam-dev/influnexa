@@ -6,7 +6,7 @@ import RegisterInfluencer from "./pages/RegisterInfluencer";
 import About from "./pages/About";
 import Careers from "./pages/Careers";
 import JobDetail from "./pages/JobDetail";
-
+import Industries from "./pages/Industries";
 function App() {
   const path = window.location.pathname;
 
@@ -37,6 +37,9 @@ function App() {
   if (path === "/blog" || path.startsWith("/blog/")) {
     return <Blog />;
   }
+  if (path === "/industries") {
+  return <Industries />;
+}
 
   return <Home />;
 }

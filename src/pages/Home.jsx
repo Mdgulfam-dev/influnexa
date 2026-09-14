@@ -29,7 +29,9 @@ import healthcareIndustry from "../assets/healthcare.png";
 import gamingIndustry from "../assets/gaming.png";
 import automotiveIndustry from "../assets/automotive.png";
 import ecommerceIndustry from "../assets/ecommerce.png";
-
+import creator1 from "../assets/creator1.jpg";
+import creator2 from "../assets/creator2.jpg";
+import creator3 from "../assets/creator3.jpg";
 
 const logos = ["BEAUTY", "FASHION", "TECH", "DTC", "FITNESS", "LIFESTYLE", "FOOD", "FINANCE"];
 
@@ -944,6 +946,7 @@ export default function Home() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [blogPosts, setBlogPosts] = useState(fallbackBlogPosts);
   const [testimonials, setTestimonials] = useState([]);
+  const [showTestimonialForm, setShowTestimonialForm] = useState(false);
   const [reviewForm, setReviewForm] = useState(initialReviewForm);
   const [reviewStatus, setReviewStatus] = useState({ type: "idle", message: "" });
     const [currentHeroImage, setCurrentHeroImage] = useState(0);
@@ -1198,7 +1201,7 @@ const scrollCreators = (direction) => {
     <div className="advantage-left">
 
       <div className="advantage-badge">
-        <span>✦</span>
+        <span className="advantage-star">✦</span>
         THE INFLUNEXA ADVANTAGE
       </div>
 
@@ -1493,7 +1496,7 @@ const scrollCreators = (direction) => {
               <div className="social-badge instagram">◎</div>
 
               <div className="fake-person person-one">
-                <span>👩🏻</span>
+                  <img src={creator1} alt="Creator" />
               </div>
 
               <div className="creator-likes">
@@ -1506,7 +1509,7 @@ const scrollCreators = (direction) => {
               <div className="social-badge youtube">▶</div>
 
               <div className="fake-person person-two">
-                <span>👨🏻</span>
+                  <img src={creator2} alt="Creator" />
               </div>
 
               <div className="creator-likes">
@@ -1519,7 +1522,7 @@ const scrollCreators = (direction) => {
               <div className="social-badge tiktok">♪</div>
 
               <div className="fake-person person-three">
-                <span>👩🏻</span>
+                <img src={creator3} alt="Creator" />
               </div>
 
               <div className="creator-likes">
@@ -1726,19 +1729,6 @@ const scrollCreators = (direction) => {
 
   </div>
 </section>
-
-        <section className="border-y border-slate-200 bg-slate-50 px-4 py-20 dark:border-white/10 dark:bg-slate-900/40 lg:px-6">
-          <SectionHeader eyebrow="AI-powered creator marketing" title="Influencer marketing solutions for brands across India">
-            From creator discovery to campaign reporting, Influnexa helps brands find the right creators and run focused collaborations across Instagram, YouTube, LinkedIn, and UGC channels.
-          </SectionHeader>
-          <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {seoCapabilities.map((capability) => (
-              <article key={capability} className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-800 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-100">
-                {capability}
-              </article>
-            ))}
-          </div>
-        </section>
 {/* HOW IT WORKS SECTION */}
 <section className="howitworks-section" id="workflow">
 
@@ -2353,7 +2343,7 @@ const scrollCreators = (direction) => {
 
 
 {/* INDUSTRY WE SERVE SECTION */}
-        <section className="industry-showcase-section">
+        <section id="industires" className="industry-showcase-section">
   <div className="industry-showcase-container">
 
     {/* Eyebrow */}
@@ -3085,14 +3075,9 @@ const scrollCreators = (direction) => {
         {/* Empty state */}
         {testimonials.length === 0 && (
           <article className="nx-testimonial-card nx-testimonial-empty">
-
-            <div className="nx-testimonial-type">
-              <strong>Reviews pending</strong>
-            </div>
-
             <p className="nx-testimonial-quote">
-              Approved client and creator reviews will appear here after
-              moderation.
+               ✨More reviews from brands and creators will appear here as they share
+  their experiences with Influnexa.
             </p>
 
           </article>
@@ -3113,6 +3098,16 @@ const scrollCreators = (direction) => {
     </div>
 
   </div> 
+
+  {/* Add Review Button */}
+<button
+  type="button"
+  className="testimonial-toggle-btn"
+  onClick={() => setShowTestimonialForm((prev) => !prev)}
+>
+  {showTestimonialForm ? "Close Form" : "Share Your Experience"}
+</button>
+{showTestimonialForm && (
           <form className="testimonial-form" onSubmit={submitReview}>
             <div>
               <h3>Share your Influnexa experience</h3>
@@ -3181,6 +3176,7 @@ const scrollCreators = (direction) => {
             )}
             <button type="submit">Submit Review</button>
           </form>
+)}
         </section>
 </section>
 
@@ -3300,7 +3296,7 @@ const scrollCreators = (direction) => {
               UGC, and launch agency-managed creator campaigns across the world.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button href="#register" variant="dark">
+              <Button href="#register" >
                 Book Free Consultation
               </Button>
               <Button href="/register/brand">Launch Your Campaign</Button>

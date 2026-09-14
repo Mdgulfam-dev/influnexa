@@ -1180,6 +1180,7 @@ const toggleReason = (index) => {
       <th className="w-[180px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Full Name
       </th>
+      
 
       <th className="w-[240px] px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 border-b border-slate-200">
         Email Id

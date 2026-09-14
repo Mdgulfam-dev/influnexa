@@ -124,11 +124,6 @@ const languages = [
 const availablePlatforms = [
   "Instagram",
   "YouTube",
-  "Facebook",
-  "Twitter/X",
-  "LinkedIn",
-  "Snapchat",
-  "Pinterest",
 ];
 
 const dealTypes = [
@@ -150,6 +145,7 @@ const initialForm = {
   instagramUsername: "",
   instagramProfileLink: "",
   instagramFollowersRange: "",
+   instagramAverageViews: "",
   exactFollowers: "",
 
   phoneNumber: "",
@@ -180,7 +176,7 @@ const initialForm = {
   youtubeUsername: "",
   youtubeChannelLink: "",
   youtubeSubscribersRange: "",
-
+ youtubeAverageViews: "",
   commercialsFor1InstagramReel: "",
   photoLink: "",
   commercialsFor1InstagramStory: "",
@@ -597,7 +593,9 @@ if (
     instagramFollowersRange: text(
       form.instagramFollowersRange
     ),
-
+instagramAverageViews: numberOrZero(
+  form.instagramAverageViews
+),
     exactFollowers: numberOrZero(
       form.exactFollowers
     ),
@@ -664,7 +662,9 @@ pastWorkWithBrands: text(form.pastWorkWithBrands),
     youtubeSubscribersRange: text(
       form.youtubeSubscribersRange
     ),
-
+youtubeAverageViews: numberOrZero(
+  form.youtubeAverageViews
+),
     // ==========================================
     // COMMERCIALS
     // ==========================================
@@ -1087,7 +1087,7 @@ onClick={() => {
 
                     <div className="md:col-span-2">
                       <Input
-                        label="Profile Photo URL"
+                        label="Profile Photo URL(Optional)"
                         type="url"
                         name="photoLink"
                         value={form.photoLink}
@@ -1540,7 +1540,15 @@ onClick={() => {
                                     "5M+",
                           ]}
                         />
-
+<Input
+  label="Instagram Average Views"
+  type="number"
+  min="0"
+  name="instagramAverageViews"
+  value={form.instagramAverageViews}
+  onChange={updateField}
+  placeholder="e.g. 25000"
+/>
                         <Input
                           label="Exact Followers"
                           type="number"
@@ -1615,6 +1623,16 @@ onClick={() => {
                           placeholder="@handle"
                           required
                         />
+
+                        <Input
+  label="YouTube Average Views"
+  type="number"
+  min="0"
+  name="youtubeAverageViews"
+  value={form.youtubeAverageViews}
+  onChange={updateField}
+  placeholder="e.g. 50000"
+/>
 
                         <Input
                           label="YouTube Channel Link"
@@ -2305,6 +2323,10 @@ function Review({ form }) {
             "Followers Range",
             form.instagramFollowersRange
           )}
+           {item(
+            "Instagram Average Views",
+            form.instagramAverageViews
+          )}
           {item(
             "Exact Followers",
             form.exactFollowers
@@ -2345,6 +2367,10 @@ function Review({ form }) {
           {item(
             "Subscribers Range",
             form.youtubeSubscribersRange
+          )}
+           {item(
+            "Youtube Average views",
+            form.youtubeAverageViews
           )}
           {item(
             "Dedicated Video",

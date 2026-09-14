@@ -1073,10 +1073,10 @@ margin-left: -20px;
 
 /* =========================================================
    MOBILE
-   361px - 480px
+  
    ========================================================= */
 
-@media (min-width: 361px) and (max-width: 480px) {
+@media (min-width: 300px) and (max-width: 670px) {
 
   #brands {
     padding-top: 55px;
@@ -1183,8 +1183,8 @@ margin-left: -20px;
     z-index: 5;
 
     width: fit-content;
-
-    margin-bottom: 12px;
+margin-left: 3px;
+    margin-bottom: 13px;
 
     padding: 6px 9px;
 
@@ -1219,7 +1219,7 @@ margin-left: -20px;
     max-width: 250px;
 
     margin-top: 12px;
-
+margin-left: 4px;
     font-size: 12px;
     line-height: 1.5;
   }
@@ -1257,130 +1257,11 @@ margin-left: -20px;
 
 
 /* =========================================================
-   SMALL PHONES
-   320px - 360px
-   ========================================================= */
-
-@media (min-width: 320px) and (max-width: 360px) {
-
-  #brands {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-
-    padding-top: 50px;
-    padding-bottom: 50px;
-  }
-
-  #brands > .mx-auto.grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px;
-  }
-
-
-  .campaign-workflow-grid {
-    grid-template-columns: 1fr;
-    gap: 11px;
-  }
-
-  .campaign-step-card {
-    min-height: 175px;
-    padding: 16px;
-  }
-
-  .campaign-step-icon {
-    width: 68px;
-    height: 64px;
-
-    margin: 5px auto 10px;
-  }
-
-  .campaign-step-icon svg {
-    width: 42px;
-    height: 42px;
-  }
-
-  .campaign-step-card > strong {
-    font-size: 15px;
-  }
-
-  .campaign-step-card > p {
-    font-size: 12px;
-  }
-
-
-  /* =====================================================
-     IMPACT
-     ===================================================== */
-
-  .campaign-impact-panel {
-    position: relative;
-
-    min-height: 285px;
-
-    padding: 22px 16px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    overflow: hidden;
-  }
-
-  .campaign-impact-panel h3 {
-    width: 59%;
-    max-width: 220px;
-
-    margin: 0;
-
-    font-size: 22px;
-    line-height: 1.06;
-
-    overflow-wrap: normal;
-    word-break: normal;
-  }
-
-  .campaign-impact-panel p {
-    width: 56%;
-    max-width: 205px;
-
-    margin-top: 11px;
-
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-
-  /* IMAGE */
-
-  .campaign-impact-visual {
-    position: absolute;
-
-    right: -2px;
-    top: 52%;
-
-    width: 38%;
-    max-width: 175px;
-
-    transform: translateY(-50%);
-
-    z-index: 2;
-  }
-
-  .campaign-impact-visual img {
-    width: 100%;
-    height: auto;
-
-    margin: 0;
-  }
-}
-
-
-/* =========================================================
    VERY SMALL PHONES
    BELOW 320px
    ========================================================= */
 
-@media (max-width: 319px) {
+@media (max-width: 300px) {
 
   #brands {
     padding-left: 12px !important;

@@ -117,7 +117,11 @@ img {
 .application-card { align-self: start; position: sticky; top: 100px; border-radius: 26px; background: #111827; padding: clamp(24px,4vw,34px); color: white; box-shadow: 0 22px 60px rgba(15,23,42,.24); }.application-card > div > p { color: #67e8f9; }.application-card h2 { margin: 0 0 26px; font-size: 1.7rem; letter-spacing: -.04em; }.application-form { display: grid; gap: 14px; }.application-form label { display: grid; gap: 7px; color: #cbd5e1; font-size: .78rem; font-weight: 800; }.application-form input, .application-form textarea { width: 100%; border: 1px solid rgba(255,255,255,.16); border-radius: 11px; background: rgba(255,255,255,.08); padding: 11px 12px; color: white; outline: none; resize: vertical; }.application-form input:focus, .application-form textarea:focus { border-color: #67e8f9; box-shadow: 0 0 0 3px rgba(103,232,249,.13); }.application-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }.application-card .form-submit { margin-top: 5px; border: 0; background: linear-gradient(90deg,#4f46e5,#06b6d4); }.application-card .form-status { margin: 0; }
 .dark .career-hero > span, .dark .career-toolbar > div > span, .dark .job-card p, .dark .job-meta, .dark .job-detail .job-intro, .dark .job-detail ul { color: #94a3b8; }.dark .job-card, .dark .job-detail, .dark .job-not-found { border-color: rgba(255,255,255,.1); background: rgba(15,23,42,.76); }.dark .job-search { color: #cbd5e1; }.dark .job-search input { border-color: rgba(255,255,255,.15); background: rgba(15,23,42,.8); color: white; }.dark .job-type, .dark .job-arrow { background: rgba(99,102,241,.2); color: #c7d2fe; }.dark .job-meta span:not(:first-child)::before { color: #475569; }
 .dark .company-overview { border-color: rgba(129,140,248,.35); background: rgba(49,46,129,.25); }.dark .company-overview h2 { color: #e0e7ff; }.dark .company-overview span { color: #cbd5e1; }
-
+/* Dark mode — Job ID placeholder */
+.dark .job-search input::placeholder {
+  color:white;
+  opacity: 1;
+}
 .admin-candidate-list { display: grid; gap: 16px; }.admin-candidate-card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 22px; }.admin-candidate-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid #e2e8f0; }.admin-candidate-heading h3 { margin: 10px 0 5px; color: #0f172a; font-size: 1.14rem; }.admin-candidate-heading p { margin: 0; color: #64748b; }.admin-candidate-heading label { display: grid; gap: 6px; color: #64748b; font-size: .7rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }.admin-candidate-heading select { min-width: 145px; border: 1px solid #cbd5e1; border-radius: 9px; background: white; padding: 9px; color: #0f172a; font-size: .82rem; font-weight: 700; letter-spacing: normal; text-transform: none; }.admin-candidate-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 22px; margin: 20px 0 0; }.admin-candidate-details div { min-width: 0; }.admin-candidate-details .wide { grid-column: span 3; }.admin-candidate-details dt { margin-bottom: 5px; color: #64748b; font-size: .7rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }.admin-candidate-details dd { margin: 0; color: #334155; line-height: 1.55; overflow-wrap: anywhere; }.admin-candidate-details a { color: #4f46e5; font-weight: 700; }.dark .admin-candidate-card { border-color: rgba(255,255,255,.12); background: rgba(15,23,42,.5); }.dark .admin-candidate-heading { border-color: rgba(255,255,255,.1); }.dark .admin-candidate-heading h3, .dark .admin-candidate-details dd { color: #f8fafc; }.dark .admin-candidate-heading p, .dark .admin-candidate-heading label, .dark .admin-candidate-details dt { color: #94a3b8; }.dark .admin-candidate-heading select { border-color: rgba(255,255,255,.16); background: #1e293b; color: white; }
 .cover-letter-preview { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }.cover-letter-toggle { margin-top: 8px; border: 0; background: transparent; padding: 0; color: #4f46e5; font-size: .8rem; font-weight: 800; }.dark .cover-letter-toggle { color: #a5b4fc; }
 .candidate-card-actions { display: flex; align-items: end; gap: 10px; }.candidate-expand-button { border: 1px solid #c7d2fe; border-radius: 9px; background: #eef2ff; padding: 9px 12px; color: #4338ca; font-size: .8rem; font-weight: 800; white-space: nowrap; }.dark .candidate-expand-button { border-color: rgba(129,140,248,.35); background: rgba(79,70,229,.2); color: #c7d2fe; }
@@ -872,8 +876,17 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
 
 
 .dark .advantage-badge {
-  color: #72d8c2;
+  color:#063d36;
 }
+.advantage-star {
+  color: #087c6b;
+}
+
+/* Dark mode */
+.dark .advantage-star {
+  color:#e0a15d;
+}
+
 
 .dark .advantage-title {
   color: #ffffff;
@@ -6477,7 +6490,7 @@ body {
 }
 
 .creator-one {
-  left: 0;
+  left:-20px;
   top: 4px;
 
   transform: rotate(-6deg);
@@ -6493,7 +6506,7 @@ body {
 }
 
 .creator-three {
-  left: 215px;
+  left: 230px;
   top: 38px;
 
   transform: rotate(8deg);
@@ -6545,7 +6558,8 @@ body {
       #765c50 100%
     );
 }
-
+.fake-person img { 
+  width: 100%; height: 100%; display: block; /* Fill the complete card */ object-fit: cover; object-position: center; /* Remove any inline image spacing */ margin: 0; padding: 0; /* Smooth image rendering */ max-width: none; }
 
 .social-badge {
   position: absolute;
@@ -7958,14 +7972,14 @@ body {
   color: #5eead4;
 }
 
-.dark .blog-index-hero h1,
+.dark 
 .dark .blog-empty h1,
 .dark .blog-article-hero h1,
 .dark .blog-page-card h2,
 .dark .blog-content h2,
 .dark .blog-content h3,
 .dark .blog-article-meta strong {
-  color: #f8fafc;
+  color:#000;
 }
 
 .dark .blog-index-hero p,
@@ -7977,7 +7991,7 @@ body {
 .dark .blog-content ol,
 .dark .blog-meta-row small,
 .dark .blog-article-meta small {
-  color: #cbd5e1;
+  color:lightslategray;
 }
 
 .dark .blog-content li::marker {
@@ -9370,7 +9384,29 @@ body {
   }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 760px) {
+
+.hero-kicker {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    margin-bottom: 20px;
+    margin-top:18px;
+    padding: 8px 10px;
+
+    font-size: 9px;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+
+    text-align: center;
+
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
   .production-hero {
     padding-top: 110px !important;
   }
@@ -9583,7 +9619,7 @@ button[class*="rounded-full"] {
   gap: clamp(38px, 6vw, 88px);
 }
 
-.hero-kicker,
+
 .section-spotlight > span,
 .process-aside small,
 .register-choice-card > span,
@@ -11246,7 +11282,9 @@ clip-path: polygon(
     min-height: auto;
     padding: 18px 20px;
   }
-
+.production-hero-visual{
+  margin-bottom: 10px;
+}
   /* Horizontal separators */
   .feature-item:not(:last-child)::after {
     top: auto;
@@ -11286,7 +11324,9 @@ clip-path: polygon(
   .feature-grid {
     width: 92%;
   }
-
+.production-hero-visual{
+  margin-bottom: 10px;
+}
   .feature-item {
     padding: 16px;
     gap: 12px;
@@ -12101,7 +12141,6 @@ footer .footer-brand-copy small,
   margin-bottom: 14px;
   border-radius: 999px;
   background: rgba(31, 111, 104, 0.1);
-  color: var(--brand-dark);
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 900;
@@ -12109,11 +12148,11 @@ footer .footer-brand-copy small,
   text-transform: uppercase;
 }
 
-.blog-page .blog-index-hero h1,
-.blog-page .blog-article-hero h1,
+.blog-page 
+
 .blog-page .blog-empty h1 {
   max-width: 880px;
-  color: var(--ink);
+  color:black;
   font-size: clamp(2.25rem, 5vw, 4.5rem) !important;
   font-weight: 900;
   line-height: 1.04 !important;
@@ -12125,7 +12164,6 @@ footer .footer-brand-copy small,
 .blog-page .blog-article-hero p,
 .blog-page .blog-empty p {
   max-width: 720px;
-  color: var(--muted);
   font-size: clamp(1rem, 1.35vw, 1.12rem);
   line-height: 1.7;
 }
@@ -12215,7 +12253,6 @@ footer .footer-brand-copy small,
 
 .blog-page .blog-page-card h2 {
   margin: 16px 0 12px;
-  color: var(--ink);
   font-size: clamp(1.32rem, 2.25vw, 2.2rem);
   font-weight: 900;
   line-height: 1.12;
@@ -12439,7 +12476,7 @@ footer .footer-brand-copy small,
 .site.dark .blog-article-signals span {
   border-color: rgba(94, 234, 212, 0.18);
   background: rgba(94, 234, 212, 0.1);
-  color: #5eead4;
+  color:#06b6d4;
 }
 
 @media (max-width: 1040px) {
@@ -14773,4 +14810,247 @@ footer .footer-brand-copy small,
 .dark .services-section .service-image,
 [data-theme="dark"] .services-section .service-image {
   z-index: 1;
+}
+
+/* =========================================================
+   INFLUNEXA REGISTRATION — DARK MODE
+   ========================================================= */
+
+.dark .registration-page {
+  background: #071411;
+  color: #f1f5f3;
+}
+
+/* Main header */
+.dark .registration-page header {
+  border-color: #20342f !important;
+}
+
+.dark .registration-page header p {
+  color: #42c9aa !important;
+}
+
+.dark .registration-page header > p + h1 {
+  color: #f5f7f6;
+}
+
+.dark .registration-page header > p + h1 + p {
+  color: #91a39d !important;
+}
+
+/* =========================================================
+   STEP RAIL
+   ========================================================= */
+
+.dark .registration-page nav button {
+  color: #9aada6;
+}
+
+.dark .registration-page nav button:hover {
+  background: #10221d !important;
+}
+
+.dark .registration-page nav button.bg-\[\#FDF4E4\] {
+  background: #123027 !important;
+}
+
+.dark .registration-page nav button.bg-\[\#FDF4E4\] span:last-child {
+  color: #f1f5f3 !important;
+}
+
+/* Step numbers */
+.dark .registration-page nav button span {
+  border-color: #29433b !important;
+  color: #91a39d !important;
+}
+
+.dark .registration-page nav button span.bg-\[\#1F7A6C\] {
+  background: #087c6b !important;
+  border-color: #087c6b !important;
+  color: #fff !important;
+}
+
+/* Current step circle */
+.dark .registration-page nav button span.bg-\[\#FDF4E4\] {
+  background: #16362d !important;
+  border-color: #42c9aa !important;
+  color: #42c9aa !important;
+}
+
+/* =========================================================
+   FORM CARDS
+   ========================================================= */
+
+.dark .registration-page form > section {
+  background: #0e1d19 !important;
+  border-color: #20342f !important;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark .registration-page form > section h2 {
+  color: #f1f5f3;
+}
+
+.dark .registration-page form > section p {
+  color: #91a39d;
+}
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.dark .registration-page label > span,
+.dark .registration-page form p.font-semibold {
+  color: #dbe6e1;
+}
+
+/* =========================================================
+   INPUTS / TEXTAREAS / SELECTS
+   ========================================================= */
+
+.dark .registration-page input,
+.dark .registration-page textarea,
+.dark .registration-page select {
+  background: #091712 !important;
+  border-color: #29433b !important;
+  color: #edf5f1 !important;
+  color-scheme: dark;
+}
+
+.dark .registration-page input::placeholder,
+.dark .registration-page textarea::placeholder {
+  color: #647a72 !important;
+}
+
+.dark .registration-page input:focus,
+.dark .registration-page textarea:focus,
+.dark .registration-page select:focus {
+  border-color: #42c9aa !important;
+  box-shadow: 0 0 0 4px rgba(66, 201, 170, 0.12) !important;
+}
+
+/* Select options */
+.dark .registration-page select option {
+  background: #0e1d19;
+  color: #edf5f1;
+}
+
+/* =========================================================
+   CATEGORY / LANGUAGE / DEAL CHIPS
+   ========================================================= */
+
+.dark .registration-page button.rounded-full {
+  background: #0b1915 !important;
+  border-color: #29433b !important;
+  color: #cbd8d3 !important;
+}
+
+.dark .registration-page button.rounded-full:hover {
+  background: #132820 !important;
+  border-color: #42c9aa !important;
+}
+
+/* Selected chips */
+.dark .registration-page button.rounded-full.bg-\[\#17161C\] {
+  background: #087c6b !important;
+  border-color: #087c6b !important;
+  color: #ffffff !important;
+}
+
+/* View More button */
+.dark .registration-page button:not(.rounded-full) {
+  border-color: #29433b !important;
+  background: #0b1915 !important;
+  color: #dbe6e1 !important;
+}
+
+.dark .registration-page button:not(.rounded-full):hover {
+  background: #132820 !important;
+  border-color: #42c9aa !important;
+}
+
+/* =========================================================
+   PLATFORM CARDS
+   ========================================================= */
+
+.dark .registration-page [class*="border-dashed"] {
+  border-color: #29433b !important;
+}
+
+/* =========================================================
+   CONSENT BOX
+   ========================================================= */
+
+.dark .registration-page .bg-\[\#FAF8F4\] {
+  background: #0a1915 !important;
+  border-color: #29433b !important;
+}
+
+.dark .registration-page .bg-\[\#FAF8F4\] span {
+  color: #dbe6e1 !important;
+}
+
+.dark .registration-page input[type="checkbox"] {
+  accent-color: #42c9aa;
+}
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+.dark .registration-page .bg-red-50 {
+  background: rgba(127, 29, 29, 0.22) !important;
+  border-color: rgba(248, 113, 113, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+/* =========================================================
+   NAVIGATION BUTTONS
+   ========================================================= */
+
+.dark .registration-page button[type="submit"] {
+  background: #087c6b !important;
+  color: #ffffff !important;
+}
+
+.dark .registration-page button[type="submit"]:hover {
+  background: #09947f !important;
+}
+
+.dark .registration-page button[type="submit"]:disabled {
+  background: #28584f !important;
+}
+
+.dark .registration-page form button[type="button"] {
+  border-color: #29433b !important;
+  background: #0b1915 !important;
+  color: #dbe6e1 !important;
+}
+
+.dark .registration-page form button[type="button"]:hover {
+  background: #132820 !important;
+  border-color: #42c9aa !important;
+}
+
+/* =========================================================
+   LINKS / ACCENTS
+   ========================================================= */
+
+.dark .registration-page a {
+  color: #42c9aa;
+}
+
+/* =========================================================
+   MOBILE STEP RAIL
+   ========================================================= */
+
+@media (max-width: 1023px) {
+  .dark .registration-page nav {
+    scrollbar-color: #29433b #071411;
+  }
+
+  .dark .registration-page nav button {
+    background: #0e1d19;
+    border: 1px solid #20342f;
+  }
 }

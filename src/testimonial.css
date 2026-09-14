@@ -1690,3 +1690,76 @@
   }
 
 }
+
+/* =========================================================
+   TESTIMONIAL FORM TOGGLE BUTTON
+   ========================================================= */
+
+.testimonial-toggle-btn {
+  display: block;
+  margin: 32px auto 0;
+  padding: 13px 28px;
+  border: none;
+  border-radius: 999px;
+  background: #087c6b;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.testimonial-toggle-btn:hover {
+  background: #075f55;
+  transform: translateY(-2px);
+}
+
+.testimonial-toggle-btn:active {
+  transform: translateY(0);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .testimonial-toggle-btn {
+    width: 100%;
+    max-width: 280px;
+    margin-top: 24px;
+  }
+}
+
+/* =========================================================
+   EMPTY TESTIMONIAL STATE
+   ========================================================= */
+
+.nx-testimonials-grid:has(.nx-testimonial-empty) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.nx-testimonial-empty {
+  width: 100%;
+  max-width: 850px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  min-height: 220px;
+  margin: 0 auto;
+}
+
+.nx-testimonial-empty .nx-testimonial-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nx-testimonial-empty .nx-testimonial-quote {
+  max-width: 650px;
+  margin: 14px auto 0;
+  text-align: center;
+}

@@ -1756,7 +1756,7 @@ HEADER
         sticky
         top-0
         z-30
-        px-4
+        px-0
         py-3
         text-left
         whitespace-nowrap
@@ -1776,7 +1776,7 @@ HEADER
         sticky
         top-0
         z-30
-        px-4
+        px-8
         py-3
         text-left
         whitespace-nowrap
@@ -1876,7 +1876,7 @@ HEADER
     </th>
 
     {/* DATA TYPE */}
-    <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
+    <th className="sticky top-0 z-30 px-9 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Data Type
     </th>
 
@@ -1965,13 +1965,13 @@ HEADER
 
 
         {/* designation */}
-        <td className="w-[140px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[140px] px-0 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
           {brand.designation || "-"}
         </td>
 
 
         {/* EMAIL */}
-        <td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[220px] px-8 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
           {brand.email || "-"}
         </td>
 
@@ -2124,7 +2124,7 @@ HEADER
 
         {/* DATA TYPE */}
         {/* DATA TYPE */}
-<td className="w-[150px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+<td className="w-[150px] px-10 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
   {brand.linkedinProfile?.trim()
     ? "LinkedIn"
     : "Brand"}

@@ -91,6 +91,7 @@ const influencerDetailFields = [
   ["Instagram Profile Link", "instagramProfileLink"],
   ["Instagram Follower Range", "instagramFollowersRange"],
   ["Exact Followers", "exactFollowers"],
+   ["Instagram Average Views", "instagramAverageViews"],
   ["Phone Number", "phoneNumber"],
   ["WhatsApp Number", "whatsappNumber"],
   ["Email", "email"],
@@ -112,6 +113,7 @@ const influencerDetailFields = [
   ["Youtube Username", "youtubeUsername"],
   ["Youtube Channel Link", "youtubeChannelLink"],
   ["Youtube Subscribers Range", "youtubeSubscribersRange"],
+    ["Youtube Average Views", "youtubeAverageViews"],
   ["Commercials For 1 Instagram Reel", "commercialsFor1InstagramReel"],
   ["Profile Photo URL", "photoLink"],
   ["Commercials For 1 Instagram Story", "commercialsFor1InstagramStory"],
@@ -1285,17 +1287,6 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     </label>
 
     <label>
-      City
-      <input
-        placeholder="City"
-        value={filters.location}
-        onChange={(event) =>
-          onFilterChange("location", event.target.value)
-        }
-      />
-    </label>
-
-    <label>
       Industry
       <input
         placeholder="Industry"
@@ -1866,7 +1857,7 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
       setLoginEmail("");
       setPassword("");
       setIsAuthenticated(true);
-      await loadDashboard({ showLoading: false });
+      loadDashboard({ showLoading: false });
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
@@ -2157,6 +2148,40 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
 
   try {
     await loadDashboard();
+
+      // Refresh Influencer table
+      if (activeTab === "influencers") {
+        setInfluencerTable({
+          items: [],
+          hasMore: false,
+          nextCursor: null,
+          history: [],
+        });
+
+        await loadRegistrationTable(
+          "influencers",
+          influencerQuery,
+          null,
+          []
+        );
+      }
+
+      // Refresh Brand table
+      if (activeTab === "brands") {
+        setBrandTable({
+          items: [],
+          hasMore: false,
+          nextCursor: null,
+          history: [],
+        });
+
+        await loadRegistrationTable(
+          "brands",
+          brandQuery,
+          null,
+          []
+        );
+      }
   } catch (error) {
     setStatus({
       type: "error",

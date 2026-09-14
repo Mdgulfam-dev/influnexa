@@ -314,49 +314,31 @@
 }
 
 
+
 /* =========================================================
-   CREATOR IMAGE — FIXED & PROPERLY VISIBLE
-   ========================================================= */
-/* =========================================================
-   CREATOR IMAGE — FIXED & PROPERLY VISIBLE
+   CREATOR IMAGE — TOP ALIGNED & CONSISTENT
    ========================================================= */
 
 .creator-card-image {
   position: relative;
-
   width: 100%;
-  height: 205px;
-
+  height: 300px;
   overflow: hidden;
-
   background: #eef2ef;
-
   border-radius: 10px 10px 0 0;
 }
 
 .creator-card-image img {
   display: block;
-
   width: 100%;
   height: 100%;
-
-  /*
-   * Keep the complete image area visible as much as possible.
-   */
   object-fit: cover;
-
-  /*
-   * Start from the top so faces are not cut off.
-   */
-  object-position: center 20%;
-
+  object-position:center top;
   transition: transform 0.45s ease;
 }
 
-.creator-profile-card:hover
-.creator-card-image img {
-  transform: scale(1.025);
-}
+
+
 
 /* =========================================================
    CATEGORY BADGE

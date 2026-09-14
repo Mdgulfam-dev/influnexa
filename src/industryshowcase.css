@@ -1424,6 +1424,27 @@
   color: #071411;
 }
 
+.dark .industry-showcase-content h3 {
+  margin: 0;
+
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+
+  color:#e3f4f0;
+}
+
+.dark .industry-showcase-content p {
+  margin: 0;
+
+  font-size:15px;
+  font-weight:10;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+
+  color:#536582;
+}
 
 .dark .industry-showcase-cta {
   background:

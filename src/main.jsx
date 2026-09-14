@@ -7,6 +7,7 @@ import './industryshowcase.css'
 import './whychooseus.css'
 import './testimonial.css'
 import './creatornetwork.css'
+import './industries.css'
 import App from './App.jsx'
 import './faq.css'
 import { Analytics } from "@vercel/analytics/react";
