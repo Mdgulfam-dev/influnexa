@@ -247,6 +247,53 @@ function MultiSelectDropdown({
     </div>
   );
 }
+
+function ExpandableText({
+  text,
+  maxLength = 35,
+  className = "",
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!text) {
+    return <span>-</span>;
+  }
+
+  const value = String(text);
+
+  // Short text doesn't need See More
+  if (value.length <= maxLength) {
+    return <span className={className}>{value}</span>;
+  }
+
+  const shortText = value.slice(0, maxLength) + "...";
+
+  return (
+    <div className={`min-w-0 ${className}`}>
+      <span className="break-words whitespace-normal">
+        {expanded ? value : shortText}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+        className="
+          ml-2
+          inline
+          text-xs
+          font-semibold
+          text-blue-600
+          hover:text-blue-800
+          hover:underline
+          whitespace-nowrap
+          cursor-pointer
+        "
+      >
+        {expanded ? "See Less" : "See More"}
+      </button>
+    </div>
+  );
+}
 function CsvBrandSection() {
 const [filterOptions, setFilterOptions] = useState({
     designation: [],
@@ -1973,19 +2020,42 @@ HEADER
         {/* EMAIL */}
         <td className="w-[220px] px-8 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
           {brand.email || "-"}
+
+          <ExpandableText
+    text={brand.email}
+    maxLength={10}
+    />
         </td>
 
 
        {/* OFFICIAL EMAIL */}
-<td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+<td
+  className="
+    w-[280px]
+    min-w-[280px]
+    max-w-[280px]
+    px-4
+    py-3
+    text-left
+    align-middle
+    text-slate-700
+  "
+>
   {brand.officialEmail ? (
-    <div className="group flex items-center gap-2">
-      <span>{brand.officialEmail}</span>
+    <div className="group flex items-start gap-2">
+      <div className="min-w-0 flex-1">
+        <ExpandableText
+          text={brand.officialEmail}
+          maxLength={25}
+        />
+      </div>
 
       <button
         type="button"
         onClick={async () => {
-          await navigator.clipboard.writeText(brand.officialEmail);
+          await navigator.clipboard.writeText(
+            brand.officialEmail
+          );
 
           setCopiedOfficialEmail(brand._id);
 
@@ -1994,19 +2064,20 @@ HEADER
           }, 1500);
         }}
         className="
+          shrink-0
           opacity-0
           group-hover:opacity-100
           transition-opacity
-          duration-200
           text-xs
           text-blue-600
           hover:text-blue-800
           font-medium
           cursor-pointer
         "
-        title="Copy Official Email Id"
       >
-        {copiedOfficialEmail === brand._id ? "Copied!" : "Copy"}
+        {copiedOfficialEmail === brand._id
+          ? "Copied!"
+          : "Copy"}
       </button>
     </div>
   ) : (
@@ -2017,15 +2088,31 @@ HEADER
 
         {/* MOBILE */}
         {/* MOBILE NUMBER */}
-<td className="w-[180px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+<td
+  className="
+    w-[180px]
+    min-w-[180px]
+    max-w-[180px]
+    px-4
+    py-3
+    text-left
+    align-middle
+    text-slate-700
+  "
+>
   {brand.mobileNumber ? (
     <div className="group flex items-center gap-2">
-      <span>{brand.mobileNumber}</span>
+      <ExpandableText
+        text={String(brand.mobileNumber)}
+        maxLength={12}
+      />
 
       <button
         type="button"
         onClick={async () => {
-          await navigator.clipboard.writeText(brand.mobileNumber);
+          await navigator.clipboard.writeText(
+            String(brand.mobileNumber)
+          );
 
           setCopiedMobile(brand._id);
 
@@ -2034,19 +2121,20 @@ HEADER
           }, 1500);
         }}
         className="
+          shrink-0
           opacity-0
           group-hover:opacity-100
           transition-opacity
-          duration-200
           text-xs
           text-blue-600
           hover:text-blue-800
           font-medium
           cursor-pointer
         "
-        title="Copy mobile number"
       >
-        {copiedMobile === brand._id ? "Copied!" : "Copy"}
+        {copiedMobile === brand._id
+          ? "Copied!"
+          : "Copy"}
       </button>
     </div>
   ) : (
@@ -2054,27 +2142,48 @@ HEADER
   )}
 </td>
 
-        {/* LINKEDIN */}
-       <td className="w-[360px] min-w-[360px] max-w-[360px] px-4 py-3 text-left align-middle text-blue-600 ">
+{/* LINKEDIN */}
+<td 
+  className="
+    w-[360px]
+    min-w-[360px]
+    max-w-[360px]
+    px-4
+    py-3
+    text-left
+    align-middle
+    text-blue-600
+  "
+>
   {brand.linkedinProfile ? (
-    <a
-      href={
-        brand.linkedinProfile.startsWith("http")
-          ? brand.linkedinProfile
-          : `https://${brand.linkedinProfile}`
-      }
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block max-w-[330px] text-blue-600 hover:underline break-all"
-      title={brand.linkedinProfile}
-    >
-      {brand.linkedinProfile}
-    </a>
+    <div className="min-w-0">
+      <a
+        href={
+          brand.linkedinProfile.startsWith("http")
+            ? brand.linkedinProfile
+            : `https://${brand.linkedinProfile}`
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline"
+        onClick={(e) => {
+          // Prevent clicking the link when clicking See More / See Less
+          if (e.target.closest("button")) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <ExpandableText
+          text={brand.linkedinProfile}
+          maxLength={30}
+          className="text-blue-600"
+        />
+      </a>
+    </div>
   ) : (
     "-"
   )}
 </td>
-
 
         {/* CITY */}
         <td className="w-[140px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
@@ -2085,6 +2194,10 @@ HEADER
         {/* ADDRESS */}
         <td className="w-[250px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
           {brand.address || "-"}
+          <ExpandableText
+    text={brand.address}
+    maxLength={10}
+  />
         </td>
 
 
@@ -2101,21 +2214,43 @@ HEADER
 
 
         {/* WEBSITE */}
-  <td className="w-[220px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+<td
+  className="
+    w-[220px]
+    min-w-[220px]
+    max-w-[220px]
+    px-4
+    py-3
+    text-left
+    align-middle
+    text-blue-600
+  "
+>
   {brand.websiteUrl ? (
-    <a
-      href={
-        brand.websiteUrl.startsWith("http")
-          ? brand.websiteUrl
-          : `https://${brand.websiteUrl}`
-      }
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block max-w-[330px] break-all !text-blue-600 hover:!text-blue-800"
-      title={brand.websiteUrl}
-    >
-      {brand.websiteUrl}
-    </a>
+    <div className="min-w-0">
+      <a
+        href={
+          brand.websiteUrl.startsWith("http")
+            ? brand.websiteUrl
+            : `https://${brand.websiteUrl}`
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline"
+        onClick={(e) => {
+          // Prevent clicking the link when clicking See More / See Less
+          if (e.target.closest("button")) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <ExpandableText
+          text={brand.websiteUrl}
+          maxLength={30}
+          className="text-blue-600"
+        />
+      </a>
+    </div>
   ) : (
     "-"
   )}
