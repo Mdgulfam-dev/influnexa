@@ -7561,7 +7561,7 @@ body {
 .dark h3,
 .dark h4,
 .dark button {
-  color: #f8fafc;
+  color:black;
 }
 
 .dark a {
@@ -9340,7 +9340,7 @@ body {
   .hero-proof-row {
     grid-template-columns: 1fr;
     gap: 10px;
-    margin-top: 26px;
+    margin-top: 28px;
   }
 
   .hero-proof-row span {
@@ -9712,7 +9712,9 @@ button[class*="rounded-full"] {
 
 .hero-proof-row span:last-child {
   border-right: 0;
+  
 }
+
 
 .hero-proof-row strong {
   color: var(--ink);
@@ -12377,7 +12379,7 @@ footer .footer-brand-copy small,
 .blog-page .blog-content h2,
 .blog-page .blog-content h3 {
   scroll-margin-top: 110px;
-  color: var(--ink);
+
   font-weight: 900;
   letter-spacing: 0;
 }
@@ -15052,5 +15054,11 @@ footer .footer-brand-copy small,
   .dark .registration-page nav button {
     background: #0e1d19;
     border: 1px solid #20342f;
+  }
+}
+
+@media (max-width: 800px)  {
+  .hero-proof-row .verified-creators-text{
+    margin-left:5px;
   }
 }

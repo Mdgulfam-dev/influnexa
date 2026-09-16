@@ -1,5 +1,6 @@
 import { useEffect, useState,useRef } from "react";
 import React from "react";
+
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
 import influnexaLogo from "../assets/influnexa-logo.png";
@@ -431,6 +432,7 @@ const initialReviewForm = {
   role: "",
   email: "",
   quote: "",
+    type: "Brand",
   rating: "5",
 };
 
@@ -946,10 +948,10 @@ export default function Home() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [blogPosts, setBlogPosts] = useState(fallbackBlogPosts);
   const [testimonials, setTestimonials] = useState([]);
-  const [showTestimonialForm, setShowTestimonialForm] = useState(false);
   const [reviewForm, setReviewForm] = useState(initialReviewForm);
   const [reviewStatus, setReviewStatus] = useState({ type: "idle", message: "" });
     const [currentHeroImage, setCurrentHeroImage] = useState(0);
+   
 const heroImages = [
   heroImage1,
   heroImage2,
@@ -1018,6 +1020,7 @@ useEffect(() => {
     try {
       await submitTestimonial({
         ...reviewForm,
+         type: reviewForm.type, // Brand or Creator
         rating: Number(reviewForm.rating) || 5,
       });
       setReviewForm(initialReviewForm);
@@ -1026,6 +1029,8 @@ useEffect(() => {
       setReviewStatus({ type: "error", message: error.message });
     }
   };
+
+
 const creatorTrackRef = useRef(null);
 
 const scrollCreators = (direction) => {
@@ -1102,18 +1107,27 @@ const scrollCreators = (direction) => {
                 </Button>
               </div>
 
-              <div className="hero-proof-row">
-                {[
-                  ["50+", "Campaigns Managed"],
-                  ["500+", "Verified Creators"],
-                  ["98%", "Client Satisfaction"],
-                ].map(([value, label]) => (
-                  <span key={label}>
-                    <strong>{value}</strong>
-                    {label}
-                  </span>
-                ))}
-              </div>
+<div className="hero-proof-row">
+  {[
+    ["50+", "Campaigns Managed"],
+    ["10000+", "Verified Creators"],
+    ["98%", "Client Satisfaction"],
+  ].map(([value, label]) => (
+    <span key={label}>
+      <strong>{value}</strong>
+
+      <span
+        className={
+          label === "Verified Creators"
+            ? "verified-creators-text"
+            : ""
+        }
+      >
+        {label}
+      </span>
+    </span>
+  ))}
+</div>
 
             {/* Brand Tagline */}
 <div className="brand-tagline">
@@ -3012,11 +3026,15 @@ const scrollCreators = (direction) => {
 
                 <div className="nx-testimonial-meta">
 
-                  <div className="nx-testimonial-type">
-                    <span className="nx-testimonial-type-icon">
-                      {testimonial.type === "Creator" ? "●" : "♧"}
-                    </span>
-                  </div>
+                <div className="nx-testimonial-type">
+  <span className="nx-testimonial-type-icon">
+    {testimonial.type === "Creator" ? "●" : "♧"}
+  </span>
+
+  <span className="nx-testimonial-type-label">
+    {testimonial.type || "Brand"}
+  </span>
+</div>
 
                   <span className="nx-testimonial-category">
                     {testimonial.category || testimonial.role || "Partner"}
@@ -3063,7 +3081,6 @@ const scrollCreators = (direction) => {
 
               <div>
                 <strong>{testimonial.name}</strong>
-                <span>{testimonial.role}</span>
               </div>
 
             </div>
@@ -3103,80 +3120,12 @@ const scrollCreators = (direction) => {
 <button
   type="button"
   className="testimonial-toggle-btn"
-  onClick={() => setShowTestimonialForm((prev) => !prev)}
+  onClick={() => {
+    window.location.href = "/share-experience";
+  }}
 >
-  {showTestimonialForm ? "Close Form" : "Share Your Experience"}
+  Share Your Experience
 </button>
-{showTestimonialForm && (
-          <form className="testimonial-form" onSubmit={submitReview}>
-            <div>
-              <h3>Share your Influnexa experience</h3>
-              <p>
-                Submitted reviews are reviewed by the admin team before
-                publishing.
-              </p>
-            </div>
-            <div className="testimonial-form-grid">
-              <label>
-                Name
-                <input
-                  name="name"
-                  value={reviewForm.name}
-                  onChange={updateReviewField}
-                  required
-                />
-              </label>
-              <label>
-                Role or company
-                <input
-                  name="role"
-                  value={reviewForm.role}
-                  onChange={updateReviewField}
-                  required
-                />
-              </label>
-              <label>
-                Email
-                <input
-                  name="email"
-                  type="email"
-                  value={reviewForm.email}
-                  onChange={updateReviewField}
-                />
-              </label>
-              <label>
-                Rating
-                <select
-                  name="rating"
-                  value={reviewForm.rating}
-                  onChange={updateReviewField}
-                >
-                  <option value="5">5</option>
-                  <option value="4">4</option>
-                  <option value="3">3</option>
-                  <option value="2">2</option>
-                  <option value="1">1</option>
-                </select>
-              </label>
-              <label className="wide">
-                Review
-                <textarea
-                  name="quote"
-                  value={reviewForm.quote}
-                  onChange={updateReviewField}
-                  rows="4"
-                  required
-                />
-              </label>
-            </div>
-            {reviewStatus.message && (
-              <div className={`testimonial-status ${reviewStatus.type}`}>
-                {reviewStatus.message}
-              </div>
-            )}
-            <button type="submit">Submit Review</button>
-          </form>
-)}
         </section>
 </section>
 
@@ -3283,24 +3232,6 @@ const scrollCreators = (direction) => {
                 Register as Influencer
               </Button>
             </article>
-          </div>
-        </section>
-
-        <section id="contact" className="px-4 py-20 lg:px-6">
-          <div className="final-cta mx-auto max-w-7xl rounded-[32px] p-8 text-center text-white md:p-16">
-            <h2 className="mx-auto max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
-              Ready to Grow Your Brand with Influencer Marketing?
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cyan-50">
-              Build trust, collect authentic product reviews, produce better
-              UGC, and launch agency-managed creator campaigns across the world.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button href="#register" >
-                Book Free Consultation
-              </Button>
-              <Button href="/register/brand">Launch Your Campaign</Button>
-            </div>
           </div>
         </section>
       </main>

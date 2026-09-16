@@ -244,7 +244,8 @@ function toggleValue(values, value) {
 }
 
 export default function RegisterInfluencer() {
-
+const [categorySearch, setCategorySearch] = useState("");
+const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [theme, setTheme] = useState(getInitialTheme);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showOtherLanguage, setShowOtherLanguage] = useState(false);
@@ -1194,57 +1195,163 @@ onClick={() => {
                     hint="Tell brands what you create, in which languages, and who you are."
                   />
 
-                  <div>
+                 <div className="relative">
   <p className="mb-2.5 text-[13px] font-semibold">
-    Categories{" "}
-    <span className="text-red-500">*</span>
+    Categories <span className="text-red-500">*</span>
   </p>
 
-  <div className="flex flex-wrap gap-2">
-    {(showAllCategories
-      ? categories
-      : categories.slice(0, 15)
-    ).map((category) => {
-      const active =
-        form.categories.includes(category);
+  {/* Searchable Category Dropdown */}
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() =>
+        setCategoryDropdownOpen((current) => !current)
+      }
+      className="flex min-h-[48px] w-full items-center justify-between rounded-xl border border-[#E7E3DA] bg-white px-4 py-3 text-left text-[14px] text-[#17161C] shadow-sm transition hover:border-[#d8d2c4] focus:border-[#17161C] focus:outline-none"
+    >
+      <span
+        className={
+          form.categories.length
+            ? "text-[#17161C]"
+            : "text-[#8A867D]"
+        }
+      >
+        {form.categories.length
+          ? `${form.categories.length} ${
+              form.categories.length === 1
+                ? "category"
+                : "categories"
+            } selected`
+          : "Search and select your categories"}
+      </span>
 
-      return (
-        <button
-          type="button"
-          key={category}
-          onClick={() =>
-            updateMulti("categories", category)
-          }
-          className={`
-            rounded-full border-[1.5px]
-            px-3.5 py-2 text-[13.5px]
-            transition
-            ${
-              active
-                ? "border-[#17161C] bg-[#17161C] text-white"
-                : "border-[#E7E3DA] bg-white text-[#17161C] hover:border-[#d8d2c4]"
-            }
-          `}
-        >
-          {category}
-        </button>
-      );
-    })}
+      <svg
+        className={`h-4 w-4 transition-transform ${
+          categoryDropdownOpen ? "rotate-180" : ""
+        }`}
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </button>
+
+    {categoryDropdownOpen && (
+      <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-xl border border-[#E7E3DA] bg-white shadow-xl">
+        {/* Search */}
+        <div className="border-b border-[#E7E3DA] p-3">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A867D]"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.5 3a5.5 5.5 0 103.446 9.79l3.632 3.632a.75.75 0 101.06-1.06l-3.631-3.632A5.5 5.5 0 008.5 3zM4.5 8.5a4 4 0 118 0 4 4 0 01-8 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <input
+              type="text"
+              value={categorySearch}
+              onChange={(e) =>
+                setCategorySearch(e.target.value)
+              }
+              placeholder="Search categories..."
+              autoFocus
+              className="w-full rounded-lg border border-[#E7E3DA] bg-[#FAF9F6] py-2.5 pl-9 pr-3 text-[13.5px] text-[#17161C] outline-none placeholder:text-[#9A968D] focus:border-[#17161C]"
+            />
+          </div>
+        </div>
+
+        {/* Category List */}
+        <div className="max-h-[280px] overflow-y-auto p-2">
+          {categories
+            .filter((category) =>
+              category
+                .toLowerCase()
+                .includes(categorySearch.toLowerCase())
+            )
+            .map((category) => {
+              const active =
+                form.categories.includes(category);
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() =>
+                    updateMulti("categories", category)
+                  }
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[13.5px] transition ${
+                    active
+                      ? "bg-[#17161C] text-white"
+                      : "text-[#17161C] hover:bg-[#FAF9F6]"
+                  }`}
+                >
+                  <span>{category}</span>
+
+                  {active && (
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.704 5.296a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 111.06-1.06l2.97 2.97 6.72-6.72a.75.75 0 011.06 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  )}
+                </button>
+              );
+            })}
+
+          {categories.filter((category) =>
+            category
+              .toLowerCase()
+              .includes(categorySearch.toLowerCase())
+          ).length === 0 && (
+            <div className="px-3 py-6 text-center text-[13px] text-[#8A867D]">
+              No categories found
+            </div>
+          )}
+        </div>
+      </div>
+    )}
   </div>
 
-  <button
-    type="button"
-    onClick={() =>
-      setShowAllCategories(
-        (current) => !current
-      )
-    }
-    className="mt-3 rounded-lg border border-[#E7E3DA] bg-white px-4 py-2 text-[13.5px] font-semibold text-[#17161C] transition hover:border-[#d8d2c4] hover:bg-[#FAF9F6]"
-  >
-    {showAllCategories
-      ? "View Less"
-      : "View More"}
-  </button>
+  {/* Selected Categories */}
+  {form.categories.length > 0 && (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {form.categories.map((category) => (
+        <span
+          key={category}
+          className="inline-flex items-center gap-2 rounded-full border border-[#D8D2C4] bg-[#FAF9F6] px-3 py-1.5 text-[13px] text-[#17161C]"
+        >
+          {category}
+
+          <button
+            type="button"
+            onClick={() =>
+              updateMulti("categories", category)
+            }
+            className="flex h-4 w-4 items-center justify-center rounded-full text-[#77736B] transition hover:bg-[#17161C] hover:text-white"
+            aria-label={`Remove ${category}`}
+          >
+            ×
+          </button>
+        </span>
+      ))}
+    </div>
+  )}
 </div>
 <div className="mt-6">
       <Input

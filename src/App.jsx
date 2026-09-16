@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Careers from "./pages/Careers";
 import JobDetail from "./pages/JobDetail";
 import Industries from "./pages/Industries";
+import ShareExperience from "./pages/ShareExperience";
 function App() {
   const path = window.location.pathname;
 
@@ -40,6 +41,9 @@ function App() {
   if (path === "/industries") {
   return <Industries />;
 }
+ if (path === "/share-experience") {
+  return <ShareExperience/>;
+ }
 
   return <Home />;
 }

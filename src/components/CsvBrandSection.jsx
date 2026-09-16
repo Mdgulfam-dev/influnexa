@@ -303,6 +303,7 @@ const [filterOptions, setFilterOptions] = useState({
   });
   const [csvBrands, setCsvBrands] = useState([]);
 const [currentTime, setCurrentTime] = useState(new Date());
+const [leadUsers, setLeadUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 const [copiedOfficialEmail, setCopiedOfficialEmail] = useState(null);
 const [copiedMobile, setCopiedMobile] = useState(null);
@@ -329,12 +330,49 @@ const [filters, setFilters] = useState({
   dataType: [],
   status: [],
 });
+
   // ========================================
   // FETCH BRANDS
   // ========================================
 useEffect(() => {
+   fetchLeadUsers();
     fetchFilterOptions();
+    
   }, []);
+
+const fetchLeadUsers = async () => {
+  try {
+    const token = sessionStorage.getItem("influnexa_admin_token");
+
+    console.log("ADMIN TOKEN:", token);
+
+    const response = await axios.get(
+      `${Config.API_URL}/admin/users`,
+      {
+        headers: {
+          "x-admin-token": token,
+        },
+      }
+    );
+
+    console.log("LEAD USERS RESPONSE:", response.data);
+
+    if (response.data.success) {
+      const leads = (response.data.data || []).filter(
+        (user) =>
+          user.role === "lead" &&
+          user.status === "active"
+      );
+
+      setLeadUsers(leads);
+    }
+  } catch (error) {
+    console.error(
+      "LEAD USERS ERROR:",
+      error.response?.data || error.message
+    );
+  }
+};
 
   const fetchFilterOptions = async () => {
     try {
@@ -865,6 +903,50 @@ const downloadMaskedFilteredBrands = async () => {
   }
 };
 
+
+// ========================================
+// COMPLETED BY CHANGE
+// ========================================
+
+const handleCompletedByChange = async (brandId, selectedLead) => {
+  try {
+    const response = await axios.put(
+      `${Config.API_URL}/csv-brands/${brandId}`,
+      {
+        completedBy: selectedLead
+          ? {
+              name: selectedLead.name,
+              email: selectedLead.email,
+            }
+          : null,
+      }
+    );
+
+    if (response.data.success) {
+      setCsvBrands((prev) =>
+        prev.map((brand) =>
+          brand._id === brandId
+            ? {
+                ...brand,
+                completedBy:
+                  response.data.data?.completedBy || null,
+              }
+            : brand
+        )
+      );
+    }
+  } catch (error) {
+    console.error(
+      "UPDATE COMPLETED BY ERROR:",
+      error.response?.data || error.message
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to assign lead"
+    );
+  }
+};
 
 const getStatusDetails = (status) => {
   switch (status) {
@@ -1707,7 +1789,7 @@ const inputClass = `
   "
               >
 
-     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[220px]" /><col className="w-[220px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /></colgroup>            
+     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[220px]" /><col className="w-[220px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
 {/* ========================================
 HEADER
 ======================================== */}
@@ -1942,6 +2024,10 @@ HEADER
       Action
     </th>
 
+      <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
+      Completed By
+    </th>
+
   </tr>
 </thead>
 
@@ -1986,12 +2072,13 @@ HEADER
   px-4
   py-3
   text-left
-  whitespace-nowrap
+  whitespace-normal
+  break-words
+  overflow-wrap-anywhere
   align-middle
   font-semibold
   text-slate-800
   bg-white
-
   after:absolute
   after:top-0
   after:right-0
@@ -2006,24 +2093,30 @@ HEADER
 
 
         {/* FULL NAME */}
-        <td className="w-[160px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[160px] px-4 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
           {brand.fullName || "-"}
         </td>
 
 
         {/* designation */}
-        <td className="w-[140px] px-0 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[140px] px-0 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
           {brand.designation || "-"}
         </td>
 
 
         {/* EMAIL */}
-        <td className="w-[220px] px-8 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.email || "-"}
+        <td className="w-[220px] px-8 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
+         
 
           <ExpandableText
-    text={brand.email}
-    maxLength={10}
+    text={brand.email||"-"}
+    maxLength={20}
     />
         </td>
 
@@ -2039,6 +2132,9 @@ HEADER
     text-left
     align-middle
     text-slate-700
+    whitespace-normal
+  break-words
+  overflow-wrap-anywhere
   "
 >
   {brand.officialEmail ? (
@@ -2098,6 +2194,9 @@ HEADER
     text-left
     align-middle
     text-slate-700
+    whitespace-normal
+  break-words
+  overflow-wrap-anywhere
   "
 >
   {brand.mobileNumber ? (
@@ -2153,6 +2252,9 @@ HEADER
     text-left
     align-middle
     text-blue-600
+    whitespace-normal
+  break-words
+  overflow-wrap-anywhere
   "
 >
   {brand.linkedinProfile ? (
@@ -2186,29 +2288,40 @@ HEADER
 </td>
 
         {/* CITY */}
-        <td className="w-[140px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[140px] px-4 py-3 text-left text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
           {brand.city || "-"}
         </td>
 
 
         {/* ADDRESS */}
-        <td className="w-[250px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.address || "-"}
+        <td className="w-[250px] px-4 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
+          
           <ExpandableText
-    text={brand.address}
-    maxLength={10}
+    text={brand.address||"-"}
+    maxLength={60}
   />
         </td>
 
 
         {/* DIRECTORS */}
-        <td className="w-[180px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
-          {brand.directors || "-"}
+        <td className="w-[180px] px-4 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
+           <ExpandableText
+    text={brand.directors||"-"}
+    maxLength={30}
+  />
         </td>
 
 
         {/* AGE */}
-        <td className="w-[150px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+        <td className="w-[150px] px-4 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
           {brand.ageOfCompany || "-"}
         </td>
 
@@ -2224,6 +2337,9 @@ HEADER
     text-left
     align-middle
     text-blue-600
+    whitespace-normal
+  break-words
+  overflow-wrap-anywhere
   "
 >
   {brand.websiteUrl ? (
@@ -2259,7 +2375,9 @@ HEADER
 
         {/* DATA TYPE */}
         {/* DATA TYPE */}
-<td className="w-[150px] px-10 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+<td className="w-[150px] px-10 py-3 text-left  text-slate-700 align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
   {brand.linkedinProfile?.trim()
     ? "LinkedIn"
     : "Brand"}
@@ -2267,7 +2385,9 @@ HEADER
 
 
         {/* STATUS */}
-        <td className=" px-4 py-3 text-left whitespace-nowrap align-middle">
+        <td className=" px-4 py-3 text-left  align-middle whitespace-normal
+  break-words
+  overflow-wrap-anywhere">
 
           <span
   className={`
@@ -2447,6 +2567,47 @@ HEADER
 
   </select>
 
+</td>
+
+{/* COMPLETED BY */}
+<td className="px-4 py-3 text-left align-middle overflow-visible">
+ <select
+  value={brand.completedBy?.email || ""}
+  onChange={(e) => {
+    const selectedLead = leadUsers.find(
+      (user) => user.email === e.target.value
+    );
+
+    handleCompletedByChange(
+      brand._id,
+      selectedLead || null
+    );
+  }}
+  className="
+      w-[180px]
+      px-3
+      py-2
+      rounded-lg
+      border
+      border-slate-300
+      bg-white
+      text-sm
+      font-medium
+      text-slate-700
+      outline-none
+      focus:ring-2
+      focus:ring-slate-300
+      cursor-pointer
+    "
+  >
+    <option value="">Select Lead</option>
+
+  {leadUsers.map((user) => (
+    <option key={user._id} value={user.email}>
+      {user.name}
+    </option>
+  ))}
+  </select>
 </td>
 
       </tr>

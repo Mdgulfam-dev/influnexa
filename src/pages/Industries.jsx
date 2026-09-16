@@ -1,4 +1,3 @@
-import React from "react";
 import "../industries.css";
 
 const industries = [
@@ -113,109 +112,108 @@ const industries = [
    INDUSTRY IMAGE PROMPTS
    ========================================================= */
 const industryImageKeywords = {
-  "Fashion": "fashion model clothing",
-  "Beauty and Makeup": "beauty makeup cosmetics",
-  "Personal Care": "personal care skincare",
-  "UGC Creators": "",
-  "Tech Reviews": "technology reviewer gadgets",
-  "Body Care": "body care cosmetics",
-  "Skin Care": "skincare beauty face",
-  "LifeStyle": "lifestyle influencer",
-  "Food": "food restaurant delicious",
-  "Housewife": "woman home lifestyle",
-  "Podcasters": "podcast microphone studio",
-  "Cooking and Recipes": "cooking kitchen recipe",
-  "Health & Wellness": "health wellness",
-  "Gym": "gym workout weights",
-  "Fitness": "fitness workout trainer",
-  "Moms": "mother baby family",
-  "Pets": "pets dog cat",
-  "Travel & Adventure": "travel adventure mountain",
-  "Celebrity": "celebrity red carpet",
-  "Film, OTT and TV Series": "film television movie production",
-  "Memes": "social media smartphone funny",
-  "Models": "fashion model photoshoot",
-  "Yoga": "yoga meditation",
-  "Hair Care": "hair salon hair care",
-  "Student": "student studying university",
-  "Family/Parenting": "family parenting children",
-  "Home & Decor": "home interior decor",
-  "Baby Care": "baby care mother",
-  "Education": "education classroom teacher",
-  "Dogs": "dog pet",
-  "Diet & Nutrition": "healthy food nutrition",
-  "Dermatologist": "dermatologist skincare doctor",
-  "Doctors": "doctor medical hospital",
-  "Crypto and NFTs": "cryptocurrency bitcoin blockchain",
-  "Personal Finance": "personal finance money",
-  "Luxury Goods": "luxury fashion jewelry",
-  "Motivation": "success motivation business",
-  "Working class": "worker professional workplace",
-  "Ethnic Wear": "traditional clothing ethnic fashion",
-  "Stock Market": "stock market trading",
-  "Comedy": "comedy comedian stage",
-  "Forex": "forex trading financial charts",
-  "Esports": "esports gaming competition",
-  "Finance": "finance banking business",
-  "Dance": "dance dancer performance",
-  "Cats": "cat pet",
-  "Crypto & NFT": "crypto bitcoin nft blockchain",
-  "Sports": "sports athlete stadium",
-  "Software Development": "software developer coding computer",
-  "Vegan": "vegan food vegetables",
-  "Dentists": "dentist dental clinic",
-  "Gadgets": "smartphone gadgets technology",
-  "Electronics and Technology": "electronics technology devices",
-  "Entertainment": "entertainment stage performance",
-  "Higher Education": "university college students",
-  "Entrepreneurship": "entrepreneur startup business",
-  "DIY": "DIY crafts tools",
-  "Footwear": "shoes footwear fashion",
-  "Gaming": "video game gamer gaming",
-  "Home & Garden": "home garden plants",
-  "Home & Kitchen": "kitchen home appliances",
-  "Athletes": "professional athlete sports",
-  "Automotive": "car automobile",
-  "Mental Health Care": "mental health meditation wellness",
-  "Motorcycles": "motorcycle rider",
-  "Religious": "religion spirituality worship",
-  "Seniority Old Age": "senior elderly lifestyle",
-  "Sexual Wellness": "wellness self care lifestyle",
-  "Sneakers": "sneakers shoes fashion",
-  "Music": "musician music concert",
-  "Arts and Crafts": "art painting crafts",
-  "Business Making Money": "business entrepreneur money",
-  "Coffee Tea Beverages": "coffee tea cafe",
-  "Computer Software": "computer software technology",
-  "Nails": "nail art manicure",
-  "Veterinary": "veterinarian animal clinic",
-  "Fan Accounts": "fans social media celebrity",
-  "Lingeries": "fashion lingerie clothing",
-  "Architecture & Interior": "architecture interior design",
-  "Banking": "bank finance banking",
-  "Cars": "cars automobile road",
-  "Hospitality": "hotel hospitality resort",
-  "Love & Romance": "couple romance love",
-  "Medical Practice": "doctor medical clinic",
-  "Photography": "photographer camera photoshoot",
-  "Plus Size Fashion": "plus size fashion model",
-  "Professional Training & Coaching": "business coach training",
-  "Public Safety": "police emergency safety",
-  "Wine and Spirits": "wine vineyard restaurant",
-  "Farming": "farmer agriculture farm",
-  "Animals": "wildlife animals",
-  "Automation & Robotics": "robotics automation technology",
-  "Quotes & Texts": "writing books typography",
-  "Politics": "politics government parliament",
-  "Activism & Social Causes": "social activism community",
-  "Books and Movies": "books movies entertainment",
-  "Gambling & Casinos": "casino gaming cards",
-  "Recreational Facilities": "recreation sports leisure",
-  "Alternative Medicine": "natural medicine wellness",
-  "Tobacco": "tobacco agriculture",
-  "Airlines Aviation": "airplane aviation airport",
+  "Fashion": "fashion",
+  "Beauty and Makeup": "makeup",
+  "Personal Care": "skincare",
+  "UGC Creators": "creator",
+  "Tech Reviews": "laptop",
+  "Body Care": "Bodycare",
+  "Skin Care": "Facewash",
+  "LifeStyle": "Nature",
+  "Food": "Biriyani",
+  "Housewife": "Ladies",
+  "Podcasters": "microphone",
+  "Cooking and Recipes": "cooking",
+  "Health & Wellness": "Health",
+  "Gym": "gym",
+  "Fitness": "fitness",
+  "Moms": "mother",
+  "Pets": "Dog",
+  "Travel & Adventure": "travel",
+  "Celebrity": "Celebrity",
+  "Film, OTT and TV Series": "cinema",
+  "Memes": "Funny",
+  "Models": "model",
+  "Yoga": "yoga",
+  "Hair Care": "hair",
+  "Student": "student",
+  "Family/Parenting": "family",
+  "Home & Decor": "interior",
+  "Baby Care": "baby",
+  "Education": "education",
+  "Dogs": "dog",
+  "Diet & Nutrition": "nutrition",
+  "Dermatologist": "dermatologist",
+  "Doctors": "doctor",
+  "Crypto and NFTs": "bitcoin",
+  "Personal Finance": "money",
+  "Luxury Goods": "luxury",
+  "Motivation": "success",
+  "Working class": "worker",
+  "Ethnic Wear": "saree",
+  "Stock Market": "stocks",
+  "Comedy": "comedian",
+  "Forex": "forex",
+  "Esports": "esports",
+  "Finance": "finance",
+  "Dance": "dancer",
+  "Cat": "Cat",
+  "Crypto & NFT": "nft",
+  "Sports": "sports",
+  "Software Development": "coding",
+  "Vegan": "vegan",
+  "Dentists": "dentist",
+  "Gadgets": "smartphone",
+  "Electronics and Technology": "electronics",
+  "Entertainment": "entertainment",
+  "Higher Education": "university",
+  "Entrepreneurship": "entrepreneur",
+  "DIY": "crafts",
+  "Footwear": "shoes",
+  "Gaming": "gaming",
+  "Home & Garden": "garden",
+  "Home & Kitchen": "kitchen",
+  "Athletes": "athlete",
+  "Automotive": "automobile",
+  "Mental Health Care": "meditation",
+  "Motorcycles": "motorcycle",
+  "Religious": "worship",
+  "Seniority Old Age": "elderly",
+  "Sexual Wellness": "wellness",
+  "Sneakers": "sneakers",
+  "Music": "music",
+  "Arts and Crafts": "painting",
+  "Business Making Money": "business",
+  "Coffee Tea Beverages": "coffee",
+  "Computer Software": "computer",
+  "Nails": "manicure",
+  "Veterinary": "veterinarian",
+  "Fan Accounts": "fans",
+  "Lingeries": "lingerie",
+  "Architecture & Interior": "architecture",
+  "Banking": "bank",
+  "Cars": "car",
+  "Hospitality": "hotel",
+  "Love & Romance": "couple",
+  "Medical Practice": "clinic",
+  "Photography": "camera",
+  "Plus Size Fashion": "fashion",
+  "Professional Training & Coaching": "coaching",
+  "Public Safety": "police",
+  "Wine and Spirits": "wine",
+  "Farming": "farmer",
+  "Animals": "wildlife",
+  "Automation & Robotics": "robot",
+  "Quotes & Texts": "books",
+  "Politics": "parliament",
+  "Activism & Social Causes": "activism",
+  "Books and Movies": "movies",
+  "Gambling & Casinos": "casino",
+  "Recreational Facilities": "recreation",
+  "Alternative Medicine": "herbs",
+  "Tobacco": "tobacco",
+  "Airlines Aviation": "airplane",
 };
-
 
 /* =========================================================
    AUTOMATIC INDUSTRY IMAGE
@@ -226,10 +224,13 @@ const getIndustryImage = (industry, index) => {
     industryImageKeywords[industry] ||
     `${industry} lifestyle`;
 
-  return `https://loremflickr.com/900/650/${encodeURIComponent(
+  return `https://loremflickr.com/900/600/${encodeURIComponent(
     keywords
   )}?lock=${index + 100}`;
-};const getDescription = (industry) => {
+};
+
+
+const getDescription = (industry) => {
   const descriptions = {
     Fashion:
       "Connect fashion brands with creators who influence trends and inspire buying decisions.",
@@ -306,13 +307,8 @@ export default function Industries() {
             </div>
 
             <div>
-              <strong>500+</strong>
+              <strong>10000+</strong>
               <span>Verified Creators</span>
-            </div>
-
-            <div>
-              <strong>8+</strong>
-              <span>Countries</span>
             </div>
           </div>
 
@@ -348,15 +344,15 @@ export default function Industries() {
                 {/* IMAGE */}
                 <div className="all-industry-image">
 
-  <img
-  src={getIndustryImage(industry, index)}
-  alt={industry}
-  loading="lazy"
-  onError={(event) => {
-    event.currentTarget.src =
-      `https://loremflickr.com/900/650/business?lock=${index + 1000}`;
-  }}
-/>
+                    <img
+                     src={getIndustryImage(industry, index)}
+                      alt={industry}
+                       loading="lazy"
+                          onError={(event) => {
+                          event.currentTarget.src =
+                             `https://loremflickr.com/900/650/business?lock=${index + 1000}`;
+                             }}
+                            />
 
                   <div className="all-industry-overlay"></div>
 

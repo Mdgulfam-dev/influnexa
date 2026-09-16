@@ -1581,12 +1581,32 @@ const getInfluencerPlatform = (creator) => {
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [csvRefreshKey, setCsvRefreshKey] = useState(0);
  
+  
   const [activeTab, setActiveTab] = useState(() => {
-    const requestedTab = window.location.hash.replace("#", "");
-    return ["overview", "brands", "tickets", "influencers", "csv-creators","upload-csv",  "csv-brands",
-  "upload-csv-brands","blogs", "testimonials", "users", "jobs", "applications"].includes(requestedTab) ? requestedTab : "overview";
-  });
+  const requestedTab = window.location.hash.replace("#", "");
+
+  const validTabs = [
+    "overview",
+    "brands",
+    "tickets",
+    "influencers",
+    "csv-creators",
+    "upload-csv",
+    "csv-brands",
+    "upload-csv-brands",
+    "blogs",
+    "testimonials",
+    "users",
+    "jobs",
+    "applications",
+  ];
+
+  return validTabs.includes(requestedTab)
+    ? requestedTab
+    : "overview";
+});
   const [data, setData] = useState(emptyDashboardData);
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [editingBlogId, setEditingBlogId] = useState("");
@@ -1625,24 +1645,8 @@ useEffect(() => {
 
   return () => clearTimeout(timer);
 }, [status.message]);
-  const tabs = useMemo(
-    () => [
-      ["overview", "Dashboard"],
-      ["brands", `Brands (${data.stats.brands || 0})`],
-      ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
-      ["influencers", `Influencers (${data.stats.influencers || 0})`],
-       ["csv-creators", `CSV Creators`],
-       ["upload-csv", `CSV  Upload Creators`],
-       ["csv-brands", `CSV Brands`],
-       ["upload-csv-brands", `CSV Upload Brands`],
-      ["blogs", `Blogs (${data.blogs.length})`],
-      ["testimonials", `Testimonials (${data.testimonials.length})`],
-      ["jobs", `Jobs (${data.jobs.length})`],
-      ["applications", `Candidates (${data.applications.length})`],
-      ["users", `Users (${data.users.length})`],
-    ],
-    [data]
-  );
+
+
 
 const validateTicketForm = () => {
   const errors = {};
@@ -1917,10 +1921,17 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
     setBlogForm(initialBlogForm);
   };
 
-  const selectTab = (id) => {
-    setActiveTab(id);
-    window.history.replaceState(null, "", `#${id}`);
-  };
+ const selectTab = (id) => {
+  if (
+    isLead &&
+    !["overview", "brands", "tickets", "csv-brands"].includes(id)
+  ) {
+    return;
+  }
+
+  setActiveTab(id);
+  window.history.replaceState(null, "", `#${id}`);
+};
 
   const updateBrandFilter = (field, value) => setBrandFilters((current) => ({ ...current, [field]: value }));
 
@@ -2055,7 +2066,49 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
   const currentUserRole = data.currentUser?.role || "admin";
+  const isLead = currentUserRole === "lead";
   const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
+
+
+  
+useEffect(() => {
+  if (
+    isLead &&
+    !["overview", "brands", "tickets", "csv-brands"].includes(activeTab)
+  ) {
+    selectTab("overview");
+  }
+}, [isLead]);
+
+ const tabs = useMemo(
+  () => {
+    const allTabs = [
+      ["overview", "Dashboard"],
+      ["brands", `Brands (${data.stats.brands || 0})`],
+      ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
+      ["influencers", `Influencers (${data.stats.influencers || 0})`],
+      ["csv-creators", `CSV Creators`],
+      ["upload-csv", `CSV Upload Creators`],
+      ["csv-brands", `CSV Brands`],
+      ["upload-csv-brands", `CSV Upload Brands`],
+      ["blogs", `Blogs (${data.blogs.length})`],
+      ["testimonials", `Testimonials (${data.testimonials.length})`],
+      ["jobs", `Jobs (${data.jobs.length})`],
+      ["applications", `Candidates (${data.applications.length})`],
+      ["users", `Users (${data.users.length})`],
+    ];
+
+    if (isLead) {
+      return allTabs.filter(([id]) =>
+        ["overview", "tickets", "brands", "csv-brands"].includes(id)
+      );
+    }
+
+    return allTabs;
+  },
+  [data, isLead]
+);
+
 
   if (!isAuthenticated) {
     return (
@@ -2188,6 +2241,7 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
       message:""
     });
   }
+   setCsvRefreshKey((prev) => prev + 1);
 }}
   title="Refresh dashboard" 
   aria-label="Refresh dashboard"
@@ -2634,19 +2688,19 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
         )}
 
 {activeTab === "csv-creators" && (
-  <CsvCreatorSection />
+  <CsvCreatorSection  key={csvRefreshKey} />
 )}
 
 {activeTab === "upload-csv" && (
-  <UploadCreatorsCSV />
+  <UploadCreatorsCSV  key={csvRefreshKey} />
 )}
 
 {activeTab === "csv-brands" && (
-  <CsvBrandSection />
+  <CsvBrandSection  key={csvRefreshKey} />
 )}
 
 {activeTab === "upload-csv-brands" && (
-  <UploadBrandsCSV />
+  <UploadBrandsCSV  key={csvRefreshKey} />
 )}
      {activeTab === "blogs" && (
   <div className="admin-blog-grid">
@@ -2957,6 +3011,7 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
                     <label>Role<select name="role" value={userForm.role} onChange={updateUserField} disabled={isEditingOwner}>
                       <option value="admin">Admin</option>
                       <option value="editor">Editor</option>
+                        <option value="lead">Lead</option>
                       {(currentUserRole === "owner" || userForm.role === "owner") && <option value="owner">Owner</option>}
                     </select></label>
                     <label>Status<select name="status" value={userForm.status} onChange={updateUserField} disabled={isEditingOwner}>

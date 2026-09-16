@@ -77,10 +77,12 @@ const [expandedRows, setExpandedRows] = useState({});
 
           failedRecords:
             report.failedRecords || 0,
+
+           
         });
 
 
-        setUploadReport(
+   setUploadReport(
           Array.isArray(report.report)
             ? report.report
             : []
@@ -124,7 +126,7 @@ const [expandedRows, setExpandedRows] = useState({});
 
       const response = await axios.get(
         `${Config.API_URL}/csv-brands`,
-        {
+         {
           params: {
             page: 1,
             limit: 100,
@@ -187,7 +189,6 @@ const [expandedRows, setExpandedRows] = useState({});
         file
       );
 
-
       const response =
         await axios.post(
           `${Config.API_URL}/csv-brands/upload`,
@@ -215,25 +216,18 @@ const [expandedRows, setExpandedRows] = useState({});
       });
 
 
-      setUploadReport(
+ setUploadReport(
         response.data.report || []
       );
-
-
       setCurrentPage(1);
+     await fetchCSVBrands();
 
-
-      await fetchCSVBrands();
 
 
       setFile(null);
-
-
       alert(
         "Brands uploaded successfully"
       );
-
-
       console.log(
         "BRAND UPLOAD RESPONSE:",
         response.data
@@ -358,7 +352,7 @@ const [expandedRows, setExpandedRows] = useState({});
       );
 
 
-      await fetchCSVBrands();
+      fetchCSVBrands();
 
     } catch (error) {
 
@@ -1238,7 +1232,8 @@ const toggleReason = (index) => {
               px-4
               py-3
               text-left
-              whitespace-nowrap
+              whitespace-normal
+              break-words
               align-middle
               font-semibold
               text-slate-800
@@ -1249,31 +1244,36 @@ const toggleReason = (index) => {
 
 
           {/* FULL NAME */}
-          <td className="w-[180px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+          <td className="w-[180px] px-4 py-3 text-left whitespace-normal
+              break-words text-slate-700 align-middle">
             {item.fullName || "-"}
           </td>
 
 
           {/* EMAIL */}
-          <td className="w-[240px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+          <td className="w-[240px] px-4 py-3 text-left whitespace-normal
+              break-words text-slate-700 align-middle">
             {item.email || "-"}
           </td>
 
 
           {/* OFFICIAL EMAIL */}
-          <td className="w-[240px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+          <td className="w-[240px] px-4 py-3 text-left whitespace-normal
+              break-words text-slate-700 align-middle">
             {item.officialEmail || "-"}
           </td>
 
 
           {/* MOBILE */}
-          <td className="w-[180px] px-4 py-3 text-left whitespace-nowrap text-slate-700 align-middle">
+          <td className="w-[180px] px-4 py-3 text-left whitespace-normal
+              break-words text-slate-700 align-middle">
             {item.mobileNumber || "-"}
           </td>
 
 
           {/* STATUS */}
-          <td className="w-[140px] px-4 py-3 text-left whitespace-nowrap align-middle">
+          <td className="w-[140px] px-4 py-3 text-left whitespace-normal
+              break-words align-middle">
 
             <span
               className={`

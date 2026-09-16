@@ -1,0 +1,308 @@
+
+/* =========================================
+   SHARE EXPERIENCE PAGE
+========================================= */
+
+.share-experience-page {
+  min-height: 100vh;
+  padding: 40px 20px 70px;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(8, 127, 114, 0.08),
+      transparent 32%
+    ),
+    #f7faf9;
+  color: #10201d;
+}
+
+.share-experience-container {
+  width: min(100%, 900px);
+  margin: 0 auto;
+}
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.back-website-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(8, 127, 114, 0.18);
+  background: #ffffff;
+  color: #087f72;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-website-btn:hover {
+  background: #087f72;
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.share-experience-header {
+  max-width: 700px;
+  margin: 55px auto 35px;
+  text-align: center;
+}
+
+.share-experience-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 13px;
+  border: 1px solid rgba(8, 127, 114, 0.18);
+  border-radius: 999px;
+  background: rgba(8, 127, 114, 0.06);
+  color: #087f72;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.share-experience-header h1 {
+  margin: 18px 0 12px;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.share-experience-header p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: #66736f;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.share-experience-form {
+  width: 100%;
+  padding: 32px;
+  border: 1px solid rgba(8, 127, 114, 0.12);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow:
+    0 20px 60px rgba(16, 32, 29, 0.08),
+    0 4px 15px rgba(16, 32, 29, 0.04);
+}
+
+.share-experience-form .testimonial-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.share-experience-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #23332f;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.share-experience-form label.wide {
+  grid-column: 1 / -1;
+}
+
+.share-experience-form input,
+.share-experience-form select,
+.share-experience-form textarea {
+  width: 100%;
+  border: 1px solid #dce7e4;
+  border-radius: 11px;
+  background: #fbfdfc;
+  color: #182723;
+  padding: 13px 14px;
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.share-experience-form input,
+.share-experience-form select {
+  min-height: 48px;
+}
+
+.share-experience-form textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.share-experience-form input:focus,
+.share-experience-form select:focus,
+.share-experience-form textarea:focus {
+  border-color: #087f72;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(8, 127, 114, 0.08);
+}
+
+.share-experience-form input::placeholder,
+.share-experience-form textarea::placeholder {
+  color: #9aa8a4;
+}
+
+/* =========================================
+   STATUS
+========================================= */
+
+.share-experience-form .testimonial-status {
+  margin-top: 20px;
+}
+
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
+
+.submit-review-btn {
+  width: 100%;
+  margin-top: 25px;
+  border: 0;
+  border-radius: 11px;
+  background: #087f72;
+  color: #ffffff;
+  padding: 15px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.submit-review-btn:hover {
+  background: #066c61;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(8, 127, 114, 0.2);
+}
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+.dark .share-experience-page {
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(66, 201, 170, 0.08),
+      transparent 32%
+    ),
+    #071411;
+  color: #edf7f4;
+}
+
+.dark .back-website-btn {
+  border-color: rgba(66, 201, 170, 0.2);
+  background: #0e1d19;
+  color: #42c9aa;
+}
+
+.dark .back-website-btn:hover {
+  background: #42c9aa;
+  color: #071411;
+}
+
+.dark .share-experience-header p {
+  color: #9aaca7;
+}
+
+.dark .share-experience-form {
+  border-color: rgba(66, 201, 170, 0.12);
+  background: #0e1d19;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.dark .share-experience-form label {
+  color: #dcebe7;
+}
+
+.dark .share-experience-form input,
+.dark .share-experience-form select,
+.dark .share-experience-form textarea {
+  border-color: #29413b;
+  background: #091713;
+  color: #edf7f4;
+}
+
+.dark .share-experience-form input:focus,
+.dark .share-experience-form select:focus,
+.dark .share-experience-form textarea:focus {
+  border-color: #42c9aa;
+  background: #0b1915;
+  box-shadow: 0 0 0 4px rgba(66, 201, 170, 0.08);
+}
+
+.dark .share-experience-form input::placeholder,
+.dark .share-experience-form textarea::placeholder {
+  color: #71837e;
+}
+
+.dark .submit-review-btn {
+  background: #42c9aa;
+  color: #071411;
+}
+
+.dark .submit-review-btn:hover {
+  background: #54d7b8;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+  .share-experience-page {
+    padding: 25px 15px 50px;
+  }
+
+  .share-experience-header {
+    margin: 40px auto 28px;
+  }
+
+  .share-experience-header h1 {
+    font-size: 34px;
+  }
+
+  .share-experience-header p {
+    font-size: 14px;
+  }
+
+  .share-experience-form {
+    padding: 22px 18px;
+    border-radius: 17px;
+  }
+
+  .share-experience-form .testimonial-form-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .share-experience-form label.wide {
+    grid-column: auto;
+  }
+
+  .back-website-btn {
+    font-size: 13px;
+    padding: 9px 13px;
+  }
+}
+
