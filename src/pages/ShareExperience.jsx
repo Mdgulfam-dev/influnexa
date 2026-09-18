@@ -60,7 +60,7 @@ function ShareExperience() {
       setReviewStatus({
         type: "error",
         message:
-          "Something went wrong while submitting your review. Please try again.",
+          "Email already exist.",
       });
     }
   };

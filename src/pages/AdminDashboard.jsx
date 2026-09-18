@@ -29,6 +29,7 @@ import CsvCreatorSection from "../components/CsvCreatorSection";
 import UploadCreatorsCSV from "../components/UploadCreatorCSV";
 import CsvBrandSection from "../components/CsvBrandSection";
 import UploadBrandsCSV from "../components/UploadBrandsCSV";
+import CreatorDataAvailability from "../pages/CreatorDataAvailability";
 const brandStatuses = [
   "New",
   "Under Review",
@@ -296,7 +297,11 @@ function normalizeExternalUrl(value) {
 
 function formatStatus(value) {
   if (!value) return "Not provided";
-  return legacyBrandStatusLabels[value] || value;
+
+  const formatted = legacyBrandStatusLabels[value] || value;
+
+  return String(formatted)
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function brandStatusTone(status) {
@@ -1583,7 +1588,7 @@ export default function AdminDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [csvRefreshKey, setCsvRefreshKey] = useState(0);
  
-  
+  const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState(() => {
   const requestedTab = window.location.hash.replace("#", "");
 
@@ -1596,18 +1601,19 @@ export default function AdminDashboard() {
     "upload-csv",
     "csv-brands",
     "upload-csv-brands",
+    "data-availability",
     "blogs",
     "testimonials",
     "users",
     "jobs",
     "applications",
   ];
-
   return validTabs.includes(requestedTab)
     ? requestedTab
     : "overview";
 });
-  const [data, setData] = useState(emptyDashboardData);
+
+
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [editingBlogId, setEditingBlogId] = useState("");
   const [userForm, setUserForm] = useState(initialUserForm);
@@ -1631,7 +1637,7 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
-
+const [data, setData] = useState(emptyDashboardData);
 
 useEffect(() => {
   if (!status.message) return;
@@ -1641,11 +1647,10 @@ useEffect(() => {
       type: "idle",
       message: "",
     });
-  },1000); // disappears after 2 seconds
+  }, 1000);
 
   return () => clearTimeout(timer);
 }, [status.message]);
-
 
 
 const validateTicketForm = () => {
@@ -1762,7 +1767,10 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
 
   try {
     const dashboard = await getAdminDashboard(dashboardParams);
+setCurrentUser(dashboard.currentUser);
 
+console.log("DASHBOARD CURRENT USER:", dashboard.currentUser);
+console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
     setData(normalizeDashboardData(dashboard));
     setIsAuthenticated(true);
 
@@ -1924,7 +1932,7 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
  const selectTab = (id) => {
   if (
     isLead &&
-    !["overview", "brands", "tickets", "csv-brands"].includes(id)
+    !["overview", "brands", "tickets", "csv-brands", "data-availability",].includes(id)
   ) {
     return;
   }
@@ -2065,20 +2073,49 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
 
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
-  const currentUserRole = data.currentUser?.role || "admin";
+  
+const currentUserRole = (
+  currentUser?.role ||
+  data?.currentUser?.role ||
+  data?.adminUser?.role ||
+  sessionStorage.getItem("adminRole") ||
+  ""
+).toLowerCase();
+
   const isLead = currentUserRole === "lead";
   const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
 
 
-  
 useEffect(() => {
+  // Wait until role is available
+  if (!currentUserRole) return;
+
+  // Editor cannot access Data Availability
+  if (
+    currentUserRole === "editor" &&
+    activeTab === "data-availability"
+  ) {
+    setActiveTab("overview");
+    window.history.replaceState(null, "", "#overview");
+    return;
+  }
+
+  // Lead restrictions
   if (
     isLead &&
-    !["overview", "brands", "tickets", "csv-brands"].includes(activeTab)
+    ![
+      "overview",
+      "brands",
+      "tickets",
+      "csv-brands",
+      "data-availability",
+    ].includes(activeTab)
   ) {
-    selectTab("overview");
+    setActiveTab("overview");
+    window.history.replaceState(null, "", "#overview");
   }
-}, [isLead]);
+}, [isLead, currentUserRole, activeTab]);
+
 
  const tabs = useMemo(
   () => {
@@ -2091,23 +2128,50 @@ useEffect(() => {
       ["upload-csv", `CSV Upload Creators`],
       ["csv-brands", `CSV Brands`],
       ["upload-csv-brands", `CSV Upload Brands`],
+      ["data-availability", `Data Availability`],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
       ["applications", `Candidates (${data.applications.length})`],
       ["users", `Users (${data.users.length})`],
     ];
+if (isLead) {
+  return allTabs.filter(([id]) =>
+    ["overview", "tickets", "brands", "csv-brands", "data-availability"].includes(id)
+  );
+}
+if (currentUserRole === "editor") {
+  return allTabs.filter(
+    ([id]) =>
+      ![
+        "data-availability",
+        "testimonials",
+        "jobs",
+        "applications",
+      ].includes(id)
+  );
+}
 
-    if (isLead) {
-      return allTabs.filter(([id]) =>
-        ["overview", "tickets", "brands", "csv-brands"].includes(id)
-      );
-    }
+// ROLE NOT LOADED YET: hide restricted sections
 
-    return allTabs;
-  },
-  [data, isLead]
-);
+if (!currentUserRole) {
+  return allTabs.filter(
+    ([id]) =>
+      ![
+        "data-availability",
+        "testimonials",
+        "jobs",
+        "applications",
+      ].includes(id)
+  );
+}
+
+// OWNER + ADMIN: everything
+return allTabs;
+}, [data, isLead, currentUserRole]);
+
+
+
 
 
   if (!isAuthenticated) {
@@ -2126,7 +2190,6 @@ useEffect(() => {
           <div className="admin-login-copy">
             <p>Secure access</p>
             <h1>Admin login</h1>
-            <span>Sign in with your admin email and password. First setup can use the existing env admin password.</span>
           </div>
           <form className="admin-login-form" onSubmit={submitLogin}>
             <label>
@@ -2257,7 +2320,7 @@ useEffect(() => {
 >
         
         <nav>
-          {tabs.map(([id, label]) => (
+         {tabs.map(([id, label]) => (
             <button
               key={id}
               className={activeTab === id ? "active" : ""}
@@ -2696,12 +2759,21 @@ useEffect(() => {
 )}
 
 {activeTab === "csv-brands" && (
-  <CsvBrandSection  key={csvRefreshKey} />
+  <CsvBrandSection  key={csvRefreshKey} adminRole={currentUser?.role} />
 )}
 
 {activeTab === "upload-csv-brands" && (
-  <UploadBrandsCSV  key={csvRefreshKey} />
+  <UploadBrandsCSV  key={csvRefreshKey}  />
 )}
+
+
+{activeTab === "data-availability" &&
+  ["owner", "admin", "lead"].includes(currentUserRole) && (
+    <CreatorDataAvailability key={csvRefreshKey} />
+)}
+
+
+
      {activeTab === "blogs" && (
   <div className="admin-blog-grid">
     <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>

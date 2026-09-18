@@ -51,32 +51,49 @@ function MultiSelectDropdown({
         onClick={() => setOpen((prev) => !prev)}
         className="
   box-border
-  w-full
-  h-[46px]
-  min-h-[46px]
-  max-h-[46px]
-  px-[12px]
-  py-[2px]
-  rounded-[14px]
-  border
-  border-slate-300
-  bg-white
-  text-[#0f172a]
-  text-[13px]
-  font-[850]
-  text-left
-  outline-none
-  transition
-  focus:border-[#cbd5e1]
-  focus:ring-2
-  focus:ring-[rgba(226,232,240,0.55)]
-  flex
-  items-center
-  justify-between
-  gap-2
-"
+    w-full
+    min-w-0
+    max-w-full
+    h-[46px]
+    min-h-[46px]
+    max-h-[46px]
+    px-[12px]
+    py-[2px]
+    rounded-[14px]
+    border
+    border-slate-300
+    bg-white
+    text-[#0f172a]
+    text-[13px]
+    font-[850]
+    text-left
+    outline-none
+    transition
+    focus:border-[#cbd5e1]
+    focus:ring-2
+    focus:ring-[rgba(226,232,240,0.55)]
+    flex
+    items-center
+    gap-2
+    overflow-hidden
+  "
       >
-        <div className="flex flex-wrap gap-1.5 flex-1">
+        <div className="flex
+    flex-nowrap
+    items-center
+    gap-1.5
+    flex-1
+    min-w-0
+    w-0
+    max-w-full
+    overflow-x-auto
+    overflow-y-hidden
+    whitespace-nowrap
+    pr-1
+    scrollbar-thin
+    scrollbar-thumb-slate-300
+    scrollbar-track-transparent
+  ">
           {value.length === 0 ? (
             <span className="text-[#94a3b8] text-[13px] font-[850]">
               {placeholder}
@@ -86,18 +103,19 @@ function MultiSelectDropdown({
               <span
                 key={item}
                 className="
-                  inline-flex
-                  items-center
-                  gap-1
-                  px-2
-                  py-1
-                  rounded-lg
-                  bg-slate-100
-                  text-slate-700
-                  text-xs
-                  font-medium
-                  
-                "
+                 inline-flex
+    shrink-0
+    items-center
+    gap-1
+    px-2
+    py-1
+    rounded-lg
+    bg-slate-100
+    text-slate-700
+    text-xs
+    font-medium
+    whitespace-nowrap
+  "
               >
                 {item}
 
@@ -294,12 +312,18 @@ function ExpandableText({
     </div>
   );
 }
-function CsvBrandSection() {
+
+
+function CsvBrandSection({ adminRole }) {
+  
 const [filterOptions, setFilterOptions] = useState({
     designation: [],
     ageOfCompany: [],
     dataType: [],
     status: [],
+    contactStatus:[],
+    completedBy: [],
+
   });
   const [csvBrands, setCsvBrands] = useState([]);
 const [currentTime, setCurrentTime] = useState(new Date());
@@ -312,7 +336,7 @@ const [copiedMobile, setCopiedMobile] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
 
   const [totalRecords, setTotalRecords] = useState(0);
-
+const [isDeletingNotUseful, setIsDeletingNotUseful] = useState(false);
   const recordsPerPage = 100;
 
 const [filters, setFilters] = useState({
@@ -329,6 +353,8 @@ const [filters, setFilters] = useState({
   websiteUrl: "",
   dataType: [],
   status: [],
+  contactStatus: [], 
+  completedBy: [],
 });
 
   // ========================================
@@ -431,6 +457,8 @@ const fetchLeadUsers = async () => {
   dataType: filters.dataType.join(","),
 
   status: filters.status.join(","),
+  contactStatus: filters.contactStatus.join(","),
+  completedBy: filters.completedBy.join(","),
 },
       }
     );
@@ -493,6 +521,8 @@ const resetFilters = () => {
     websiteUrl: "",
     dataType: [],
     status: [],
+    contactStatus:[],
+     completedBy: [],
   });
 
   setCurrentPage(1);
@@ -992,6 +1022,13 @@ const getStatusDetails = (status) => {
         outreach: "Brand responds positively",
       };
 
+       case "Verified":
+      return {
+        day: "Anytime",
+        outreach: "Brand responds positively",
+      };
+
+
     case "Proposal Sent":
       return {
         day: "After interest",
@@ -1011,6 +1048,12 @@ const getStatusDetails = (status) => {
       };
 
     case "Lost/Not Interested":
+      return {
+        day: "—",
+        outreach: "Brand rejects",
+      };
+
+       case "Not Useful":
       return {
         day: "—",
         outreach: "Brand rejects",
@@ -1160,6 +1203,53 @@ const getReminder = (brand) => {
     type: "overdue",
   };
 };
+const handleDeleteNotUseful = async () => {
+  if (!filters.status.includes("Not Useful")) {
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Are you sure you want to permanently delete ALL Not Useful brands?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setIsDeletingNotUseful(true);
+
+    const token = sessionStorage.getItem(
+      "influnexa_admin_token"
+    );
+
+    const response = await axios.delete(
+      `${Config.API_URL}/csv-brands/delete-all-not-useful?status=Not%20Useful`,
+      {
+        headers: {
+          "x-admin-token": token,
+        },
+      }
+    );
+
+    if (response.data.success) {
+      alert(response.data.message);
+
+      // Refresh the table
+      await fetchCSVBrands();
+    }
+  } catch (error) {
+    console.error(
+      "DELETE ALL NOT USEFUL ERROR:",
+      error
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to delete Not Useful brands"
+    );
+  } finally {
+    setIsDeletingNotUseful(false);
+  }
+};
 
 const inputClass = `
   box-border
@@ -1186,6 +1276,15 @@ const inputClass = `
   focus:ring-2
   focus:ring-[rgba(226,232,240,0.55)]
 `;
+
+
+const completedByOptions = leadUsers.map((user) => ({
+  label: user.name,
+  value: user.email,
+}));
+
+
+
   return (
 
     <div
@@ -1254,53 +1353,89 @@ const inputClass = `
 
       </div>
 
-      {hasActiveFilters && csvBrands.length > 0 &&(
-  <div className="flex items-center justify-end gap-3 ml-auto">
+        <div className="px-7 pb-5">
+  <div className="flex items-center justify-end gap-3">
+
+    {/* DELETE NOT USEFUL */}
+    {filters.status.includes("Not Useful") &&
+      ["owner", "admin"].includes(adminRole) && (
+        <button
+          type="button"
+          onClick={handleDeleteNotUseful}
+          disabled={isDeletingNotUseful}
+          className="
+            h-11
+            px-4
+            rounded-xl
+            border
+            border-red-200
+            bg-red-50
+            text-red-600
+            text-sm
+            font-semibold
+            hover:bg-red-100
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            transition
+            whitespace-nowrap
+          "
+        >
+          {isDeletingNotUseful
+            ? "Deleting..."
+            : "Delete Not Useful"}
+        </button>
+      )}
 
     {/* DOWNLOAD FILTERED */}
-    <button
-      onClick={downloadFilteredBrands}
-      className="
-        px-5
-        py-3
-        rounded-xl
-        bg-slate-900
-        text-white
-        text-sm
-        font-semibold
-        shadow-sm
-        hover:bg-slate-800
-        transition
-        whitespace-nowrap
-      "
-    >
-      Download Filtered
-    </button>
+    {hasActiveFilters && csvBrands.length > 0 && (
+      <button
+        type="button"
+        onClick={downloadFilteredBrands}
+        className="
+          h-11
+          px-5
+          rounded-xl
+          bg-slate-900
+          text-white
+          text-sm
+          font-semibold
+          shadow-sm
+          hover:bg-slate-800
+          transition
+          whitespace-nowrap
+        "
+      >
+        Download Filtered
+      </button>
+    )}
 
-    {/* DOWNLOAD MASKED FILTERED */}
-    <button
-      onClick={downloadMaskedFilteredBrands}
-      className="
-        px-5
-        py-3
-        rounded-xl
-        bg-white
-        text-slate-700
-        border
-        border-slate-300
-        text-sm
-        font-semibold
-        shadow-sm
-        hover:bg-slate-50
-        transition
-        whitespace-nowrap
-      "
-    >
-      Download Masked
-    </button>
+    {/* DOWNLOAD MASKED */}
+    {hasActiveFilters && csvBrands.length > 0 && (
+      <button
+        type="button"
+        onClick={downloadMaskedFilteredBrands}
+        className="
+          h-11
+          px-5
+          rounded-xl
+          bg-white
+          text-slate-700
+          border
+          border-slate-300
+          text-sm
+          font-semibold
+          shadow-sm
+          hover:bg-slate-50
+          transition
+          whitespace-nowrap
+        "
+      >
+        Download Masked
+      </button>
+    )}
 
   </div>
-)}
+</div>
 {/* ========================================
     FILTER SECTION
 ======================================== */}
@@ -1673,6 +1808,32 @@ const inputClass = `
     handleFilterChange("status", value)
   }
   placeholder="Status"
+/>
+{/* CONTACT STATUS */}
+<MultiSelectDropdown
+  label="Contact Status"
+  options={[
+    "Mobile Only",
+    "Email Only",
+    "Official Email Only",
+    "Both Email & Mobile",
+  ]}
+  value={filters.contactStatus}
+  onChange={(value) =>
+    handleFilterChange("contactStatus", value)
+  }
+  placeholder="Contact Status"
+/>
+
+{/* COMPLETED BY */}
+<MultiSelectDropdown
+  label="Completed By"
+  options={leadUsers.map((user) => user.name)}
+  value={filters.completedBy}
+  onChange={(value) =>
+    handleFilterChange("completedBy", value)
+  }
+  placeholder="Completed By"
 />
     </div>
 
@@ -2544,6 +2705,9 @@ HEADER
     <option value="Interested">
       Interested
     </option>
+      <option value="Verified">
+      Verified
+    </option>
 
     <option value="Proposal Sent">
       Proposal Sent
@@ -2559,6 +2723,9 @@ HEADER
 
     <option value="Lost/Not Interested">
       Lost/Not Interested
+    </option>
+     <option value="Not Useful">
+      Not Useful
     </option>
 
     <option value="No Response">

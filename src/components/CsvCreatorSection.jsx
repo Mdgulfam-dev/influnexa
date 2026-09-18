@@ -25,6 +25,13 @@ const [page, setPage] = useState(1);
 const [limit] = useState(100);
 const [totalPages, setTotalPages] = useState(1);
 const [totalRecords, setTotalRecords] = useState(0);
+const [creatorStats, setCreatorStats] = useState({
+  instagram: 0,
+  youtube: 0,
+  mixed: 0,
+  cities: 0,
+  regions: 0,
+});
 const handleEdit = (creator) => {
  
   setSelectedCreator(creator);
@@ -76,6 +83,8 @@ const handleEdit = (creator) => {
   campaignType:[],
   influencerType: [],
   contactStatus: [],
+   age: [],
+  completedBy: [],
 });
 
 const [filterOptions, setFilterOptions] = useState({
@@ -124,7 +133,7 @@ useEffect(() => {
 
 const updateCsvCreator = async () => {
   try {
-    const adminEmail = localStorage.getItem("adminEmail");
+    const adminEmail = localStorage.getItem("Email");
     const res = await axios.put(
       `${Config.API_URL}/csv-creators/${selectedCreator._id}`,
       
@@ -200,6 +209,13 @@ Object.entries(currentFilters).forEach(([key, value]) => {
     setCreators(res.data.data || []);
     setTotalPages(res.data.totalPages);
     setTotalRecords(res.data.total || 0);
+    setCreatorStats({
+  instagram: res.data.stats?.instagram || 0,
+  youtube: res.data.stats?.youtube || 0,
+  mixed: res.data.stats?.mixed || 0,
+  cities: res.data.stats?.cities || 0,
+  regions: res.data.stats?.regions || 0,
+});
 
   } catch (error) {
     console.log("CSV FETCH ERROR", error);
@@ -703,90 +719,125 @@ const tableCellClass = `
 `;
 
 const selectStyles = {
- control: (base, state) => ({
-  ...base,
+  control: (base, state) => ({
+    ...base,
 
-  boxSizing: "border-box",
-  width: "100%",
+    boxSizing: "border-box",
+    width: "100%",
+    minWidth: 0,
+    maxWidth: "100%",
 
-  minHeight: "46px",
-  height: "46px",
-  maxHeight: "46px",
+    minHeight: "46px",
+    height: "46px",
+    maxHeight: "46px",
 
-  borderRadius: "14px",
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
+    backgroundColor: "#ffffff",
 
-  border: "1px solid #cbd5e1",
+    color: "#0f172a",
+    fontSize: "13px",
+    fontWeight: 850,
 
-  backgroundColor: "#ffffff",
+    boxShadow: state.isFocused
+      ? "0 0 0 2px rgba(226,232,240,0.55)"
+      : "none",
 
-  color: "#0f172a",
+    outline: "none",
 
-  fontSize: "13px",
-  fontWeight: 850,
+    alignItems: "center",
 
-  boxShadow: state.isFocused
-    ? "0 0 0 2px rgba(226, 232, 240, 0.55)"
-    : "none",
+    // IMPORTANT
+    overflow: "hidden",
 
-  outline: "none",
+    "&:hover": {
+      borderColor: "#cbd5e1",
+    },
+  }),
 
-  alignItems: "center",
+  valueContainer: (base) => ({
+    ...base,
 
-  overflow: "hidden",
+    boxSizing: "border-box",
 
-  "&:hover": {
-    borderColor: "#cbd5e1",
-  },
-}),
+    height: "44px",
+    minHeight: "44px",
+    maxHeight: "44px",
 
- valueContainer: (base) => ({
-  ...base,
+    padding: "2px 9px",
 
-  height: "46px",
-  minHeight: "46px",
-  maxHeight: "46px",
+    display: "flex",
+    flexWrap: "nowrap",
+    alignItems: "center",
 
-  padding: "2px 9px",
+    // IMPORTANT
+    minWidth: 0,
+    maxWidth: "100%",
 
-  display: "flex",
-  flexWrap: "nowrap",
-  alignItems: "center",
+    overflowX: "auto",
+    overflowY: "hidden",
 
-  overflowX: "auto",
-  overflowY: "hidden",
+    flex: "1 1 0%",
 
-  flex: "1 1 auto",
-  scrollbarWidth: "none",
+    scrollbarWidth: "thin",
 
-  "&::-webkit-scrollbar": {
-    display: "none",
-  },
-}),
+    "&::-webkit-scrollbar": {
+      height: "4px",
+    },
+
+    "&::-webkit-scrollbar-track": {
+      background: "transparent",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "10px",
+    },
+  }),
 
   placeholder: (base) => ({
-  ...base,
-  color: "#94a3b8",
-  fontSize: "13px",
-  fontWeight: 850,
-  whiteSpace: "nowrap",
-}),
+    ...base,
+
+    color: "#94a3b8",
+    fontSize: "13px",
+    fontWeight: 850,
+
+    whiteSpace: "nowrap",
+
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }),
 
   input: (base) => ({
     ...base,
+
     margin: "0",
     padding: "0",
+
     minWidth: "2px",
     width: "2px",
+
     height: "20px",
+
+    flexShrink: 0,
   }),
 
   multiValue: (base) => ({
     ...base,
+
     backgroundColor: "#f1f5f9",
+
     borderRadius: "7px",
+
     margin: "2px 3px 2px 0",
+
     height: "30px",
+
+    // IMPORTANT
+    width: "max-content",
     minWidth: "max-content",
+    maxWidth: "none",
+
     flexShrink: 0,
 
     display: "flex",
@@ -795,24 +846,35 @@ const selectStyles = {
 
   multiValueLabel: (base) => ({
     ...base,
+
     color: "#475569",
+
     fontSize: "13px",
+
     padding: "5px 7px",
+
     whiteSpace: "nowrap",
+
+    overflow: "visible",
   }),
 
   multiValueRemove: (base) => ({
     ...base,
+
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
 
     width: "26px",
     height: "30px",
+
     padding: "0",
 
     color: "#64748b",
+
     cursor: "pointer",
+
+    flexShrink: 0,
 
     "&:hover": {
       backgroundColor: "#e2e8f0",
@@ -822,17 +884,20 @@ const selectStyles = {
 
   indicatorsContainer: (base) => ({
     ...base,
+
     height: "44px",
 
     display: "flex",
     alignItems: "center",
 
     flexShrink: 0,
+
     backgroundColor: "#ffffff",
   }),
 
   clearIndicator: (base) => ({
     ...base,
+
     padding: "6px",
     color: "#94a3b8",
 
@@ -843,6 +908,7 @@ const selectStyles = {
 
   dropdownIndicator: (base) => ({
     ...base,
+
     padding: "8px",
     color: "#94a3b8",
 
@@ -855,107 +921,515 @@ const selectStyles = {
     display: "none",
   }),
 
+  // DROPDOWN OPTIONS
   menu: (base) => ({
     ...base,
+
+    width: "100%",
+    minWidth: "100%",
+    maxWidth: "100%",
+
     zIndex: 9999,
+
     borderRadius: "12px",
-    overflow: "hidden",
+
     border: "1px solid #e2e8f0",
-    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.08)",
+
+    boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
+
+    overflow: "hidden",
+  }),
+
+  menuList: (base) => ({
+    ...base,
+
+    // IMPORTANT:
+    // Options become vertically scrollable
+    maxHeight: "250px",
+
+    overflowY: "auto",
+    overflowX: "hidden",
+
+    padding: "6px 0",
+
+    scrollbarWidth: "thin",
+
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+
+    "&::-webkit-scrollbar-track": {
+      background: "#f8fafc",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "10px",
+    },
+  }),
+
+  option: (base, state) => ({
+    ...base,
+
+    fontSize: "13px",
+    fontWeight: 600,
+
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+
+    padding: "9px 12px",
+
+    backgroundColor: state.isSelected
+      ? "#f0fdf4"
+      : state.isFocused
+        ? "#f8fafc"
+        : "#ffffff",
+
+    color: state.isSelected
+      ? "#047857"
+      : "#334155",
+
+    cursor: "pointer",
+
+    "&:active": {
+      backgroundColor: "#f0fdf4",
+    },
   }),
 
   menuPortal: (base) => ({
     ...base,
+
     zIndex: 99999,
   }),
 };
   return (
 
 <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
+{/* =========================
+    HEADER
+========================= */}
+<div className="px-7 pt-7 pb-5">
 
-  {/* HEADER */}
-  <div className="px-7 pt-7 pb-5">
+  <div className="grid grid-cols-1 lg:grid-cols-[235px_minmax(0,1fr)] gap-5">
 
-    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    {/* =========================
+        LEFT — TITLE + RESET
+    ========================= */}
+<div className="flex flex-col justify-between items-start min-h-[100px]">
 
-      <div>
-        <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-          CSV Creators Data
-        </h2>
+      <h2 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">
+        CSV Creators Data
+      </h2>
 
-        <p className="mt-2 text-sm text-slate-500">
-          Find creators by name, email, Instagram, YouTube, category,
-          location, platform, or status.
-        </p>
-      </div>
+      <button
+        onClick={resetFilters}
+        className="
+          mt-4
+          h-11
+          w-fit
+          px-4
+          rounded-xl
+          border
+          border-slate-300
+          bg-white
+          text-slate-700
+          text-sm
+          font-semibold
+          hover:bg-slate-50
+          transition
+        "
+      >
+        Reset Filters
+      </button>
 
-      <div className="flex items-center gap-3 flex-wrap">
+    </div>
 
-        <button
-          onClick={resetFilters}
+
+    {/* =========================
+        RIGHT — STATS + ACTIONS
+    ========================= */}
+    <div className="min-w-0">
+
+      {/* STATS */}
+      <div
+        className="
+          grid
+          grid-cols-2
+          sm:grid-cols-3
+          xl:grid-cols-6
+          gap-3
+          w-full
+        "
+      >
+
+        {/* TOTAL */}
+        <div
           className="
-            h-11
-            px-5
-            rounded-xl
-            border
-            border-slate-300
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
             bg-white
-            text-slate-700
-            text-sm
-            font-semibold
-            hover:bg-slate-50
-            transition
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          Reset Filters
-        </button>
+          <div className="flex items-center gap-3 h-full">
 
-        {isFiltered && !loading && creators.length > 0 && (
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
 
-          <div className="flex gap-3">
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {totalRecords.toLocaleString()}
+              </div>
 
-            <button
-              onClick={downloadCSV}
-              className="
-                h-11
-                px-5
-                rounded-xl
-                bg-emerald-600
-                hover:bg-emerald-700
-                text-white
-                text-sm
-                font-semibold
-                transition
-              "
-            >
-              Download CSV
-            </button>
+              <div className="text-[12px] font-medium text-slate-500 whitespace-nowrap">
+                {isFiltered ? "Filtered Creators" : "Total Creators"}
+              </div>
+            </div>
 
-            <button
-              onClick={downloadMaskedCSV}
-              className="
-                h-11
-                px-5
-                rounded-xl
-                bg-slate-700
-                hover:bg-slate-800
-                text-white
-                text-sm
-                font-semibold
-                transition
-              "
-            >
-              Download Masked CSV
-            </button>
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 18L16 20L24 12L32 15L40 8L47 10L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-emerald-400"
+                />
+              </svg>
+            </div>
 
           </div>
-        )}
+        </div>
+
+
+        {/* INSTAGRAM */}
+        <div
+          className="
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+          "
+        >
+          <div className="flex items-center gap-3 h-full">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+              </svg>
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {creatorStats.instagram.toLocaleString()}
+              </div>
+
+              <div className="text-[12px] font-medium text-slate-500">
+                Instagram
+                <br />
+                Creators
+              </div>
+            </div>
+
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 20L16 14L24 17L32 10L40 12L47 6L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-violet-400"
+                />
+              </svg>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* YOUTUBE */}
+        <div
+          className="
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+          "
+        >
+          <div className="flex items-center gap-3 h-full">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
+              <svg
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.9V8.1l6.6 3.9-6.6 3.9Z" />
+              </svg>
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {creatorStats.youtube.toLocaleString()}
+              </div>
+
+              <div className="text-[12px] font-medium text-slate-500">
+                YouTube
+                <br />
+                Creators
+              </div>
+            </div>
+
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 19L16 21L24 14L32 16L40 9L47 12L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-pink-400"
+                />
+              </svg>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* MIXED */}
+        <div
+          className="
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+          "
+        >
+          <div className="flex items-center gap-3 h-full">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+              <span className="text-sm font-bold">IG</span>
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {creatorStats.mixed.toLocaleString()}
+              </div>
+
+              <div className="text-[12px] font-medium text-slate-500">
+                Instagram +
+                <br />
+                YouTube
+              </div>
+            </div>
+
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 19L16 21L24 13L32 15L40 8L47 11L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-cyan-400"
+                />
+              </svg>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* CITIES */}
+        <div
+          className="
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+          "
+        >
+          <div className="flex items-center gap-3 h-full">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {creatorStats.cities.toLocaleString()}
+              </div>
+
+              <div className="text-[12px] font-medium text-slate-500">
+                Cities
+              </div>
+            </div>
+
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 19L16 15L24 17L32 10L40 12L47 6L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-amber-400"
+                />
+              </svg>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* REGIONS */}
+        <div
+          className="
+            relative
+            h-[88px]
+            overflow-hidden
+            rounded-[15px]
+            border border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+          "
+        >
+          <div className="flex items-center gap-3 h-full">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[20px] leading-6 font-bold text-slate-900">
+                {creatorStats.regions.toLocaleString()}
+              </div>
+
+              <div className="text-[12px] font-medium text-slate-500">
+                Regions
+              </div>
+            </div>
+
+            <div className="absolute right-2 bottom-2 opacity-50">
+              <svg width="55" height="25" viewBox="0 0 55 25" fill="none">
+                <path
+                  d="M1 22L9 17L16 19L24 12L32 14L40 8L47 11L54 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-blue-400"
+                />
+              </svg>
+            </div>
+
+          </div>
+        </div>
 
       </div>
+
+
+      {/* DOWNLOAD BUTTONS */}
+      {isFiltered && !loading && creators.length > 0 && (
+        <div className="flex justify-end gap-3 mt-3">
+
+          <button
+            onClick={downloadCSV}
+            className="
+              h-11
+              px-5
+              rounded-xl
+              bg-emerald-600
+              hover:bg-emerald-700
+              text-white
+              text-sm
+              font-semibold
+              transition
+            "
+          >
+            Download CSV
+          </button>
+
+          <button
+            onClick={downloadMaskedCSV}
+            className="
+              h-11
+              px-5
+              rounded-xl
+              bg-slate-700
+              hover:bg-slate-800
+              text-white
+              text-sm
+              font-semibold
+              transition
+            "
+          >
+            Download Masked CSV
+          </button>
+
+        </div>
+      )}
 
     </div>
 
   </div>
+</div>
 {/* =========================
 CSV FILTER SECTION
 ========================= */}
@@ -970,16 +1444,15 @@ CSV FILTER SECTION
   "
 >
   
-    <div
-      className="
+    <div className="
   grid
-    grid-cols-1
-    gap-x-5
-    gap-y-5
-    sm:grid-cols-2
-    lg:grid-cols-[1.5fr_1fr_1fr_1fr]
-  "
-    >
+  grid-cols-1
+  gap-x-5
+  gap-y-5
+  sm:grid-cols-2
+  lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]
+  min-w-0
+">
 {
 [
 {
@@ -1157,6 +1630,22 @@ options:filterOptions.languages
   ]
 },
 
+
+{
+  name: "age",
+  type: "select",
+  label: "Age",
+  placeholder: "Age",
+  options: [
+    "Under 18",
+    "18 - 24",
+    "25 - 34",
+    "35 - 44",
+    "45 - 54",
+    "55+",
+  ],
+},
+
 ].map((field) => (
 
   <div key={field.name}>
@@ -1289,31 +1778,6 @@ options:filterOptions.languages
 </div>
 </div>
 
-<div className="px-7 mb-4">
-  <div className="flex items-center justify-between">
-
-    <div className="
-      inline-flex
-      items-center
-      gap-3
-      h-11
-      px-5
-      rounded-xl
-      bg-slate-900
-      text-white
-      shadow-sm
-    ">
-      <span className="text-sm font-medium text-slate-300">
-        {isFiltered ? "Filtered Records:" : "Total Records:"}
-      </span>
-
-      <span className="text-lg font-bold text-white">
-        {totalRecords.toLocaleString()}
-      </span>
-    </div>
-
-  </div>
-</div>
 
 {
 loading ?
@@ -2962,18 +3426,8 @@ key={creator._id}
 ">
   {creator.areYouATvMoviesOttCelebrity || "-"}
 </td>
-<td className="
-    px-4
-    py-5
-    text-sm
-    text-slate-700
-    border-b
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-">
-  {creator.typeOfCeleb || "-"}
-</td>
+
+
 <td className="
     px-4
     py-5
@@ -2985,6 +3439,18 @@ key={creator._id}
     align-middle
 ">
   {creator.whatAllPlatformsAreYouAvailableOn?.join(", ") || "-"}
+</td>
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+  {creator.typeOfCeleb || "-"}
 </td>
 <td className="
     px-4

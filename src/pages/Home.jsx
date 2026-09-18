@@ -2424,7 +2424,7 @@ const scrollCreators = (direction) => {
         className="industry-showcase-cta"
       >
         <span>Explore All Industries</span>
-        <span>→</span>
+        <span className="text-2xl font-normal leading-none">→</span>
       </a>
     </div>
 
