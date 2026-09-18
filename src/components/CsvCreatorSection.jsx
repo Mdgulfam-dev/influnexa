@@ -5578,7 +5578,7 @@ key={creator._id}
 
         <input
           type="text"
-          value={localStorage.getItem("adminEmail") || ""}
+          value={localStorage.getItem("Email") || ""}
           readOnly
           className="
             w-full
