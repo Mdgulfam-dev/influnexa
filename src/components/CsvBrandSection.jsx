@@ -616,6 +616,8 @@ const downloadFilteredBrands = async () => {
       "Data Type":
         brand.dataType || "",
 
+        "Category":brand.category||"",
+
       "Status":
         brand.status || "",
 
@@ -754,6 +756,7 @@ const downloadMaskedFilteredBrands = async () => {
       "Age of the Company": brand.ageOfCompany || "",
       "Website URL": brand.websiteUrl || "",
       "Data Type": brand.dataType || "",
+      "Category":brand.category||"",
       "Status": brand.status || "",
     }));
 
@@ -1950,7 +1953,7 @@ const completedByOptions = leadUsers.map((user) => ({
   "
               >
 
-     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[220px]" /><col className="w-[220px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
+     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[220px]" /><col className="w-[220px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
 {/* ========================================
 HEADER
 ======================================== */}
@@ -2169,6 +2172,10 @@ HEADER
     <th className="sticky top-0 z-30 px-9 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
       Data Type
     </th>
+    {/* CATEGORY */}
+<th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
+  Category
+</th>
 
     {/* STATUS */}
     <th className="sticky top-0 z-30 px-4 py-3 text-left whitespace-nowrap font-semibold text-slate-500 bg-slate-50 border-b border-slate-200">
@@ -2543,6 +2550,12 @@ HEADER
     ? "LinkedIn"
     : "Brand"}
 </td>
+
+{/* CATEGORY */}
+<td className="px-4 py-3 text-left whitespace-normal break-words text-slate-700 align-middle">
+  {brand.category || "-"}
+</td>
+
 
 
         {/* STATUS */}
