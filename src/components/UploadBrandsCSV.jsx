@@ -153,54 +153,49 @@ const [expandedRows, setExpandedRows] = useState({});
 
 
   // ========================================
-  // UPLOAD CSV
-  // ========================================
+// UPLOAD CSV
+// ========================================
 
-  const uploadCSV = async () => {
+const uploadCSV = async () => {
+  console.log("Brand upload button clicked");
+  console.log("Selected file:", file);
 
-    console.log("Brand upload button clicked");
+  try {
+    if (!file) {
+      alert("Please select CSV file first");
+      return;
+    }
 
-    console.log(
-      "Selected file:",
-      file
+    setLoading(true);
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    // ========================================
+    // WAIT FOR BACKEND TO FINISH
+    // ========================================
+
+    const response = await axios.post(
+      `${Config.API_URL}/csv-brands/upload`,
+      formData,
+      {
+        timeout: 0,
+      }
     );
 
+    console.log(
+      "BRAND UPLOAD RESPONSE:",
+      response.data
+    );
 
-    try {
+    // ========================================
+    // ONLY CONTINUE IF BACKEND RETURNED SUCCESS
+    // ========================================
 
-      if (!file) {
-
-        alert(
-          "Please select CSV file first"
-        );
-
-        return;
-      }
-
-
-      setLoading(true);
-
-
-      const formData =
-        new FormData();
-
-      formData.append(
-        "file",
-        file
-      );
-
-      const response =
-        await axios.post(
-          `${Config.API_URL}/csv-brands/upload`,
-          formData,
-          {
-            timeout: 0,
-          }
-        );
-
+    if (response.data.success) {
 
       setSummary({
-
         totalRecords:
           response.data.totalRecords || 0,
 
@@ -212,50 +207,96 @@ const [expandedRows, setExpandedRows] = useState({});
 
         failedRecords:
           response.data.failedRecords || 0,
-
       });
 
-
- setUploadReport(
-        response.data.report || []
-      );
       setCurrentPage(1);
-     await fetchCSVBrands();
 
-
+    await fetchLatestReport()
 
       setFile(null);
-      alert(
-        "Brands uploaded successfully"
-      );
-      console.log(
-        "BRAND UPLOAD RESPONSE:",
-        response.data
-      );
 
-    } catch (error) {
+      // ========================================
+      // SUCCESS ALERT
+      // Backend has already completed its work
+      // ========================================
 
-      console.log(
-        "BRAND CSV ERROR:",
-        error.response?.data ||
-        error.message
-      );
+      alert("Brands uploaded successfully");
 
+    } else {
 
       alert(
-        error.response?.data?.message ||
+        response.data.message ||
         "Brand CSV upload failed"
       );
-
-    } finally {
-
-      setLoading(false);
-
     }
 
-  };
+  } catch (error) {
 
+  console.error("BRAND CSV ERROR:", error);
 
+  console.error(
+    "ERROR MESSAGE:",
+    error.message
+  );
+
+  console.error(
+    "ERROR CODE:",
+    error.code
+  );
+
+  console.error(
+    "ERROR NAME:",
+    error.name
+  );
+
+  console.error(
+    "SERVER RESPONSE:",
+    error.response?.data
+  );
+
+  console.error(
+    "STATUS:",
+    error.response?.status
+  );
+
+  console.error(
+    "REQUEST URL:",
+    error.config?.url
+  );
+
+  console.error(
+    "REQUEST:",
+    error.request
+  );
+
+  if (
+    error.message === "Network Error" ||
+    error.code === "ERR_NETWORK" ||
+    !error.response
+  ) {
+    console.error(
+      "❌ NO RESPONSE RECEIVED FROM SERVER"
+    );
+
+    alert(
+      "Connection to the server was lost while processing the CSV. " +
+      "Please check the upload status before uploading the same CSV again."
+    );
+
+    return;
+  }
+
+  alert(
+    error.response?.data?.message ||
+    "Brand CSV upload failed"
+  );
+
+} finally {
+
+    setLoading(false);
+
+  }
+};
   // ========================================
   // DELETE ALL BRANDS
   // ========================================
