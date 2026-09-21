@@ -323,6 +323,7 @@ const [filterOptions, setFilterOptions] = useState({
     status: [],
     contactStatus:[],
     completedBy: [],
+     category: [],
 
   });
   const [csvBrands, setCsvBrands] = useState([]);
@@ -355,6 +356,7 @@ const [filters, setFilters] = useState({
   status: [],
   contactStatus: [], 
   completedBy: [],
+  category:[]
 });
 
   // ========================================
@@ -459,6 +461,7 @@ const fetchLeadUsers = async () => {
   status: filters.status.join(","),
   contactStatus: filters.contactStatus.join(","),
   completedBy: filters.completedBy.join(","),
+  category: filters.category.join(","),
 },
       }
     );
@@ -523,6 +526,7 @@ const resetFilters = () => {
     status: [],
     contactStatus:[],
      completedBy: [],
+     category:[]
   });
 
   setCurrentPage(1);
@@ -1838,6 +1842,17 @@ const completedByOptions = leadUsers.map((user) => ({
   }
   placeholder="Completed By"
 />
+
+{/* CATEGORY */}
+<MultiSelectDropdown
+  label="Category"
+  options={filterOptions.category}
+  value={filters.category}
+  onChange={(value) =>
+    handleFilterChange("category", value)
+  }
+  placeholder="Category"
+/>
     </div>
 
   </div>
@@ -1953,7 +1968,7 @@ const completedByOptions = leadUsers.map((user) => ({
   "
               >
 
-     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[220px]" /><col className="w-[220px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
+     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[320px]" /><col className="w-[320px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
 {/* ========================================
 HEADER
 ======================================== */}
@@ -2276,42 +2291,80 @@ HEADER
         </td>
 
 
-        {/* EMAIL */}
-        <td className="w-[220px] px-8 py-3 text-left  text-slate-700 align-middle whitespace-normal
-  break-words
-  overflow-wrap-anywhere">
-         
+      {/* EMAIL */}
+<td
+  className="
+    w-[320px]
+    px-8
+    py-3
+    text-left
+    text-slate-700
+    align-middle
+   
+    
+  "
+>
+  {brand.email ? (
+    <div className="group flex items-start gap-2 min-w-0">
+      <div className="min-w-0 flex-1 break-all">
+        {brand.email}
+      </div>
 
-          <ExpandableText
-    text={brand.email||"-"}
-    maxLength={20}
-    />
-        </td>
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(brand.email);
+
+          setCopiedOfficialEmail(`email-${brand._id}`);
+
+          setTimeout(() => {
+            setCopiedOfficialEmail(null);
+          }, 1500);
+        }}
+        className="
+          shrink-0
+      w-[42px]
+      text-left
+      opacity-0
+      group-hover:opacity-100
+      transition-opacity
+      text-xs
+      text-blue-600
+      hover:text-blue-800
+      font-medium
+      cursor-pointer
+        "
+      >
+        {copiedOfficialEmail === `email-${brand._id}`
+          ? "Copied!"
+          : "Copy"}
+      </button>
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
 
 
        {/* OFFICIAL EMAIL */}
 <td
   className="
-    w-[280px]
-    min-w-[280px]
-    max-w-[280px]
+    w-[320px]
+    min-w-[320px]
+    max-w-[320px]
     px-4
     py-3
     text-left
     align-middle
     text-slate-700
-    whitespace-normal
-  break-words
-  overflow-wrap-anywhere
+    
+  
   "
 >
   {brand.officialEmail ? (
-    <div className="group flex items-start gap-2">
-      <div className="min-w-0 flex-1">
-        <ExpandableText
-          text={brand.officialEmail}
-          maxLength={25}
-        />
+    <div className="group flex items-start gap-2 min-w-0">
+      <div className="min-w-0 flex-1 break-all">
+      {brand.officialEmail}
       </div>
 
       <button
@@ -2328,15 +2381,17 @@ HEADER
           }, 1500);
         }}
         className="
-          shrink-0
-          opacity-0
-          group-hover:opacity-100
-          transition-opacity
-          text-xs
-          text-blue-600
-          hover:text-blue-800
-          font-medium
-          cursor-pointer
+         shrink-0
+      w-[42px]
+      text-left
+      opacity-0
+      group-hover:opacity-100
+      transition-opacity
+      text-xs
+      text-blue-600
+      hover:text-blue-800
+      font-medium
+      cursor-pointer
         "
       >
         {copiedOfficialEmail === brand._id

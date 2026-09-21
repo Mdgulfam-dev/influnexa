@@ -30,6 +30,7 @@ import UploadCreatorsCSV from "../components/UploadCreatorCSV";
 import CsvBrandSection from "../components/CsvBrandSection";
 import UploadBrandsCSV from "../components/UploadBrandsCSV";
 import CreatorDataAvailability from "../pages/CreatorDataAvailability";
+import LeadWorkflowSection from "../components/LeadWorkflowSection";
 const brandStatuses = [
   "New",
   "Under Review",
@@ -1587,7 +1588,6 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [csvRefreshKey, setCsvRefreshKey] = useState(0);
- 
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState(() => {
   const requestedTab = window.location.hash.replace("#", "");
@@ -2093,7 +2093,7 @@ useEffect(() => {
   // Editor cannot access Data Availability
   if (
     currentUserRole === "editor" &&
-    activeTab === "data-availability"
+    ["data-availability", "lead-workflow"].includes(activeTab)
   ) {
     setActiveTab("overview");
     window.history.replaceState(null, "", "#overview");
@@ -2129,6 +2129,7 @@ useEffect(() => {
       ["csv-brands", `CSV Brands`],
       ["upload-csv-brands", `CSV Upload Brands`],
       ["data-availability", `Data Availability`],
+       ["lead-workflow", "Lead Workflow"],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
@@ -2145,6 +2146,7 @@ if (currentUserRole === "editor") {
     ([id]) =>
       ![
         "data-availability",
+         "lead-workflow",
         "testimonials",
         "jobs",
         "applications",
@@ -2772,7 +2774,12 @@ return allTabs;
     <CreatorDataAvailability key={csvRefreshKey} />
 )}
 
-
+{/* BRAND LEAD WORKFLOW */}
+{activeTab === "lead-workflow" && (
+  <LeadWorkflowSection
+    refreshKey={csvRefreshKey}
+  />
+)}
 
      {activeTab === "blogs" && (
   <div className="admin-blog-grid">

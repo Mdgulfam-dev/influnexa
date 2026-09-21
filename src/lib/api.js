@@ -1,3 +1,4 @@
+
 const LOCAL_API_URL = "http://127.0.0.1:5001/api";
 const PRODUCTION_API_URL = "https://influnexa-backend-igoz.onrender.com/api";
 
@@ -61,6 +62,33 @@ if (data.user?.email) {
 
 export function logoutAdmin() {
   clearAdminToken();
+}
+
+export async function getLeadWorkflow(query = "") {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/lead-workflow${query}`,
+    {
+      method: "GET",
+      headers: {
+        ...adminHeaders(),
+      },
+      cache: "no-store",
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(
+      data.message || "Unable to load brand lead workflow."
+    );
+  }
+
+  return data;
 }
 
 export async function submitRegistration(type, payload) {
