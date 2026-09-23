@@ -347,14 +347,14 @@ const caseStudies = [
 ];
 
 const faqs = [
-  ["How does the campaign process work?", "You share your product, target audience, countries, budget, and goals. Influnexa researches creator options, shares a shortlist for approval, manages contracts and content, then reports results."],
-  ["How is pricing structured?", "Pricing depends on creator volume, markets, deliverables, licensing, and management level. Fixed campaign packages and custom retainers are both supported."],
-  ["How are creators selected?", "Our agency team researches creators manually using niche relevance, content quality, audience fit, engagement behavior, location, language, and previous brand suitability."],
-  ["Do influencers apply for campaigns on this website?", "No. This website is not a marketplace where influencers apply to campaigns. Influnexa works as an agency and manages creator selection directly with the client."],
-  ["How long does a campaign take?", "Most campaigns can start planning within a few days, with launch timing depending on creator approval, product shipping, content review, and publishing schedule."],
-  ["Which regions are supported?", "Influnexa supports creator collaborations across India, with creator research shaped around your target region, language, audience, and campaign requirements."],
-  ["What reporting is included?", "Reports include creator list, content links, rating and review status, reach, impressions, engagement, audience response, proof of posting, and campaign learnings."],
-  ["What support do we receive?", "Brands get strategy, market research, creator sourcing, brief support, negotiation, review coordination, posting checks, and final campaign analysis."],
+  ["How does the campaign process work?", "You simply share your campaign requirements, budget, target audience and goals with us. We’ll find relevant creators, share the best options with you, coordinate with the creators and manage the campaign from start to finish. "],
+  ["How is pricing structured?", "Pricing depends on the campaign requirements, creator profiles, deliverables and number of creators involved. Once we understand your requirements, we share a clear quotation with no unnecessary confusion. "],
+  ["How are creators selected?", "We select creators based on your target audience, niche, location, content quality, engagement and campaign goals. We focus on finding creators who are actually relevant to your brand, not just creators with a high follower count. "],
+  ["Do influencers apply for campaigns on this website?", "Yes. Creators can register with Influnexa and become part of our creator network. For relevant campaigns, we can shortlist and connect suitable creators based on the brand's requirements. "],
+  ["How long does a campaign take?", "It depends on the campaign size and deliverables. Smaller campaigns can be completed quickly, while larger campaigns may take more time for creator selection, approvals, content creation and reporting. We’ll give you a clear timeline before starting. "],
+  ["Which regions are supported?", "We work with creators across India and can also help brands with location-specific campaigns. Whether you need creators from a particular city, state or region, we can curate options accordingly. "],
+  ["What reporting is included?", "After the campaign, we share the important campaign performance details such as content links, reach, views, engagement and other available metrics. This helps you understand how the campaign performed. "],
+  ["What support do we receive?", "You don’t have to manage everything yourself. Our team handles creator research, shortlisting, communication, coordination, content follow-ups and campaign management, so you can focus on your brand while we manage the creator side. "],
 ];
 
 const homeDescription =
@@ -1153,7 +1153,12 @@ const scrollCreators = (direction) => {
 </div>
           </div>
         </section>
-<section className="feature-strip">
+
+
+<section  className={`feature-strip ${
+    theme === "dark" ? "feature-strip-dark" : "feature-strip-light"
+  }`}
+>
   <div className="feature-grid">
 
     <div className="feature-item">
@@ -2362,9 +2367,7 @@ const scrollCreators = (direction) => {
 
     {/* Eyebrow */}
     <div className="industry-showcase-eyebrow">
-      <span></span>
       <p>INDUSTRIES WE SERVE</p>
-      <span></span>
     </div>
 
     {/* Heading */}
@@ -2771,7 +2774,7 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
+        
       </article>
 
       {/* 02 */}
@@ -2792,7 +2795,7 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
+        
       </article>
 
       {/* 03 */}
@@ -2815,7 +2818,7 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
+        
       </article>
 
       {/* 04 */}
@@ -2838,7 +2841,7 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
+        
       </article>
 
       {/* 05 */}
@@ -2862,7 +2865,7 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
+        
       </article>
 
       {/* 06 */}
@@ -2883,7 +2886,6 @@ const scrollCreators = (direction) => {
           </p>
         </div>
 
-        <div className="why-arrow-v2">→</div>
       </article>
 
     </div>
@@ -3179,7 +3181,7 @@ const scrollCreators = (direction) => {
                 className="blog-card insight-card"
               >
                 <span>{post.category}</span>
-                <h3>{post.title}</h3>
+                <h2 className="text-2xl font-extrabold ">{post.title}</h2>
                 <p>{post.excerpt || post.readTime}</p>
                 <small>{post.readTime}</small>
                 <a

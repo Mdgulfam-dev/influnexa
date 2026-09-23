@@ -1,5 +1,6 @@
 import "../industries.css";
-
+import { useEffect, useState } from "react";
+import { applyTheme, getInitialTheme } from "../lib/theme";
 const industries = [
   "Fashion",
   "Beauty and Makeup",
@@ -273,8 +274,21 @@ const getDescription = (industry) => {
 };
 
 export default function Industries() {
+   const [theme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
   return (
-    <main className="all-industries-page">
+    <main
+      className={`all-industries-page ${
+        theme === "dark"
+          ? "industries-dark"
+          : "industries-light"
+      }`}
+    >
+  
 
       {/* HERO */}
       <section className="all-industries-hero">
@@ -285,16 +299,16 @@ export default function Industries() {
   <span>Back to Website</span>
 </a>
           <div className="all-industries-eyebrow">
-            <span></span>
+            
             <p>INFLUNEXA INDUSTRY NETWORK</p>
-            <span></span>
+           
           </div>
-
-          <h1>
+<div className="industry-heading">
+          <h1 >
             Creator Campaigns Built for{" "}
             <span>Every Industry.</span>
           </h1>
-
+</div>
           <p>
             Discover creators across 100+ industries and connect your brand
             with the right audience, community and culture.

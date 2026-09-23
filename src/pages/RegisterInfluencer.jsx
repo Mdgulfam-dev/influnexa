@@ -854,7 +854,7 @@ const nextStep = (step) => {
               Creator Onboarding
             </p>
 
-            <h1 className="mb-2 font-sans text-4xl font-bold tracking-tight">
+            <h1 className="mb-2  text-4xl font-bold tracking-tight">
               Influencer Registration
             </h1>
 

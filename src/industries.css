@@ -751,4 +751,88 @@
 }
 
 
+.all-industries-page.industries-dark {
+  --industry-bg: #071411;
+  --industry-card: #0e1d19;
+  --industry-text: #f2faf7;
+  --industry-muted: #9aafa8;
+  --industry-teal: #42c9aa;
+  --industry-teal-dark: #42c9aa;
+  --industry-border: rgba(255, 255, 255, 0.09);
 
+  background: #071411;
+  color: #f2faf7;
+}
+.all-industries-page.industries-dark .all-industries-hero {
+  background: #071411;
+}
+
+.all-industries-page.industries-dark .all-industries-section {
+  background: #071411;
+}
+
+.all-industries-page.industries-dark .all-industries-container {
+  background: transparent;
+}
+
+.all-industries-page.industries-dark .all-industry-card {
+  background: #0e1d19;
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.all-industries-page.industries-dark .all-industry-image {
+  background: #172923;
+}
+
+.all-industries-page.industries-dark .all-industry-number {
+  background: #42c9aa;
+  color: #071411;
+}
+
+.all-industries-page.industries-dark .all-industry-content h3 {
+  color: #f2faf7;
+}
+
+.all-industries-page.industries-dark .all-industry-content p {
+  color: #9aafa8;
+}
+
+.all-industries-page.industries-dark .all-industry-footer {
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #42c9aa;
+}
+
+.all-industries-page.industries-dark .all-industries-heading h2 {
+  color: #f2faf7;
+}
+
+.all-industries-page.industries-dark .all-industries-heading p {
+  color: #9aafa8;
+}
+
+.all-industries-page.industries-dark .industries-back-button {
+  background: rgba(14, 29, 25, 0.85);
+  border-color: rgba(66, 201, 170, 0.20);
+  color: #42c9aa;
+}
+
+.all-industries-page.industries-dark .industries-back-arrow {
+  background: rgba(66, 201, 170, 0.10);
+  color: #42c9aa;
+}
+
+.all-industries-page.industries-dark .all-industries-bottom-cta {
+  background: #04100d;
+}
+
+.all-industries-page.industries-dark .all-industries-bottom-cta h2 {
+  color: #f2faf7;
+}
+
+.all-industries-page.industries-dark .all-industries-bottom-cta p .industry-heading h1{
+  color: #9aafa8;
+}
+.all-industries-page.industries-dark .industry-heading h1{
+  color: white;
+}

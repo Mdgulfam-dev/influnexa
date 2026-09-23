@@ -286,7 +286,7 @@ function BlogCard({ post, featured = false }) {
           <span>{post.category || "Insight"}</span>
           <small>{post.readTime || "5 min read"}</small>
         </div>
-        <h2>{post.title}</h2>
+        <h1>{post.title}</h1>
         <p>{post.excerpt}</p>
         <a href={articlePath(post)} aria-label={`Read article: ${post.title}`}>Read article</a>
       </div>

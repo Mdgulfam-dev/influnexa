@@ -1173,7 +1173,11 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
         Global Search
         <input
           name="search"
-          placeholder={searchPlaceholder}
+           placeholder={
+            type === "influencers"
+              ? "Full Name, Email, Phone Number..."
+              : searchPlaceholder
+          }
           type="search"
           value={filters.search}
           onChange={(event) => onFilterChange("search", event.target.value)}
@@ -1234,7 +1238,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
             >
     <option value="">All Influencer Types</option>
     <option value="Nano Influencer">Nano Influencer</option>
-    <option value="Micro Influencer">Micro Influencer</option>
+    <option value="Micro Influencer">	Micro Influencer</option>
     <option value="Macro Influencer">Macro Influencer</option>
     <option value="Mega Influencer">Mega Influencer</option>
             </select>
@@ -1629,7 +1633,7 @@ export default function AdminDashboard() {
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
   const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
+  const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "", influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [influencerTable, setInfluencerTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
@@ -1959,7 +1963,8 @@ console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
       setBrandQuery(cleared);
     }
     if (activeTab === "influencers") {
-      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", followerMin: "", followerMax: "",followerRange: "", from: "", to: "" };
+      const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",
+  influencerType: "", followerMin: "", followerMax: "",followerRange: "", from: "", to: "" };
       setInfluencerFilters(cleared);
       setInfluencerQuery(cleared);
     }
@@ -2484,7 +2489,7 @@ return allTabs;
               onFilterChange={updateBrandFilter}
               onSearch={applyRegistrationSearch}
               onReset={resetRegistrationFilters}
-              searchPlaceholder="Company, Contact, Email, Industry..."
+              searchPlaceholder="Company Name, Email, Phone Number..."
               statusOptions={brandStatuses}
               type="brands"
             />
@@ -2743,7 +2748,6 @@ return allTabs;
               onFilterChange={updateInfluencerFilter}
               onSearch={applyRegistrationSearch}
               onReset={resetRegistrationFilters}
-              searchPlaceholder="Creator, Email, Country, Platform..."
               statusOptions={influencerStatuses}
               type="influencers"
             />

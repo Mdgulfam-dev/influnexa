@@ -306,3 +306,118 @@
   }
 }
 
+/* =========================================================
+   SHARE EXPERIENCE - DARK THEME
+   ========================================================= */
+
+.share-experience-page.share-experience-dark {
+  background: #071411;
+  color: #f2faf7;
+}
+
+/* Main container */
+.share-experience-page.share-experience-dark
+  .share-experience-container {
+  background: transparent;
+}
+
+/* Back button */
+.share-experience-page.share-experience-dark
+  .back-website-btn {
+  color: #42c9aa;
+  border-color: rgba(66, 201, 170, 0.25);
+  background: rgba(14, 29, 25, 0.85);
+}
+
+.share-experience-page.share-experience-dark
+  .back-website-btn:hover {
+  background: rgba(66, 201, 170, 0.1);
+  border-color: rgba(66, 201, 170, 0.45);
+}
+
+/* Header */
+.share-experience-page.share-experience-dark
+  .share-experience-eyebrow {
+  color: #42c9aa;
+}
+
+.share-experience-page.share-experience-dark
+  .share-experience-header h1 {
+  color: #f2faf7;
+}
+
+.share-experience-page.share-experience-dark
+  .share-experience-header p {
+  color: #9aafa8;
+}
+
+/* Form */
+.share-experience-page.share-experience-dark
+  .testimonial-form {
+  background: #0e1d19;
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Labels */
+.share-experience-page.share-experience-dark
+  .testimonial-form label {
+  color: #dcebe6;
+}
+
+/* Inputs */
+.share-experience-page.share-experience-dark
+  .testimonial-form input,
+.share-experience-page.share-experience-dark
+  .testimonial-form select,
+.share-experience-page.share-experience-dark
+  .testimonial-form textarea {
+  background: #071411;
+  color: #f2faf7;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Placeholder */
+.share-experience-page.share-experience-dark
+  .testimonial-form input::placeholder,
+.share-experience-page.share-experience-dark
+  .testimonial-form textarea::placeholder {
+  color: #71857e;
+}
+
+/* Focus */
+.share-experience-page.share-experience-dark
+  .testimonial-form input:focus,
+.share-experience-page.share-experience-dark
+  .testimonial-form select:focus,
+.share-experience-page.share-experience-dark
+  .testimonial-form textarea:focus {
+  border-color: #42c9aa;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 201, 170, 0.12);
+}
+
+/* Select options */
+.share-experience-page.share-experience-dark
+  .testimonial-form select option {
+  background: #0e1d19;
+  color: #f2faf7;
+}
+
+/* Submit button */
+.share-experience-page.share-experience-dark
+  .submit-review-btn {
+  background: #42c9aa;
+  color: #071411;
+}
+
+.share-experience-page.share-experience-dark
+  .submit-review-btn:hover {
+  background: #52d7b7;
+}
+
+/* Success / error message */
+.share-experience-page.share-experience-dark
+  .testimonial-status {
+  border-color: rgba(255, 255, 255, 0.1);
+}

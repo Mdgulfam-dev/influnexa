@@ -856,7 +856,7 @@ export default function RegisterBrand() {
               Brand Onboarding
             </p>
 
-            <h1 className="mb-2 font-sans text-4xl font-bold tracking-tight">
+            <h1 className="mb-2  text-4xl font-bold tracking-tight">
               Brand Registration
             </h1>
 

@@ -1,16 +1,172 @@
 @config "../tailwind.config.js";
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;&family=Raleway:wght@400;500;600;700;&display=swap");
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   color: #0f172a;
   background: #f8fafc;
-  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================
+   GLOBAL HEADING FONT
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Raleway", sans-serif;
+}
+
+/* =========================================================
+   GLOBAL BODY / CONTENT FONT
+   ========================================================= */
+
+body,
+p,
+span,
+a,
+button,
+input,
+textarea,
+select,
+option,
+label,
+li,
+td,
+th {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Keep headings using Raleway even when Tailwind classes
+   or other inherited styles are applied */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Raleway", sans-serif;
+}
+
+.csv-brand-section {
+  font-family: "Poppins", sans-serif;
+}
+
+.csv-brand-section h1,
+.csv-brand-section h2,
+.csv-brand-section h3,
+.csv-brand-section h4,
+.csv-brand-section h5,
+.csv-brand-section h6 {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CSV CREATOR SECTION TYPOGRAPHY
+   ========================================================= */
+
+.csv-creator-section {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Creator section headings */
+.csv-creator-section h1,
+.csv-creator-section h2,
+.csv-creator-section h3,
+.csv-creator-section h4,
+.csv-creator-section h5,
+.csv-creator-section h6 {
+  font-family: "Raleway", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Filter labels */
+.csv-creator-section label {
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Inputs */
+.csv-creator-section input,
+.csv-creator-section textarea,
+.csv-creator-section select {
+  font-family: "Poppins", sans-serif !important;
+}
+
+
+
+
+/* Buttons */
+.csv-creator-section button {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* React Select */
+.csv-creator-section .react-select__control,
+.csv-creator-section .react-select__menu,
+.csv-creator-section .react-select__option,
+.csv-creator-section .react-select__single-value,
+.csv-creator-section .react-select__placeholder {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* Table */
+.csv-creator-section table,
+.csv-creator-section th,
+.csv-creator-section td {
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* =========================================================
+   UPLOAD BRAND + UPLOAD CREATOR FONT
+   Headings  → Raleway
+   Other text → Poppins
+   ========================================================= */
+
+.csv-upload-font {
+  font-family: "Poppins", sans-serif;
+}
+
+/* =========================
+   HEADINGS — RALEWAY
+   ========================= */
+
+.csv-upload-font h1,
+.csv-upload-font h2,
+.csv-upload-font h3,
+.csv-upload-font h4,
+.csv-upload-font h5,
+.csv-upload-font h6 {
+  font-family: "Raleway", sans-serif;
+}
+
+/* =========================
+   EVERYTHING ELSE — POPPINS
+   ========================= */
+
+.csv-upload-font p,
+.csv-upload-font span,
+.csv-upload-font label,
+.csv-upload-font input,
+.csv-upload-font select,
+.csv-upload-font textarea,
+.csv-upload-font button,
+.csv-upload-font table,
+.csv-upload-font th,
+.csv-upload-font td,
+.csv-upload-font a,
+.csv-upload-font div {
+  font-family: "Poppins", sans-serif;
 }
 
 * {
@@ -1286,6 +1442,9 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
 }
 
+
+
+
 .dark .premium-card,
 .dark .industry-card,
 .dark .reason-card,
@@ -2442,15 +2601,7 @@ main.admin-shell .admin-content > .admin-status { position: fixed; right: 22px; 
   position: relative;
 }
 
-.insight-card::before {
-  position: absolute;
-  inset: 22px 28px auto auto;
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  background: rgba(79, 70, 229, 0.08);
-  content: "";
-}
+
 
 .dark .blog-card small {
   color: #cbd5e1;
@@ -5844,10 +5995,10 @@ body {
   font-size: clamp(48px, 4.2vw, 68px);
 
   line-height: 1.04;
-
+font-weight: 700;
   letter-spacing: -0.045em;
 
-  font-weight: 800;
+  
 
   color: #10203d;
 }
@@ -9101,7 +9252,6 @@ body {
   gap: 12px;
   margin-top: 34px;
   
-  
 
 }
 
@@ -9113,6 +9263,9 @@ body {
   font-size: 13px;
   font-weight: 850;
   
+
+  
+  
 }
 
 .hero-proof-row strong {
@@ -9120,8 +9273,10 @@ body {
   font-size: 26px;
   font-weight: 950;
   line-height: 1;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: -14px;
+
 }
 /* Only move "Verified Creators" */
 .hero-proof-row .verified-creators-text {
@@ -9318,6 +9473,8 @@ body {
   .production-hero .hero-layout {
     grid-template-columns: 1fr;
   }
+
+  
 }
 
 @media (max-width: 1024px) {
@@ -9325,6 +9482,8 @@ body {
     padding-top: 118px !important;
     margin-top:35px !important;
 }
+
+
 }
 @media (max-width: 768px) {
   .production-hero {
@@ -9351,22 +9510,46 @@ body {
   .hero-actions a {
     width: 100%;
   }
+.hero-proof-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  margin-top: 28px;
+  gap: 0;
+}
 
-  .hero-proof-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 28px;
-  }
+.hero-proof-row > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  .hero-proof-row span {
-    grid-template-columns: 72px 1fr;
-    align-items: baseline;
-    padding-top: 12px;
-  }
+  width: 100%;
+  min-height: 70px;
+  padding: 14px 10px;
+  text-align: center;
+}
 
-  .hero-proof-row strong {
-    font-size: 22px;
-  }
+.hero-proof-row > span + span {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.hero-proof-row strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.1;
+  margin: 0 0 5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hero-proof-row > span > span {
+  display: block;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: center;
+  margin: 0;
+}
 
   .production-panel {
     border-radius: 20px;
@@ -12581,6 +12764,12 @@ footer .footer-brand-copy small,
   padding-top: 24px;
 }
 
+
+.blog-card-copy h1 {
+ font-size: 30px;
+ font-weight: 900;
+}
+
 .site.dark .blog-page .blog-page-card .blog-card-copy {
   background: #0f172a;
 }
@@ -15076,4 +15265,300 @@ footer .footer-brand-copy small,
   .hero-proof-row .verified-creators-text{
     margin-left:5px;
   }
+}
+
+/* =========================================================
+   HOME DARK MODE - FORCE DARK TEXT TO WHITE
+   ========================================================= */
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.site.dark .hero-copy h1 {
+  color: #ffffff !important;
+}
+
+.site.dark .hero-copy p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .hero-kicker {
+  color: #42c9aa !important;
+}
+
+.site.dark .hero-proof-row span {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .hero-proof-row strong {
+  color: #ffffff !important;
+}
+
+.site.dark .brand-tagline-main {
+  color: #ffffff !important;
+}
+
+
+
+/* =========================================================
+   INFLUNEXA ADVANTAGE
+   ========================================================= */
+
+.site.dark .advantage-title {
+  color: #ffffff !important;
+}
+
+.site.dark .advantage-title span {
+  color: #42c9aa !important;
+}
+
+.site.dark .advantage-description {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .advantage-feature h3 {
+  color: #ffffff !important;
+}
+
+.site.dark .advantage-feature p {
+  color: #94a3b8 !important;
+}
+
+.site.dark .advantage-badge {
+  color: #42c9aa !important;
+}
+
+.site.dark .workflow-heading h3 {
+  color: #ffffff !important;
+}
+
+.site.dark .workflow-heading p {
+  color: #94a3b8 !important;
+}
+
+
+/* =========================================================
+   WORKFLOW CARDS
+   ========================================================= */
+
+.site.dark .workflow-card h4 {
+  color: #ffffff !important;
+}
+
+.site.dark .workflow-card p {
+  color: #94a3b8 !important;
+}
+
+.site.dark .workflow-number {
+  color: #42c9aa !important;
+}
+
+.site.dark .workflow-icon {
+  color: #42c9aa !important;
+}
+
+
+/* =========================================================
+   PERFORMANCE CARD
+   ========================================================= */
+
+.site.dark .performance-card h4 {
+  color: #ffffff !important;
+}
+
+.site.dark .performance-card button {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .performance-stats strong {
+  color: #ffffff !important;
+}
+
+.site.dark .performance-stats span {
+  color: #94a3b8 !important;
+}
+
+
+/* =========================================================
+   OUTCOMES
+   ========================================================= */
+
+.site.dark .outcome-card span {
+  color: #ffffff !important;
+}
+
+.site.dark .outcome-card div {
+  color: #42c9aa !important;
+}
+
+
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
+
+.site.dark .howitworks-header h2 {
+  color: #ffffff !important;
+}
+
+.site.dark .howitworks-header p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .howitworks-eyebrow {
+  color: #42c9aa !important;
+}
+
+.site.dark .howitworks-card h3 {
+  color: #ffffff !important;
+}
+
+.site.dark .howitworks-card p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .howitworks-tags span {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .howitworks-number {
+  color: #42c9aa !important;
+}
+
+
+/* =========================================================
+   CAMPAIGN WORKFLOW
+   ========================================================= */
+
+.site.dark #brands .campaign-heading-title {
+  color: #ffffff !important;
+}
+
+.site.dark #brands .campaign-heading-description {
+  color: #cbd5e1 !important;
+}
+
+.site.dark #brands .campaign-heading-tag {
+  color: #42c9aa !important;
+}
+
+.site.dark #brands .campaign-step-card h3 {
+  color: #ffffff !important;
+}
+
+.site.dark #brands .campaign-step-card p {
+  color: #cbd5e1 !important;
+}
+
+
+/* =========================================================
+   FAQ
+   ========================================================= */
+
+.site.dark .faq-showcase-heading h2 {
+  color: #ffffff !important;
+}
+
+.site.dark .faq-showcase-heading p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .faq-eyebrow {
+  color: #42c9aa !important;
+}
+
+.site.dark .faq-showcase-question-text {
+  color: #ffffff !important;
+}
+
+.site.dark .faq-showcase-answer p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .faq-showcase-number {
+  color: #42c9aa !important;
+}
+
+
+/* =========================================================
+   BLOG
+   ========================================================= */
+
+.site.dark #blog h2 {
+  color: #ffffff !important;
+}
+
+.site.dark .blog-card h3 {
+  color: #ffffff !important;
+}
+
+.site.dark .blog-card p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .blog-card small {
+  color: #94a3b8 !important;
+}
+
+.site.dark .blog-card span {
+  color: #42c9aa !important;
+}
+
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
+
+.site.dark #register h2 {
+  color: #ffffff !important;
+}
+
+.site.dark #register .section-header p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .register-choice-card h3 {
+  color: #ffffff !important;
+}
+
+.site.dark .register-choice-card p {
+  color: #cbd5e1 !important;
+}
+
+.site.dark .register-choice-card span {
+  color: #42c9aa !important;
+}
+
+.dark #case-studies {
+  color: #ffffff;
+}
+
+.dark #case-studies h1,
+.dark #case-studies h2,
+.dark #case-studies h3,
+.dark #case-studies p,
+.dark #case-studies span {
+  color: #ffffff !important;
+}
+
+/* Keep the eyebrow/primary accent teal */
+.dark #case-studies .text-primary {
+  color: #42c9aa !important;
+}
+
+/* SERVICES - DARK MODE */
+.dark #services h1,
+.dark #services h2 {
+  color: #ffffff !important;
+}
+
+
+/* Keep Creator-Led Growth teal */
+.dark #services .services-title-accent {
+  color: #42c9aa !important;
+}
+
+
+.dark footer h3 {
+  color: #ffffff !important;
 }

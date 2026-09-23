@@ -95,7 +95,7 @@ function MultiSelectDropdown({
     scrollbar-track-transparent
   ">
           {value.length === 0 ? (
-            <span className="text-[#94a3b8] text-[13px] font-[850]">
+            <span className="text-[#94a3b8] text-[13px] font-semibold">
               {placeholder}
             </span>
           ) : (
@@ -1138,10 +1138,19 @@ const getReminder = (brand) => {
     otherwise createdAt is used.
   */
   const startDate =
-    brand.statusChangedAt ||
-    brand.createdAt;
+    brand.statusChangedAt;
 
   if (!startDate) {
+    return {
+      text: "No date",
+      type: "none",
+    };
+  }
+
+   // IMPORTANT:
+  // Active workflow statuses must have their own statusChangedAt.
+  // Never use createdAt here.
+  if (!brand.statusChangedAt) {
     return {
       text: "No date",
       type: "none",
@@ -1275,7 +1284,7 @@ const inputClass = `
   font-[850]
   placeholder:text-[#94a3b8]
   placeholder:text-[13px]
-  placeholder:font-[850]
+  placeholder:font-semibold
   placeholder:opacity-100
   outline-none
   transition
@@ -1296,6 +1305,7 @@ const completedByOptions = leadUsers.map((user) => ({
 
     <div
       className="
+      csv-brand-section
        relative
     z-0
     bg-white

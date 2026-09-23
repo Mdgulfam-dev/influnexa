@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 import Blog from "./pages/Blog";
@@ -9,6 +10,22 @@ import JobDetail from "./pages/JobDetail";
 import Industries from "./pages/Industries";
 import ShareExperience from "./pages/ShareExperience";
 function App() {
+
+    const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("influnexa-theme") || "light";
+  });
+
+  const onToggleTheme = () => {
+    setTheme((currentTheme) => {
+      const nextTheme =
+        currentTheme === "dark" ? "light" : "dark";
+
+      localStorage.setItem("influnexa-theme", nextTheme);
+
+      return nextTheme;
+    });
+  };
+
   const path = window.location.pathname;
 
   if (path === "/register/brand") {
@@ -39,7 +56,9 @@ function App() {
     return <Blog />;
   }
   if (path === "/industries") {
-  return <Industries />;
+  return  <Industries
+        theme={theme}
+      />;
 }
  if (path === "/share-experience") {
   return <ShareExperience/>;

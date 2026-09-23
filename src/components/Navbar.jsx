@@ -56,6 +56,7 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
         <div className="hidden items-center gap-3 lg:flex">
           <button
             className="theme-toggle grid h-11 w-11 place-items-center rounded-full"
+            
             type="button"
             onClick={onToggleTheme}
             aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
@@ -105,7 +106,11 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
           </div>
           <div className="mt-4 flex gap-3">
             <button
-              className="rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white"
+            className={`rounded-full border px-5 py-3 text-sm font-bold ${
+    isDark
+      ? "border-white/15 !text-white"
+      : "border-slate-300 !text-white"
+  }`}
               type="button"
               onClick={onToggleTheme}
             >

@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { submitTestimonial } from "../lib/api";
 import "../shareexperience.css";
-
+import { applyTheme, getInitialTheme } from "../lib/theme";
 function ShareExperience() {
+  const [theme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
   const [reviewForm, setReviewForm] = useState({
     name: "",
     role: "",
@@ -70,7 +76,13 @@ function ShareExperience() {
   };
 
   return (
-    <div className="share-experience-page">
+    <div
+  className={`share-experience-page ${
+    theme === "dark"
+      ? "share-experience-dark"
+      : "share-experience-light"
+  }`}
+>
       <div className="share-experience-container">
 
         {/* BACK TO WEBSITE */}

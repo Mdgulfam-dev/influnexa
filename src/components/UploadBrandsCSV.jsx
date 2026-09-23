@@ -589,6 +589,7 @@ const toggleReason = (index) => {
 
     <div
       className="
+      csv-upload-font
         bg-white
         border
         border-slate-200

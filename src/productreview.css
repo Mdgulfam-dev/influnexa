@@ -602,9 +602,9 @@ margin-left: -20px;
   top: 45%;
 
   width:100%;
-  max-width: 360px;
+  max-width: 330px;
 
-  transform: translateY(-50%);
+  transform: translateY(-58%);
   pointer-events: none;
 }
 

@@ -681,7 +681,7 @@ const inputClass = `
 
   placeholder:text-[#94a3b8]
   placeholder:text-[13px]
-  placeholder:font-[850]
+  placeholder:font-semibold
   placeholder:opacity-100
 
   outline-none
@@ -800,7 +800,7 @@ const selectStyles = {
 
     color: "#94a3b8",
     fontSize: "13px",
-    fontWeight: 850,
+    fontWeight: 550,
 
     whiteSpace: "nowrap",
 
@@ -1004,7 +1004,7 @@ const selectStyles = {
 };
   return (
 
-<div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
+<div className="    csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
 {/* =========================
     HEADER
 ========================= */}
