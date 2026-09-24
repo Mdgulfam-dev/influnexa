@@ -1978,7 +1978,7 @@ const completedByOptions = leadUsers.map((user) => ({
   "
               >
 
-     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[320px]" /><col className="w-[320px]" /><col className="w-[170px]" /><col className="w-[360px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[150px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
+     <colgroup><col className="w-[70px]" /><col className="w-[180px]" /><col className="w-[160px]" /><col className="w-[140px]" /><col className="w-[320px]" /><col className="w-[320px]" /><col className="w-[170px]" /><col className="w-[380px]" /><col className="w-[140px]" /><col className="w-[250px]" /><col className="w-[180px]" /><col className="w-[200px]" /><col className="w-[220px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[150px]" /><col className="w-[130px]" /><col className="w-[200px]" /><col className="w-[220px]" /></colgroup>            
 {/* ========================================
 HEADER
 ======================================== */}

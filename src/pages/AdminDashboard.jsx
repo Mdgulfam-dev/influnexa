@@ -1792,6 +1792,21 @@ console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
   }
 };
 
+useEffect(() => {
+  if (!isAuthenticated) return;
+
+  loadDashboard({ showLoading: false }).catch((error) => {
+    console.error("Dashboard load failed:", error);
+
+    setStatus({
+      type: "error",
+      message: error.message || "Failed to load dashboard",
+    });
+  });
+}, [isAuthenticated]);
+
+
+
   const loadRegistrationTable = async (type, filters, after = null, history = []) => {
     try {
       const result = await getAdminRegistrations(type, { ...filters, limit: registrationPageSize, after });
@@ -1873,7 +1888,6 @@ console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
       setLoginEmail("");
       setPassword("");
       setIsAuthenticated(true);
-      loadDashboard({ showLoading: false });
     } catch (error) {
       setStatus({ type: "error", message: error.message });
     }
