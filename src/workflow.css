@@ -1095,8 +1095,8 @@
 
 @media (max-width: 1350px) {
   .howitworks-section {
-    padding-left: 22px;
-    padding-right: 22px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .howitworks-container {
@@ -1116,11 +1116,14 @@
 
   .howitworks-card {
     min-height: 405px;
-
     padding-left: 10px;
+  
     padding-right: 10px;
   }
 
+
+
+  
   .howitworks-number {
     left: 14px;
   }
@@ -1151,7 +1154,7 @@ margin-left: 12px;
    TABLET
    ========================================================= */
 
-@media (max-width: 1050px) {
+@media (max-width: 1100px) {
   .howitworks-section {
     padding-top: 58px;
     padding-bottom: 48px;
@@ -1495,4 +1498,30 @@ margin-left: 12px;
   .howitworks-secondary-btn {
     box-shadow: none;
   }
+}
+
+/* =========================================================
+   HOW IT WORKS — TEXT WRAPPING
+   ========================================================= */
+
+.howitworks-card .service-point-list,
+.howitworks-card .howitworks-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.howitworks-card .service-point-list span,
+.howitworks-card .howitworks-tags span {
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  text-align: center;
+  line-height: 1.2;
 }

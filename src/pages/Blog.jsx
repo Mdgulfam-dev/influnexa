@@ -331,7 +331,7 @@ function BlogArticle({ post, relatedPosts = [] }) {
           </div>
         </div>
         {post.coverImage ? (
-          <img loading="eager" decoding="async" width="760" height="520" src={post.coverImage} alt={`${post.title} cover`} />
+          <img loading="eager" decoding="async"  src={post.coverImage} alt={`${post.title} cover`} />
         ) : (
           <div className="blog-article-art" aria-hidden="true">
             <span>{post.category || "Insight"}</span>

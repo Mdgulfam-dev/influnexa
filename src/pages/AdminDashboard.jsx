@@ -493,47 +493,36 @@ if (key === "email") {
     }
   };
 
-  return (
-    <div className="group min-w-0">
+return (
+  <div className="group min-w-0">
+    <div className="flex min-w-0 flex-col items-start">
+      
       {/* Email */}
-      <div className="min-w-0">
-       
-          {value || "Not provided"}
-        
+      <div
+        className="
+          min-w-0
+          transition-transform
+          duration-200
+          group-hover:-translate-y-1
+        "
+      >
+        {value || "Not provided"}
       </div>
 
-      {/* Short email → Copy beside email */}
+      {/* Copy button */}
       {value && !isLongEmail && (
-        <div className="inline-flex ml-2 align-middle">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="
-              shrink-0
-              rounded-md
-              border border-slate-200
-              bg-white
-              px-2 py-1
-              text-xs
-              font-medium
-              text-slate-500
-              opacity-0
-              transition-opacity
-              duration-200
-              group-hover:opacity-100
-              hover:border-slate-300
-              hover:bg-slate-50
-              hover:text-slate-700
-            "
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-      )}
-
-      {/* Long email → Full email + Copy below */}
-      {value && isLongEmail && (
-        <div className="mt-2">
+        <div
+          className="
+            mt-1
+            h-0
+            overflow-hidden
+            opacity-0
+            transition-all
+            duration-200
+            group-hover:h-7
+            group-hover:opacity-100
+          "
+        >
           <button
             type="button"
             onClick={handleCopy}
@@ -545,10 +534,6 @@ if (key === "email") {
               text-xs
               font-medium
               text-slate-500
-              opacity-0
-              transition-opacity
-              duration-200
-              group-hover:opacity-100
               hover:border-slate-300
               hover:bg-slate-50
               hover:text-slate-700
@@ -559,7 +544,9 @@ if (key === "email") {
         </div>
       )}
     </div>
-  );
+  </div>
+);
+      
 }
 // PHONE NUMBER
 if (key === "phoneNumber") {

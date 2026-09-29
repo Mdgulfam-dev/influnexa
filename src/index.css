@@ -7706,13 +7706,17 @@ font-weight: 700;
   color: #d1d5db;
 }
 
-.dark strong,
+
 .dark h1,
 .dark h2,
 .dark h3,
 .dark h4,
 .dark button {
-  color:black;
+  color:white;
+}
+
+.dark strong{
+  color: black;
 }
 
 .dark a {
@@ -8120,7 +8124,7 @@ font-weight: 700;
 .dark .blog-article-hero > div > span,
 .dark .blog-section-heading > span {
   background: rgba(45, 212, 191, 0.11);
-  color: #5eead4;
+  color:#063d36;
 }
 
 .dark 
@@ -12498,6 +12502,7 @@ footer .footer-brand-copy small,
 .blog-page .blog-article-hero img,
 .blog-page .blog-article-art {
   min-height: 420px;
+ 
   border-radius: 8px;
 }
 
@@ -12732,6 +12737,41 @@ footer .footer-brand-copy small,
   }
 }
 
+/* =========================================================
+   BLOG ARTICLE HERO IMAGE — FINAL
+   ========================================================= */
+
+.blog-article-hero {
+ 
+  overflow: hidden;
+}
+
+.blog-article-hero > img {
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  min-height: 0 !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+
+  aspect-ratio: auto !important;
+
+  object-fit: initial !important;
+  object-position: initial !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  border-radius: 12px !important;
+}
+
+
 /* Keep article details on a dedicated, readable surface instead of the cover image. */
 .blog-page .blog-page-card .blog-card-copy {
   position: relative;
@@ -12768,6 +12808,10 @@ footer .footer-brand-copy small,
 .blog-card-copy h1 {
  font-size: 30px;
  font-weight: 900;
+}
+
+.dark .blog-card-copy h1 {
+  color: #000;
 }
 
 .site.dark .blog-page .blog-page-card .blog-card-copy {
@@ -13375,7 +13419,7 @@ footer .footer-brand-copy small,
    ========================================================= */
 
 .service-card-2 .service-image {
-  right: 10px;
+  right: 2px;
   top:20px;
 
   width:250px;
@@ -14359,7 +14403,186 @@ footer .footer-brand-copy small,
   }
 }
 
+/* ============================================================
+   RESPONSIVE — 1100px TO 1500px
+   ============================================================ */
+/* =========================================================
+   RESPONSIVE — 1101px TO 1500px
+   THREE COLUMN LAYOUT
+   ========================================================= */
 
+@media (min-width: 1401px) and (max-width: 1500px) {
+
+  .services-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    width: 101%;
+  }
+
+
+  /* ========================================================
+     CARD COMMON
+     ======================================================== */
+
+  .service-card-1,
+  .service-card-2,
+  .service-card-3,
+  .service-card-4,
+  .service-card-5,
+  .service-card-6 {
+    height: 380px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .service-card-1 .service-content,
+  .service-card-2 .service-content,
+  .service-card-3 .service-content,
+  .service-card-4 .service-content,
+  .service-card-5 .service-content,
+  .service-card-6 .service-content {
+    width: 90%;
+    max-width: 90%;
+  }
+
+
+  /* ========================================================
+     CARD 01
+     ======================================================== */
+
+  .service-card-1 .service-point-list {
+    left: 3px;
+    bottom: -20px;
+    width: calc(100% - 10px);
+    max-width: 100%;
+  }
+
+  .service-card-1 .service-image {
+    right: 1px;
+    bottom: -5px;
+
+    width: clamp(175px, 16vw, 220px);
+    height: auto;
+    max-height: 230px;
+
+    object-fit: contain;
+  }
+
+
+  /* ========================================================
+     CARD 02
+     ======================================================== */
+
+  .service-card-2 .service-point-list {
+    left: 3px;
+    bottom: -10px;
+    width: calc(100% - 10px);
+    max-width: 100%;
+  }
+
+  .service-card-2 .service-image {
+    right: 2%;
+    bottom: 18px;
+
+    width: clamp(175px, 17vw, 225px);
+    height: auto;
+    max-height: 185px;
+
+    object-fit: contain;
+  }
+
+
+  /* ========================================================
+     CARD 03
+     ======================================================== */
+
+  .service-card-3 .service-point-list {
+    left: 3px;
+    bottom: -10px;
+    width: calc(100% - 10px);
+    max-width: 100%;
+  }
+
+  .service-card-3 .service-image {
+    right: 5%;
+    top: 30px;
+
+    width: clamp(175px, 17vw, 225px);
+    height: auto;
+    max-height: 195px;
+
+    object-fit: contain;
+  }
+
+
+  /* ========================================================
+     CARD 04
+     ======================================================== */
+
+  .service-card-4 .service-point-list {
+    left: 3px;
+    bottom: -10px;
+    width: calc(100% - 10px);
+    max-width: 100%;
+  }
+
+  .service-card-4 .service-image {
+    right: 2%;
+    bottom: 150px;
+
+    width: clamp(175px, 17vw, 225px);
+    height: auto;
+    max-height: 180px;
+
+    object-fit: contain;
+  }
+
+
+  /* ========================================================
+     CARD 05
+     ======================================================== */
+
+  .service-card-5 .service-point-list {
+    left: 3px;
+    bottom: -10px;
+    width: calc(100% - 10px);
+    max-width: 100%;
+  }
+
+  .service-card-5 .service-image {
+    right: 2%;
+    bottom: 140px;
+
+    width: clamp(180px, 17vw, 230px);
+    height: auto;
+    max-height: 180px;
+
+    object-fit: contain;
+  }
+
+
+  /* ========================================================
+     CARD 06
+     ======================================================== */
+
+  .service-card-6 .service-point-list {
+    left: 3px;
+    bottom: -10px;
+    width: calc(100% - 40px);
+    max-width: 100%;
+  }
+
+  .service-card-6 .service-image {
+    right: 2%;
+    top: 30px;
+
+    width: clamp(180px, 17vw, 230px);
+    height: auto;
+    max-height: 180px;
+
+    object-fit: contain;
+  }
+}
 /* =========================================================
    TABLET
    850px and below

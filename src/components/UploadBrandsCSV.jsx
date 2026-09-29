@@ -47,7 +47,7 @@ const [expandedRows, setExpandedRows] = useState({});
   // FETCH LATEST REPORT
   // ========================================
 
-  const fetchLatestReport = async () => {
+ const fetchLatestReport = async (updateSummary = true) => {
 
     try {
 
@@ -64,22 +64,21 @@ const [expandedRows, setExpandedRows] = useState({});
         const report =
           response.data.report;
 
+if (updateSummary) {
+  setSummary({
+    totalRecords:
+      report.totalRecords || 0,
 
-        setSummary({
-          totalRecords:
-            report.totalRecords || 0,
+    successfulRecords:
+      report.successfulRecords || 0,
 
-          successfulRecords:
-            report.successfulRecords || 0,
+    updatedRecords:
+      report.updatedRecords || 0,
 
-          updatedRecords:
-            report.updatedRecords || 0,
-
-          failedRecords:
-            report.failedRecords || 0,
-
-           
-        });
+    failedRecords:
+      report.failedRecords || 0,
+  });
+}
 
 
    setUploadReport(
@@ -89,17 +88,18 @@ const [expandedRows, setExpandedRows] = useState({});
         );
 
       } else {
+setUploadReport([]);
 
-        setUploadReport([]);
+if (updateSummary) {
+  setSummary({
+    totalRecords: 0,
+    successfulRecords: 0,
+    updatedRecords: 0,
+    failedRecords: 0,
+  });
+}
 
-        setSummary({
-          totalRecords: 0,
-          successfulRecords: 0,
-          updatedRecords: 0,
-          failedRecords: 0,
-        });
-
-      }
+}
 
     } catch (error) {
 
@@ -211,7 +211,7 @@ const uploadCSV = async () => {
 
       setCurrentPage(1);
 
-    await fetchLatestReport()
+    await fetchLatestReport(false)
 
       setFile(null);
 

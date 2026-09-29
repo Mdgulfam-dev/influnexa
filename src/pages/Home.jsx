@@ -1109,9 +1109,9 @@ const scrollCreators = (direction) => {
 
 <div className="hero-proof-row">
   {[
-    ["50+", "Campaigns Managed"],
-    ["10000+", "Verified Creators"],
-    ["98%", "Client Satisfaction"],
+    ["57+", "Campaigns Managed"],
+    ["10,000+", "Verified Creators"],
+    ["93%", "Client Satisfaction"],
   ].map(([value, label]) => (
     <span key={label}>
       <strong>{value}</strong>
