@@ -3238,106 +3238,247 @@ const scrollCreators = (direction) => {
         </section>
       </main>
 
-      <footer className="bg-slate-950 px-4 py-14 text-white lg:px-6">
-        <div className="footer-panel mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.5fr_repeat(4,1fr)]">
-          <div>
+    
+<footer className="influnexa-footer">
+  {/* Decorative background */}
+  <div className="footer-decoration footer-decoration-top" />
+  <div className="footer-decoration footer-decoration-bottom" />
+
+  <div className="footer-dots" aria-hidden="true">
+    {Array.from({ length: 20 }).map((_, index) => (
+      <span key={index} />
+    ))}
+  </div>
+
+  {/* ================= MAIN FOOTER ================= */}
+  <div className="footer-main">
+    {/* BRAND COLUMN */}
+    <div className="footer-brand-column">
+      <a
+        className="footer-brand-lockup"
+        href="/#home"
+        aria-label="Influnexa home"
+      >
+        <span className="footer-logo-frame">
+          <img src={influnexaLogo} alt="Influnexa" />
+        </span>
+
+        <span className="footer-brand-copy">
+          <strong>Influnexa</strong>
+          <small>INFLUENCE, CONNECT, GROW</small>
+        </span>
+      </a>
+
+      <p className="footer-description">
+        AI-powered creator marketing for brands that want the right creators,
+        authentic content, and measurable growth.
+      </p>
+
+      {/* SOCIAL ICONS */}
+      <div className="footer-socials" aria-label="Influnexa social media">
+        {socialLinks.map((social) =>
+          social.href ? (
             <a
-              className="footer-brand-lockup"
-              href="/#home"
-              aria-label="Influnexa home"
+              key={social.label}
+              className="footer-social-btn"
+              href={social.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Follow Influnexa on ${social.label}`}
             >
-              <span className="footer-logo-frame">
-                <img src={influnexaLogo} alt="Influnexa" />
-              </span>
-              <span className="footer-brand-copy">
-                <strong>Influnexa</strong>
-                <small>Influence, connect, grow</small>
-              </span>
+              <SocialIcon type={social.type} />
             </a>
-            <p className="mt-4 max-w-sm text-sm leading-7 text-slate-400">
-              AI-powered influencer and creator marketing for brands, agencies,
-              startups, e-commerce teams, and creators across India.
-            </p>
-            <div className="mt-6" aria-label="Influnexa social media">
-              <div className="flex flex-wrap gap-2">
-                {socialLinks.map((social) =>
-                  social.href ? (
-                    <a
-                      key={social.label}
-                      className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/40 hover:bg-white/10 hover:text-cyan-300"
-                      href={social.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Follow Influnexa on ${social.label}`}
-                    >
-                      <SocialIcon type={social.type} />
-                    </a>
-                  ) : (
-                    <span
-                      key={social.label}
-                      className="grid h-10 w-10 cursor-not-allowed place-items-center rounded-full border border-white/10 bg-white/[0.03] text-slate-600"
-                      title={`${social.label} profile pending`}
-                      aria-label={`${social.label} profile pending`}
-                    >
-                      <SocialIcon type={social.type} />
-                    </span>
-                  ),
-                )}
-              </div>
-            </div>
-          </div>
-          {[
-            [
-              "Services",
-              ["Influencer Marketing", "#services"],
-              ["UGC Content", "#services"],
-              ["Reviews", "#services"],
-              ["Analytics", "#services"],
-            ],
-            [
-              "Resources",
-              ["About Us", "/about"],
-              ["Blog", "/blog"],
-              ["Case Studies", "#case-studies"],
-              ["Creator Guide", "/register/influencer"],
-              ["Brand Guide", "/register/brand"],
-            ],
-            [
-              "Legal",
-              ["Privacy", "#home"],
-              ["Terms", "#home"],
-              ["Compliance", "#home"],
-              ["Security", "#home"],
-            ],
-            [
-              "Contact",
-              [
-                "support.influnexa@gmail.com",
-                "mailto:support.influnexa@gmail.com",
-                "email",
-              ],
-              ["+91 90014 02531", "https://wa.me/919001402531", "whatsapp"],
-              ["+91 94053 65870", "https://wa.me/919405365870", "whatsapp"],
-            ],
-          ].map(([heading, ...links]) => (
-            <div key={heading}>
-              <h3 className="font-bold">{heading}</h3>
-              <div className="mt-4 grid gap-3 text-sm text-slate-400">
-                {links.map(([label, href, icon]) => (
-                  <a
-                    className={icon ? "footer-contact-link" : undefined}
-                    key={label}
-                    href={href}
-                  >
-                    {icon && <ContactIcon type={icon} />}
-                    {label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
+          ) : (
+            <span
+              key={social.label}
+              className="footer-social-btn footer-social-disabled"
+              title={`${social.label} profile pending`}
+              aria-label={`${social.label} profile pending`}
+            >
+              <SocialIcon type={social.type} />
+            </span>
+          ),
+        )}
+      </div>
+
+      {/* TRUST BADGE */}
+      <div className="footer-trust-badge">
+        <span className="footer-trust-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L14.2 8.2L20.5 10.5L14.2 12.8L12 19L9.8 12.8L3.5 10.5L9.8 8.2L12 2Z"
+              fill="currentColor"
+            />
+          </svg>
+        </span>
+
+        <span>
+          <strong>Trusted by Brands &amp; Creators</strong>
+          <small>Across India</small>
+        </span>
+      </div>
+    </div>
+
+    {/* SERVICES */}
+    <div className="footer-column">
+      <h3>
+        Services
+        <span />
+      </h3>
+
+      <div className="footer-links">
+        <a href="#services">Influencer Marketing</a>
+        <a href="#services">UGC Content</a>
+        <a href="#services">Campaign Management</a>
+        <a href="#services">Rating &amp; Review Campaigns</a>
+        <a href="#services">Creator Discovery</a>
+        <a href="#services">Analytics &amp; Reporting</a>
+      </div>
+    </div>
+
+    {/* RESOURCES */}
+    <div className="footer-column">
+      <h3>
+        Resources
+        <span />
+      </h3>
+
+      <div className="footer-links">
+        <a href="/about">About Us</a>
+        <a href="/blog">Blog</a>
+        <a href="#case-studies">Case Studies</a>
+        <a href="/register/influencer">Creator Guide</a>
+        <a href="/register/brand">Brand Guide</a>
+        <a href="/careers">Careers</a>
+      </div>
+    </div>
+
+    {/* LEGAL */}
+    <div className="footer-column">
+      <h3>
+        Legal
+        <span />
+      </h3>
+
+      <div className="footer-links">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/compliance">Compliance</a>
+        <a href="/security">Security</a>
+        <a href="/sitemap">Sitemap</a>
+      </div>
+    </div>
+
+    {/* CONTACT */}
+    <div className="footer-column footer-contact-column">
+      <h3>
+        Contact Us
+        <span />
+      </h3>
+
+      <div className="footer-contact-list">
+        {/* EMAIL */}
+        <a
+          href="mailto:support.influnexa@gmail.com"
+          className="footer-contact-item"
+        >
+          <span className="footer-contact-icon">
+            <ContactIcon type="email" />
+          </span>
+
+          <span> partnerships@influnexa.in</span>
+        </a>
+
+        {/* PHONE */}
+        <a
+          href="https://wa.me/919001402531"
+          target="_blank"
+          rel="noreferrer"
+          className="footer-contact-item"
+        >
+          <span className="footer-contact-icon">
+            <ContactIcon type="whatsapp" />
+          </span>
+
+          <span>+91 90014 02531</span>
+        </a>
+
+        {/* WHATSAPP */}
+        <a
+          href="https://wa.me/919405365870"
+          target="_blank"
+          rel="noreferrer"
+          className="footer-contact-item"
+        >
+          <span className="footer-contact-icon">
+            <ContactIcon type="whatsapp" />
+          </span>
+
+          <span>+91 94053 65870</span>
+        </a>
+
+        {/* LOCATION */}
+        <div className="footer-contact-item">
+          <span className="footer-contact-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 21C16.5 16.8 19 13.1 19 9.5C19 5.91 15.87 3 12 3C8.13 3 5 5.91 5 9.5C5 13.1 7.5 16.8 12 21Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              />
+              <circle
+                cx="12"
+                cy="9.5"
+                r="2.5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              />
+            </svg>
+          </span>
+
+          <span>New Delhi, India</span>
         </div>
-      </footer>
+      </div>
+    </div>
+  </div>
+
+  {/* ================= BOTTOM BAR ================= */}
+  <div className="footer-bottom">
+    <div className="footer-bottom-inner">
+      <div className="footer-copyright">
+        <span>© 2026 Influnexa. All rights reserved.</span>
+
+        <span className="footer-divider">|</span>
+
+        <a href="/privacy-policy">Privacy Policy</a>
+
+        <span className="footer-divider">|</span>
+
+        <a href="/terms">Terms &amp; Conditions</a>
+
+        <span className="footer-divider">|</span>
+
+        <a href="/sitemap">Sitemap</a>
+      </div>
+
+      <a href="#home" className="footer-back-top">
+        <span className="footer-arrow">
+          ↑
+        </span>
+
+        <span>Back to top</span>
+      </a>
+    </div>
+  </div>
+</footer>
     </div>
   );
 }

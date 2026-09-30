@@ -23,6 +23,7 @@ import {
   createBrandTicket,
   updateBrandTicket,
   deleteBrandTicket,
+  getAdminLoginHistory,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -1574,14 +1575,37 @@ const getInfluencerPlatform = (creator) => {
   return Array.from(platformSet).join(", ");
 };
 
+function formatLoginHistoryDateTime(value) {
+  if (!value) return "Unknown time";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown time";
+  }
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loginHistoryUser, setLoginHistoryUser] = useState(null);
+const [loginHistory, setLoginHistory] = useState([]);
+const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [csvRefreshKey, setCsvRefreshKey] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState(() => {
   const requestedTab = window.location.hash.replace("#", "");
+
+
 
   const validTabs = [
     "overview",
@@ -1746,6 +1770,32 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     }),
     [candidateFilters]
   );
+
+
+
+  
+const openLoginHistory = async (user) => {
+  try {
+    setLoginHistoryUser(user);
+    setLoginHistory([]);
+    setLoginHistoryLoading(true);
+
+    const result = await getAdminLoginHistory(user._id);
+
+    setLoginHistory(result.history || []);
+  } catch (error) {
+    console.error("Failed to load login history:", error);
+    setLoginHistory([]);
+  } finally {
+    setLoginHistoryLoading(false);
+  }
+};
+
+const closeLoginHistory = () => {
+  setLoginHistoryUser(null);
+  setLoginHistory([]);
+  setLoginHistoryLoading(false);
+};
 
 const loadDashboard = async ({ showLoading = true } = {}) => {
   if (showLoading) {
@@ -2225,7 +2275,7 @@ return allTabs;
             </label>
             {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
             <div className="admin-login-actions">
-              <button type="submit">Login</button>
+           <button type="submit">Login</button>
              
             </div>
           </form>
@@ -3071,6 +3121,114 @@ return allTabs;
               </div>
             </form>
 
+           {loginHistoryUser && (
+  <div
+    className="admin-history-overlay"
+    onClick={closeLoginHistory}
+  >
+    <div
+      className="admin-history-panel"
+      onClick={(event) => event.stopPropagation()}
+    >
+
+      {/* HEADER */}
+      <div className="admin-history-header">
+        <div>
+          <h2>Login History</h2>
+
+          <p>{loginHistoryUser.name}</p>
+
+          <small>{loginHistoryUser.email}</small>
+        </div>
+
+        <button
+          type="button"
+          className="admin-history-close"
+          onClick={closeLoginHistory}
+          aria-label="Close history"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* SUBTITLE */}
+      <div className="admin-history-subtitle">
+        Activity from the last 7 days
+      </div>
+
+      {/* ONLY THIS AREA SCROLLS */}
+      {loginHistoryLoading ? (
+        <div className="admin-history-empty">
+          <div className="admin-history-spinner" />
+          <strong>Loading history...</strong>
+        </div>
+      ) : loginHistory.length === 0 ? (
+        <div className="admin-history-empty">
+          <div className="admin-history-empty-icon">
+            🕘
+          </div>
+
+          <strong>No activity found</strong>
+
+          <span>
+            No login/logout activity in the last 7 days.
+          </span>
+        </div>
+      ) : (
+        <div className="admin-history-list">
+          {loginHistory.map((item) => (
+            <div
+              key={item._id}
+              className="admin-history-item"
+            >
+              <div
+                className={`admin-history-icon ${
+                  item.action === "login"
+                    ? "login"
+                    : "logout"
+                }`}
+              >
+                {item.action === "login" ? "↗" : "↙"}
+              </div>
+
+              <div className="admin-history-content">
+                <strong>
+                  {item.action === "login"
+                    ? "Logged in"
+                    : "Logged out"}
+                </strong>
+
+                <span>
+                  {formatLoginHistoryDateTime(item.createdAt)}
+
+                  {/* Show active duration beside logout time */}
+        {item.action === "logout" && item.duration && (
+          <span className="admin-history-duration">
+            · Active for {item.duration}
+          </span>
+        )}
+                </span>
+              </div>
+
+              <span
+                className={`admin-history-status ${
+                  item.action === "login"
+                    ? "login"
+                    : "logout"
+                }`}
+              >
+                {item.action === "login"
+                  ? "Login"
+                  : "Logout"}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
             {canManageUsers ? (
               <>
                 <form className="admin-panel admin-blog-form" onSubmit={submitUser}>
@@ -3122,7 +3280,22 @@ return allTabs;
                           <Pill tone={user.status === "active" ? "success" : "default"}>{user.status}</Pill>
                           <h3>{user.name}</h3>
                           <p>{user.email}</p>
-                          <span>{user.role} - Last login: {formatDate(user.lastLoginAt)}</span>
+                         <div className="admin-user-meta">
+  <span>
+    {user.role} - Last login: {formatDate(user.lastLoginAt)}
+  </span>
+
+  <button
+    type="button"
+    className="admin-history-button"
+    onClick={() => openLoginHistory(user)}
+    title="View login history"
+    aria-label={`View ${user.name}'s login history`}
+  >
+    🕘
+  </button>
+</div>
+
                         </div>
                         <div className="admin-row-actions">
                           <button type="button" onClick={() => editUser(user)}>Edit</button>

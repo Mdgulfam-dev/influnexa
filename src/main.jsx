@@ -10,6 +10,7 @@ import './creatornetwork.css'
 import './industries.css'
 import './shareexperience.css'
 import './dataavailable.css'
+import "./footer.css"
 import './leadworkflow.css'
 import App from './App.jsx'
 import './faq.css'

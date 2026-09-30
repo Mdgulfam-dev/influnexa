@@ -60,8 +60,57 @@ if (data.user?.email) {
   return data;
 }
 
-export function logoutAdmin() {
-  clearAdminToken();
+export async function logoutAdmin() {
+  try {
+    const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
+
+    // Already logged out
+    if (!token) {
+      clearAdminToken();
+      return {
+        success: true,
+        message: "Logged out successfully.",
+      };
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/logout`, {
+      method: "POST",
+      headers: {
+        ...adminHeaders(),
+      },
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    // Session is already invalid/expired.
+    // Treat it as logged out.
+    if (response.status === 401) {
+      clearAdminToken();
+
+      return {
+        success: true,
+        message: "Session already expired.",
+      };
+    }
+
+    if (!response.ok) {
+      throw new Error(data.message || "Unable to logout.");
+    }
+
+    clearAdminToken();
+
+    return data;
+  } catch (error) {
+    // Always clear the local session when logout fails.
+    clearAdminToken();
+
+    console.error("Logout error:", error);
+
+    return {
+      success: true,
+      message: "Logged out locally.",
+    };
+  }
 }
 
 export async function getLeadWorkflow(query = "") {
@@ -172,6 +221,35 @@ export async function getAdminDashboard(params = {}) {
 
   return data;
 }
+
+export async function getAdminLoginHistory(userId) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/users/${userId}/login-history`,
+    {
+      method: "GET",
+      headers: {
+        ...adminHeaders(),
+      },
+      cache: "no-store",
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(
+      data.message || "Failed to load login history."
+    );
+  }
+
+  return data;
+}
+
+
 
 export async function getAdminRegistrations(type, params = {}) {
   const query = new URLSearchParams();

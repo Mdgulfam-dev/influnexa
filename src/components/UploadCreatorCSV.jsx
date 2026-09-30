@@ -161,9 +161,9 @@ error.response?.data || error.message
     failedRecords: response.data.failedRecords,
 });
 
-setUploadReport(response.data.report);
 
-// fetchLatestReport();
+
+await fetchLatestReport(false);
 fetchCSVCreators();
 
       console.log(

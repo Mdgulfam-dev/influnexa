@@ -15786,3 +15786,472 @@ footer .footer-brand-copy small,
 .dark footer h3 {
   color: #ffffff !important;
 }
+
+
+/* =========================================================
+   ADMIN USER LOGIN HISTORY
+   ========================================================= */
+
+.admin-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-history-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d8e2df;
+  border-radius: 8px;
+
+  background: #f8faf9;
+  color: #08766e;
+
+  font-size: 15px;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-history-button:hover {
+  background: #08766e;
+  color: #ffffff;
+  border-color: #08766e;
+  transform: translateY(-1px);
+}
+
+.admin-history-button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
+.admin-history-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(7, 20, 17, 0.48);
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+
+.admin-history-panel {
+  width: min(560px, 100%);
+  max-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #e2ebe8;
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 70px rgba(7, 20, 17, 0.22);
+
+  animation: adminHistoryOpen 0.2s ease-out;
+}
+
+@keyframes adminHistoryOpen {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.admin-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 24px 18px;
+
+  border-bottom: 1px solid #edf2f0;
+}
+
+.admin-history-header h2 {
+  margin: 0;
+
+  color: #071411;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.admin-history-header p {
+  margin: 5px 0 0;
+
+  color: #34423e;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-history-header small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #7a8985;
+
+  font-size: 12px;
+}
+
+.admin-history-close {
+  flex: 0 0 auto;
+
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #f3f6f5;
+
+  color: #43514d;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-history-close:hover {
+  background: #08766e;
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.admin-history-subtitle {
+  padding: 13px 24px;
+
+  background: #f4faf8;
+
+  color: #08766e;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   HISTORY LIST
+   ========================================================= */
+
+.admin-history-list {
+  padding: 8px 24px 22px;
+
+  overflow-y: auto;
+}
+
+.admin-history-item {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 15px 0;
+
+  border-bottom: 1px solid #edf2f0;
+}
+
+.admin-history-item:last-child {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   LOGIN / LOGOUT ICON
+   ========================================================= */
+
+.admin-history-icon {
+  flex: 0 0 38px;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.admin-history-icon.login {
+  background: #e5f7ef;
+  color: #08766e;
+}
+
+.admin-history-icon.logout {
+  background: #f7eeee;
+  color: #a34b4b;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.admin-history-content {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.admin-history-content strong {
+  color: #17221f;
+
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.admin-history-content span {
+  color: #71807b;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.admin-history-status {
+  flex: 0 0 auto;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-history-status.login {
+  background: #e5f7ef;
+  color: #08766e;
+}
+
+.admin-history-status.logout {
+  background: #f7eeee;
+  color: #a34b4b;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING
+   ========================================================= */
+
+.admin-history-empty {
+  min-height: 230px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 35px 24px;
+
+  text-align: center;
+
+  color: #71807b;
+}
+
+.admin-history-empty strong {
+  color: #34423e;
+
+  font-size: 14px;
+}
+
+.admin-history-empty span {
+  font-size: 13px;
+}
+
+.admin-history-empty-icon {
+  margin-bottom: 3px;
+
+  font-size: 28px;
+}
+
+
+/* =========================================================
+   LOADING SPINNER
+   ========================================================= */
+
+.admin-history-spinner {
+  width: 30px;
+  height: 30px;
+
+  margin-bottom: 5px;
+
+  border: 3px solid #dce9e5;
+  border-top-color: #08766e;
+
+  border-radius: 50%;
+
+  animation: adminHistorySpin 0.8s linear infinite;
+}
+
+@keyframes adminHistorySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   TABLE / CARD RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .admin-history-overlay {
+    align-items: flex-end;
+
+    padding: 0;
+  }
+
+  .admin-history-panel {
+    width: 100%;
+    max-height: 88vh;
+
+    border-radius: 18px 18px 0 0;
+  }
+
+  .admin-history-header {
+    padding: 18px;
+  }
+
+  .admin-history-subtitle {
+    padding: 12px 18px;
+  }
+
+  .admin-history-list {
+    padding: 6px 18px 18px;
+  }
+
+  .admin-history-item {
+    gap: 10px;
+  }
+
+  .admin-history-icon {
+    flex-basis: 34px;
+
+    width: 34px;
+    height: 34px;
+
+    font-size: 15px;
+  }
+
+  .admin-history-status {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-user-meta {
+    align-items: flex-start;
+  }
+
+  .admin-history-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .admin-history-header h2 {
+    font-size: 19px;
+  }
+
+  .admin-history-content strong {
+    font-size: 13px;
+  }
+
+  .admin-history-content span {
+    font-size: 12px;
+  }
+}
+
+
+.admin-history-time {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.admin-history-duration {
+  color: #08766e;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-history-duration.unavailable {
+  color: #94a3b8;
+  font-weight: 500;
+}
