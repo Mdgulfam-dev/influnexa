@@ -352,6 +352,7 @@ if (type === "followers") {
         text-blue-600
         hover:underline
         break-all
+        
       "
     >
       {value}
@@ -474,7 +475,7 @@ if (key === "__slNo") {
 
 if (key === "email") {
   const value = String(record?.[key] || "").trim();
-  const isLongEmail = value.length > 30;
+  const isLongEmail = value.length > 50;
 
   const handleCopy = async (event) => {
     event.stopPropagation();
@@ -495,13 +496,13 @@ if (key === "email") {
   };
 
 return (
-  <div className="group min-w-0">
+  <div className="group  min-w-0 ">
     <div className="flex min-w-0 flex-col items-start">
       
       {/* Email */}
       <div
         className="
-          min-w-0
+       min-w-0
           transition-transform
           duration-200
           group-hover:-translate-y-1
@@ -1112,11 +1113,12 @@ function RegistrationDataTable({
                 
                 <td
                   key={key}
-                  className="
-                    px-4
-                    py-5
-                    align-top
-                  "
+                 className={`
+    px-4
+    py-5
+    align-top
+    ${key === "email" ? "admin-email-column" : ""}
+  `}
                 >
                   {key === "status" ? (
                     <Pill tone={registrationStatusTone(record.status)}>

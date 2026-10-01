@@ -1138,7 +1138,7 @@ csv-upload-font
           {item.reason || "-"}
         </div>
 
-        {item.reason && item.reason.length > 100 && (
+        {item.reason && item.reason.length > 40 && (
           <button
             type="button"
             onClick={() => toggleReason(index)}
@@ -1164,7 +1164,7 @@ csv-upload-font
           {item.reason || "-"}
         </div>
 
-        {item.reason && item.reason.length > 100 && (
+        {item.reason && item.reason.length > 40 && (
           <button
             type="button"
             onClick={() => toggleReason(index)}

@@ -412,7 +412,7 @@
 .campaign-impact-panel {
   position: relative;
 
-  width: 110%;
+  width: 100%;
   min-width: 0;
 
   min-height: 100%;
@@ -598,11 +598,11 @@ margin-left: -20px;
   position: absolute;
   z-index: 1;
 
-  right: 1px;
-  top: 45%;
+  right: -2px;
+  top: 43%;
 
   width:100%;
-  max-width: 330px;
+  max-width: 300px;
 
   transform: translateY(-58%);
   pointer-events: none;
@@ -615,12 +615,14 @@ margin-left: -20px;
   object-fit: contain;
 }
 
+
+
 /* =========================================================
    LARGE LAPTOP
    1051px - 1199px
    ========================================================= */
 
-@media (min-width: 1051px) and (max-width: 1199px) {
+@media (min-width: 1051px) and (max-width: 1299px) {
 
   #brands > .mx-auto.grid {
     grid-template-columns: 1fr !important;
@@ -748,11 +750,11 @@ margin-left: -20px;
 
     z-index: 2;
 
-    right: 15px;
+    right: 35px;
     top: 50%;
 
-    width: 35%;
-    max-width: 330px;
+    width:100%;
+    max-width: 500px;
 
     transform: translateY(-50%);
 

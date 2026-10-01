@@ -138,6 +138,49 @@ const services = [
     ],
   },
 ];
+
+
+const CountUp = ({ end, suffix = "", duration = 900 }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime;
+    let animationFrame;
+
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+
+      const progress = Math.min(
+        (currentTime - startTime) / duration,
+        1
+      );
+
+      // Smooth counting
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      setCount(Math.floor(easeOut * end));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return (
+    <>
+      {count.toLocaleString()}
+      {suffix}
+    </>
+  );
+};
+
+
+
+
 const seoCapabilities = [
   "Influencer Marketing Agency in India",
   "AI Influencer Marketing Platform",
@@ -1109,12 +1152,18 @@ const scrollCreators = (direction) => {
 
 <div className="hero-proof-row">
   {[
-    ["57+", "Campaigns Managed"],
-    ["10,000+", "Verified Creators"],
-    ["93%", "Client Satisfaction"],
-  ].map(([value, label]) => (
+    [57, "+", "Campaigns Managed"],
+    [10000, "+", "Verified Creators"],
+    [93, "%", "Client Satisfaction"],
+  ].map(([value, suffix, label]) => (
     <span key={label}>
-      <strong>{value}</strong>
+      <strong>
+        <CountUp
+          end={value}
+          suffix={suffix}
+          duration={800}
+        />
+      </strong>
 
       <span
         className={
@@ -1128,7 +1177,6 @@ const scrollCreators = (direction) => {
     </span>
   ))}
 </div>
-
             {/* Brand Tagline */}
 <div className="brand-tagline">
   <span className="brand-tagline-script">

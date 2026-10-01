@@ -1367,7 +1367,7 @@ const toggleReason = (index) => {
           {item.reason || "-"}
         </div>
 
-        {item.reason && item.reason.length > 100 && (
+        {item.reason && item.reason.length > 40 && (
           <button
             type="button"
             onClick={() => toggleReason(index)}
@@ -1394,7 +1394,7 @@ const toggleReason = (index) => {
             : "-"}
         </div>
 
-        {item.reason && item.reason.length > 100 && (
+        {item.reason && item.reason.length > 40 && (
           <button
             type="button"
             onClick={() => toggleReason(index)}

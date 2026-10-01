@@ -1098,7 +1098,7 @@ const selectStyles = {
                 {totalRecords.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500 whitespace-nowrap">
+              <div className="text-[11px] font-medium text-slate-500 whitespace-normal">
                 {isFiltered ? "Filtered Creators" : "Total Creators"}
               </div>
             </div>
@@ -1153,7 +1153,7 @@ const selectStyles = {
                 {creatorStats.instagram.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500">
                 Instagram
                 <br />
                 Creators
@@ -1206,7 +1206,7 @@ const selectStyles = {
                 {creatorStats.youtube.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500">
                 YouTube
                 <br />
                 Creators
@@ -1253,7 +1253,7 @@ const selectStyles = {
                 {creatorStats.mixed.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500">
                 Instagram +
                 <br />
                 YouTube
@@ -1309,7 +1309,7 @@ const selectStyles = {
                 {creatorStats.cities.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500">
                 Cities
               </div>
             </div>
@@ -1363,7 +1363,7 @@ const selectStyles = {
                 {creatorStats.regions.toLocaleString()}
               </div>
 
-              <div className="text-[12px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500">
                 Regions
               </div>
             </div>
@@ -3120,26 +3120,60 @@ key={creator._id}
 ">
   {creator.languages?.join(", ") || "-"}
 </td>
-<td className="
-  px-4
-  py-5
-  text-sm
-  text-slate-700
-  border-b
-  border-slate-200
-  align-top
-  w-[350px]
-  max-w-[350px]
-">
-  <div className="
+
+<td
+  className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    align-top
+    w-[350px]
     max-w-[350px]
-    whitespace-normal
-    break-words
-    leading-6
-    line-clamp-3
-    overflow-hidden
-  ">
-    {creator.fullAddress || "-"}
+  "
+>
+  <div className="max-w-[350px]">
+    {creator.fullAddress ? (
+      <>
+        <div
+          className={`whitespace-normal break-words leading-6 ${
+            expandedBios[`address-${creator._id}`]
+              ? ""
+              : "line-clamp-3 overflow-hidden"
+          }`}
+        >
+          {creator.fullAddress}
+        </div>
+
+        {creator.fullAddress.length >90 && (
+          <button
+            type="button"
+            onClick={() =>
+              setExpandedBios((prev) => ({
+                ...prev,
+                [`address-${creator._id}`]:
+                  !prev[`address-${creator._id}`],
+              }))
+            }
+            className="
+              mt-1
+              text-blue-600
+              hover:text-blue-800
+              font-medium
+              text-xs
+            "
+          >
+            {expandedBios[`address-${creator._id}`]
+              ? "See Less"
+              : "See More"}
+          </button>
+        )}
+      </>
+    ) : (
+      "-"
+    )}
   </div>
 </td>
 
