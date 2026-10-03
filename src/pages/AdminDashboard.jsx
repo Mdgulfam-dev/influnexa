@@ -1652,6 +1652,7 @@ const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [candidateFilters, setCandidateFilters] = useState({ search: "", status: "", jobId: "", page: 1 });
   const [loginEmail, setLoginEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 const [data, setData] = useState(emptyDashboardData);
@@ -1920,7 +1921,10 @@ useEffect(() => {
 
   const submitLogin = async (event) => {
     event.preventDefault();
-    setStatus({ type: "loading", message:"" });
+    if (isSubmitting) return;
+
+  setIsSubmitting(true);
+  setStatus({ type: "loading", message: "" });
 
     try {
       await loginAdmin({ email: loginEmail, password });
@@ -1929,7 +1933,9 @@ useEffect(() => {
       setIsAuthenticated(true);
     } catch (error) {
       setStatus({ type: "error", message: error.message });
-    }
+    }finally {
+    setIsSubmitting(false);
+  }
   };
 
   const logout = () => {
@@ -2277,7 +2283,9 @@ return allTabs;
             </label>
             {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
             <div className="admin-login-actions">
-           <button type="submit">Login</button>
+          <button type="submit" disabled={isSubmitting}>
+  {isSubmitting ? "Logging in..." : "Login"}
+</button>
              
             </div>
           </form>
