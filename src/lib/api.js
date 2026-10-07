@@ -25,6 +25,59 @@ export function hasAdminSession() {
   return Boolean(sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY));
 }
 
+
+export async function getAssignedCreators(brandTicketId) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/brand-ticket-creators/${brandTicketId}`,
+    {
+      method: "GET",
+      headers: {
+        ...adminHeaders(),
+      },
+      cache: "no-store",
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(
+      data.message || "Unable to load assigned creators."
+    );
+  }
+
+  return data.assignment?.creatorIds || [];
+}
+
+
+export async function getBrandTickets() {
+  const response = await fetch(`${API_BASE_URL}/admin/brand-tickets`, {
+    method: "GET",
+    headers: {
+      ...adminHeaders(),
+    },
+    cache: "no-store",
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(data.message || "Unable to load brand tickets.");
+  }
+
+  return data.tickets || [];
+}
+
+
+
 function adminHeaders() {
   const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 

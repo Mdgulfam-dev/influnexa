@@ -7,8 +7,13 @@ import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { io } from "socket.io-client";
 import Select from "react-select";
+import { getBrandTickets } from "../lib/api";
 
-function CsvCreatorSection() {
+function CsvCreatorSection({adminRole}) {
+  const [selectedCreators, setSelectedCreators] = useState([]);
+  const [selectAllCreators, setSelectAllCreators] = useState(false);
+ const [brandTickets, setBrandTickets] = useState([]);
+const [selectedBrandTicket, setSelectedBrandTicket] = useState("");
 const [copiedEmail, setCopiedEmail] = useState(null);
 const [copiedPhone, setCopiedPhone] = useState(null);
   const [creators, setCreators] = useState([]);
@@ -164,6 +169,20 @@ const updateCsvCreator = async () => {
   }
 };
 
+
+useEffect(() => {
+  const fetchBrandTickets = async () => {
+    try {
+      const tickets = await getBrandTickets();
+      setBrandTickets(tickets);
+    } catch (error) {
+      console.log("BRAND TICKETS ERROR", error);
+    }
+  };
+
+  fetchBrandTickets();
+}, []);
+
   // =========================
   // GET CSV CREATORS
   // =========================
@@ -308,6 +327,70 @@ useEffect(() => {
     }
 
   };
+
+// =========================
+// CREATOR SELECTION
+// =========================
+
+const toggleCreatorSelection = (id) => {
+  setSelectedCreators((prev) =>
+    prev.includes(id)
+      ? prev.filter((creatorId) => creatorId !== id)
+      : [...prev, id]
+  );
+};
+const toggleSelectAll = async () => {
+  if (selectAllCreators) {
+    // Unselect all
+    setSelectAllCreators(false);
+    setSelectedCreators([]);
+    return;
+  }
+
+  try {
+    // Build the SAME filters currently applied
+    const params = {};
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        if (value.length > 0) {
+          params[key] = value.join(",");
+        }
+      } else if (
+        value !== "" &&
+        value !== null &&
+        value !== undefined
+      ) {
+        params[key] = value;
+      }
+    });
+
+    // Get ALL creators matching the filters
+    params.download = true;
+
+    const res = await axios.get(
+      `${Config.API_URL}/csv-creators`,
+      {
+        params,
+      }
+    );
+
+    const allFilteredCreators = res.data.data || [];
+
+    // Select ALL filtered creator IDs
+    const allIds = allFilteredCreators.map(
+      (creator) => creator._id
+    );
+
+    setSelectedCreators(allIds);
+    setSelectAllCreators(true);
+
+  } catch (error) {
+    console.error("SELECT ALL ERROR:", error);
+    alert("Failed to select all filtered creators.");
+  }
+};
+
 
 // =========================
 // DOWNLOAD FILTERED CSV
@@ -481,7 +564,31 @@ const formattedData = allCreators.map((creator) => ({
 };
 
 
+const assignCreatorsToBrand = async () => {
+  try {
+    const token = sessionStorage.getItem("influnexa_admin_token");
 
+    await axios.post(
+      `${Config.API_URL}/admin/brand-ticket-creators`,
+      {
+        brandTicketId: selectedBrandTicket,
+        creatorIds: selectedCreators,
+      },
+      {
+        headers: {
+          "x-admin-token": token,
+        },
+      }
+    );
+
+    alert("Creators assigned successfully");
+    setSelectedCreators([]);
+    setSelectAllCreators(false);
+  } catch (error) {
+    console.error(error);
+    alert("Failed to assign creators");
+  }
+};
 // =========================
 // DOWNLOAD MASKED CSV
 // =========================
@@ -656,6 +763,9 @@ const resetFilters = () => {
   setFilters(emptyFilters);
   setIsFiltered(false);
 setPage(1);
+setSelectedCreators([]);
+setSelectAllCreators(false);
+
   fetchCreators(emptyFilters);
 };
 
@@ -1004,11 +1114,11 @@ const selectStyles = {
 };
   return (
 
-<div className="    csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
+<div className=" csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
 {/* =========================
     HEADER
 ========================= */}
-<div className="px-7 pt-7 pb-5">
+<div className="px-7 pt-7 pb-2">
 
   <div className="grid grid-cols-1 lg:grid-cols-[235px_minmax(0,1fr)] gap-5">
 
@@ -1021,24 +1131,122 @@ const selectStyles = {
         CSV Creators Data
       </h2>
 
+<div className="
+  relative
+  z-[100]
+  flex
+  items-center
+  gap-[1vw]
+  flex-nowrap
+  mt-[1.5vw]
+  w-full
+  pointer-events-auto
+">
+
+  <select
+    value={selectedBrandTicket}
+    onChange={(e) => setSelectedBrandTicket(e.target.value)}
+    className="
+      w-[20vw]
+      h-[3vw]
+      min-h-[44px]
+      max-h-[52px]
+      px-[1vw]
+      border
+      border-slate-200
+      rounded-[0.8vw]
+      bg-white
+      text-[0.9vw]
+      text-slate-700
+      shrink-0
+
+      max-[1199px]:w-[25vw]
+      max-[1199px]:h-[3.5vw]
+      max-[1199px]:text-[1.1vw]
+
+      max-[767px]:w-[55vw]
+      max-[767px]:h-[9vw]
+      max-[767px]:px-[3vw]
+      max-[767px]:text-[3vw]
+      max-[767px]:rounded-[2vw]
+
+      max-[480px]:w-[55vw]
+      max-[480px]:h-[11vw]
+      max-[480px]:text-[3.5vw]
+    "
+  >
+    <option value="">Select Brand Ticket</option>
+
+    {brandTickets.map((ticket) => (
+      <option key={ticket._id} value={ticket._id}>
+        {ticket.ticketNumber} · {ticket.brandName}
+      </option>
+    ))}
+  </select>
+
+  {isFiltered && selectedBrandTicket && selectedCreators.length > 0 && (
+   <button
+  type="button"
+  onClick={() => {
+    console.log("Assign button clicked");
+    assignCreatorsToBrand();
+  }}
+  className="
+    relative
+    z-[100]
+    pointer-events-auto
+    shrink-0
+    h-[3vw]
+    min-h-[44px]
+    max-h-[52px]
+    px-[1.5vw]
+    rounded-[0.8vw]
+    bg-emerald-600
+    text-white
+    text-[0.9vw]
+    font-semibold
+    hover:bg-emerald-700
+    whitespace-nowrap
+    cursor-pointer
+
+    max-[1199px]:h-[3.5vw]
+    max-[1199px]:px-[1.8vw]
+    max-[1199px]:text-[1.1vw]
+
+    max-[767px]:h-[9vw]
+    max-[767px]:px-[4vw]
+    max-[767px]:text-[3vw]
+    max-[767px]:rounded-[2vw]
+
+    max-[480px]:h-[11vw]
+    max-[480px]:px-[3vw]
+    max-[480px]:text-[3.5vw]
+  "
+>
+  Assign to This Brand
+</button>  )}
+
+</div><br></br>
+
       <button
         onClick={resetFilters}
         className="
-          mt-4
-          h-11
-          w-fit
-          px-4
-          rounded-xl
-          border
-          border-slate-300
-          bg-white
-          text-slate-700
-          text-sm
-          font-semibold
-          hover:bg-slate-50
-          transition
-        "
-      >
+  h-11
+  w-fit
+  px-4
+  rounded-xl
+  border
+  border-slate-300
+  bg-white
+  text-slate-700
+  text-sm
+  font-semibold
+  hover:bg-slate-50
+  transition
+  lg:absolute
+  lg:right-7
+  lg:top-[165px]
+">
         Reset Filters
       </button>
 
@@ -1078,7 +1286,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -1094,11 +1302,11 @@ const selectStyles = {
             </div>
 
             <div className="min-w-0">
-              <div className="text-[20px] leading-6 font-bold text-slate-900">
+              <div className="text-[20px] leading-6 font-bold text-slate-900 -ml-2">
                 {totalRecords.toLocaleString()}
               </div>
 
-              <div className="text-[11px] font-medium text-slate-500 whitespace-normal">
+              <div className="text-[11px] font-medium text-slate-500 whitespace-normal -ml-1">
                 {isFiltered ? "Filtered Creators" : "Total Creators"}
               </div>
             </div>
@@ -1134,7 +1342,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-500">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-500">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -1149,11 +1357,11 @@ const selectStyles = {
             </div>
 
             <div className="min-w-0">
-              <div className="text-[20px] leading-6 font-bold text-slate-900">
+              <div className="text-[20px] leading-6 font-bold text-slate-900 -ml-2">
                 {creatorStats.instagram.toLocaleString()}
               </div>
 
-              <div className="text-[11px] font-medium text-slate-500">
+              <div className="text-[11px] font-medium text-slate-500 -ml-1">
                 Instagram
                 <br />
                 Creators
@@ -1191,7 +1399,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
               <svg
                 className="h-6 w-6"
                 viewBox="0 0 24 24"
@@ -1244,7 +1452,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
               <span className="text-sm font-bold">IG</span>
             </div>
 
@@ -1291,7 +1499,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -1345,7 +1553,7 @@ const selectStyles = {
         >
           <div className="flex items-center gap-3 h-full">
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -1385,27 +1593,30 @@ const selectStyles = {
       </div>
 
 
-      {/* DOWNLOAD BUTTONS */}
-      {isFiltered && !loading && creators.length > 0 && (
-        <div className="flex justify-end gap-3 mt-3">
+ {/* DOWNLOAD BUTTONS */}
+{isFiltered && !loading && creators.length > 0 && (
+  <div className="flex justify-end gap-3 mt-3">
 
-          <button
-            onClick={downloadCSV}
-            className="
-              h-11
-              px-5
-              rounded-xl
-              bg-emerald-600
-              hover:bg-emerald-700
-              text-white
-              text-sm
-              font-semibold
-              transition
-            "
-          >
-            Download CSV
-          </button>
-
+    {adminRole !== "creator" && (
+      <>
+      <button
+    
+        onClick={downloadCSV}
+        className="
+          h-11
+          px-5
+          rounded-xl
+          bg-emerald-600
+          hover:bg-emerald-700
+          text-white
+          text-sm
+          font-semibold
+          transition
+        "
+      >
+        Download CSV
+      </button>
+  
           <button
             onClick={downloadMaskedCSV}
             className="
@@ -1422,6 +1633,8 @@ const selectStyles = {
           >
             Download Masked CSV
           </button>
+          </>
+          )}
 
         </div>
       )}
@@ -1856,23 +2069,43 @@ Loading CSV creators...
 <tr>
 
 
-<th  className="
-    sticky top-0 z-30
-    px-4
-    py-4
-    text-left
-    text-sm
-    font-bold
-    tracking-wider
-    text-slate-500
-    bg-slate-50
-    border-b
-    
-    border-slate-200
-    whitespace-nowrap
-  ">
-      SL.No.
-    </th>
+<th  className=" 
+    sticky top-0 z-30 
+    px-4 
+    py-4 
+    text-left 
+    text-sm 
+    font-bold 
+    tracking-wider 
+    text-slate-500 
+    bg-slate-50 
+    border-b 
+    border-slate-200 
+    whitespace-nowrap 
+  "> 
+
+  <div className="flex items-center gap-3">
+
+    {isFiltered && (
+      <input
+        type="checkbox"
+         checked={selectAllCreators}
+        onChange={toggleSelectAll}
+        className="
+          h-4 w-4
+          cursor-pointer
+          rounded
+          border-slate-300
+          accent-emerald-600
+        "
+      />
+    )}
+
+    <span>SL.No.</span>
+
+  </div>
+
+</th>
 
 
 <th
@@ -2735,21 +2968,41 @@ key={creator._id}
     transition
 "
 >
- <td className="
-    px-4
-    py-5
-    text-sm
-    font-semibold
-    text-slate-700
-    bg-white
-    border-b
-   
-    border-slate-200
-    whitespace-nowrap
-    align-middle
-  ">
-    {(page - 1) * limit + index + 1}
-  </td>
+<td className="
+  px-4
+  py-5
+  text-sm
+  font-semibold
+  text-slate-700
+  bg-white
+  border-b
+  border-slate-200
+  whitespace-nowrap
+  align-middle
+">
+  <div className="flex items-center gap-3">
+
+    {isFiltered && (
+      <input
+        type="checkbox"
+        checked={selectedCreators.includes(creator._id)}
+        onChange={() => toggleCreatorSelection(creator._id)}
+        className="
+          h-4 w-4
+          cursor-pointer
+          rounded
+          border-slate-300
+          accent-emerald-600
+        "
+      />
+    )}
+
+    <span>
+      {(page - 1) * limit + index + 1}
+    </span>
+
+  </div>
+</td>
 
 <td
   className="
@@ -3007,7 +3260,7 @@ key={creator._id}
         {creator.categories.join(", ")}
       </div>
 
-      {creator.categories.join(", ").length > 100 && (
+      {creator.categories.join(", ").length >90 && (
         <button
           type="button"
          onClick={() =>
@@ -3048,7 +3301,7 @@ key={creator._id}
         {creator.campaignType.join(", ")}
       </div>
 
-      {creator.campaignType.join(", ").length > 100 && (
+      {creator.campaignType.join(", ").length > 80 && (
         <button
           type="button"
           onClick={() =>

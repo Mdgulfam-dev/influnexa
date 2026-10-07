@@ -9,6 +9,8 @@ import Careers from "./pages/Careers";
 import JobDetail from "./pages/JobDetail";
 import Industries from "./pages/Industries";
 import ShareExperience from "./pages/ShareExperience";
+import CreateBrandTicket from "./pages/CreateBrandTicket"
+import AssignedTicketCreators from "./pages/AssignedTicketCreators";
 function App() {
 
     const [theme, setTheme] = useState(() => {
@@ -39,6 +41,14 @@ function App() {
   if (path === "/admin") {
     return <AdminDashboard />;
   }
+
+  if (path === "/admin/tickets/create") {
+  return <CreateBrandTicket />;
+}
+
+if (path === "/admin/tickets/creators") {
+  return <AssignedTicketCreators />;
+}
 
   if (path === "/about") {
     return <About />;

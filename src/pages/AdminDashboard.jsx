@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
+
 import {
   createBlogPost,
   createAdminUser,
@@ -24,6 +25,8 @@ import {
   updateBrandTicket,
   deleteBrandTicket,
   getAdminLoginHistory,
+  getBrandTickets,
+  getAssignedCreators,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -1597,6 +1600,8 @@ function formatLoginHistoryDateTime(value) {
 }
 
 export default function AdminDashboard() {
+const [showPasswordModal, setShowPasswordModal] = useState(false);
+const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loginHistoryUser, setLoginHistoryUser] = useState(null);
@@ -1669,6 +1674,24 @@ useEffect(() => {
 
   return () => clearTimeout(timer);
 }, [status.message]);
+
+const viewAssignedCreators = async (ticket) => {
+  try {
+    setSelectedTicket(ticket);
+    setAssignedCreators([]);
+    setCreatorSearch("");
+    setLoadingAssignedCreators(true);
+
+    const creators = await getAssignedCreators(ticket._id);
+
+    setAssignedCreators(creators);
+  } catch (error) {
+    console.error("GET ASSIGNED CREATORS ERROR:", error);
+    alert(error.message || "Failed to load assigned creators.");
+  } finally {
+    setLoadingAssignedCreators(false);
+  }
+};
 
 
 const validateTicketForm = () => {
@@ -2094,6 +2117,7 @@ useEffect(() => {
       status: user.status || "active",
     });
     setActiveTab("users");
+    setShowAddUserModal(true);
   };
 
   const cancelUserEdit = () => {
@@ -2154,10 +2178,13 @@ useEffect(() => {
   // Wait until role is available
   if (!currentUserRole) return;
 
-  // Editor cannot access Data Availability
+  // creator cannot access Data Availability
   if (
-    currentUserRole === "editor" &&
-    ["data-availability", "lead-workflow"].includes(activeTab)
+    currentUserRole === "creator" &&
+    [ "brands",
+    "upload-csv",
+    "csv-brands",
+    "upload-csv-brands","data-availability", "lead-workflow"].includes(activeTab)
   ) {
     setActiveTab("overview");
     window.history.replaceState(null, "", "#overview");
@@ -2198,17 +2225,21 @@ useEffect(() => {
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
       ["applications", `Candidates (${data.applications.length})`],
-      ["users", `Users (${data.users.length})`],
+     ["users", canManageUsers ? `Users (${data.users.length})` : "Users"],
     ];
 if (isLead) {
   return allTabs.filter(([id]) =>
     ["overview", "tickets", "brands", "csv-brands", "data-availability"].includes(id)
   );
 }
-if (currentUserRole === "editor") {
+if (currentUserRole === "creator") {
   return allTabs.filter(
     ([id]) =>
       ![
+        "brands",
+        "upload-csv",
+        "csv-brands",
+        "upload-csv-brands",
         "data-availability",
          "lead-workflow",
         "testimonials",
@@ -2561,240 +2592,60 @@ return allTabs;
 
         {activeTab === "tickets" && (
           <div className="admin-ticket-workspace">
-            <form className="admin-panel admin-blog-form" onSubmit={submitTicket}>
-              <div className="admin-panel-title-row"><h2>{editingTicketId ? "Edit brand ticket" : "Create brand ticket"}</h2></div>
-              <div className="admin-form-row">
-  <label>
-    Brand name <span className="admin-required">*</span>
-    <input
-      name="brandName"
-      value={ticketForm.brandName}
-      onChange={updateTicketField}
-     
-    />
-
-  {ticketErrors.brandName && (
-    <small className="admin-inline-error">
-      {ticketErrors.brandName}
-    </small>
-  )}
-  </label>
-
-  <label>
-    Campaign name <span className="admin-required">*</span>
-    <input
-      name="campaignName"
-      value={ticketForm.campaignName}
-      onChange={updateTicketField}
-     
-    />
-    {ticketErrors.campaignName && (
-    <small className="admin-inline-error">
-      {ticketErrors.campaignName}
-    </small>
-  )}
-  </label>
-</div>
-
-<div className="admin-form-row">
-  <label>
-    Full name <span className="admin-required">*</span>
-    <input
-      name="fullName"
-      value={ticketForm.fullName}
-      onChange={updateTicketField}
-      
-    />
-    {ticketErrors.fullName && (
-  <small className="admin-inline-error">
-    {ticketErrors.fullName}
-  </small>
-)}
-
-  </label>
-
-  <label>
-    Contact email <span className="admin-required">*</span>
-    <input
-      name="contactEmail"
-      type="email"
-      value={ticketForm.contactEmail}
-      onChange={updateTicketField}
-      
-    />
-    {ticketErrors.contactEmail && (
-  <small className="admin-inline-error">
-    {ticketErrors.contactEmail}
-  </small>
-)}
-  </label>
-</div>
-
-<label>
-  Campaign objective <span className="admin-required">*</span>
-  <textarea
-    name="objective"
-    value={ticketForm.objective}
-    onChange={updateTicketField}
-    rows="2"
-    placeholder="Awareness, product launch, conversions..."
-  
-  />
-  {ticketErrors.objective && (
-  <small className="admin-inline-error">
-    {ticketErrors.objective}
-  </small>
-)}
-</label>
-
-<div className="admin-form-row">
-  <label>
-    Platforms <span className="admin-required">*</span>
-    <input
-      name="platforms"
-      value={ticketForm.platforms}
-      onChange={updateTicketField}
-      placeholder="Instagram, YouTube"
-      
-    />
-    {ticketErrors.platforms && (
-  <small className="admin-inline-error">
-    {ticketErrors.platforms}
-  </small>
-)}
-  </label>
-
-  <label>
-    Status <span className="admin-required">*</span>
-    <select
-      name="status"
-      value={ticketForm.status}
-      onChange={updateTicketField}
-      required
-    >
-      {ticketStatuses.map((item) => (
-        <option key={item}>{item}</option>
-      ))}
-    </select>
-    {ticketErrors.status && (
-  <small className="admin-inline-error">
-    {ticketErrors.status}
-  </small>
-)}
-  </label>
-</div>
-
-<div className="admin-form-row">
-  <label>
-    Start date <span className="admin-required">*</span>
-    <input
-      name="startDate"
-      type="date"
-      value={ticketForm.startDate}
-      onChange={updateTicketField}
-    
-    />
-    {ticketErrors.startDate && (
-  <small className="admin-inline-error">
-    {ticketErrors.startDate}
-  </small>
-)}
-  </label>
-
-  <label>
-    End date <span className="admin-required">*</span>
-    <input
-      name="endDate"
-      type="date"
-      value={ticketForm.endDate}
-      onChange={updateTicketField}
-      
-    />
-    {ticketErrors.endDate && (
-  <small className="admin-inline-error">
-    {ticketErrors.endDate}
-  </small>
-)}
-  </label>
-</div>
-
-<div className="admin-form-row">
-  <label>
-    Budget <span className="admin-required">*</span>
-    <input
-      min="0"
-      name="budget"
-      type="number"
-      value={ticketForm.budget}
-      onChange={updateTicketField}
-      
-    />
-    {ticketErrors.budget && (
-  <small className="admin-inline-error">
-    {ticketErrors.budget}
-  </small>
-)}
-  </label>
-
-  <label>
-    Currency <span className="admin-required">*</span>
-    <input
-      name="currency"
-      value={ticketForm.currency}
-      onChange={updateTicketField}
-  required
-    />
-    {ticketErrors.currency && (
-  <small className="admin-inline-error">
-    {ticketErrors.currency}
-  </small>
-)}
-  </label>
-</div>
-
-<h3 className="admin-ticket-subheading">
-  Campaign performance
-</h3>
-
-<div className="admin-ticket-metrics">
-  {[
-    ["creators", "Creators"],
-    ["posts", "Posts"],
-    ["reach", "Reach"],
-    ["impressions", "Impressions"],
-    ["engagements", "Engagements"],
-    ["clicks", "Clicks"],
-    ["conversions", "Conversions"],
-    ["spend", "Spend"]
-  ].map(([key, label]) => (
-    <label key={key}>
-      {label}
-      <input
-        min="0"
-        name={key}
-        type="number"
-        value={ticketForm.metrics[key]}
-        onChange={updateTicketMetric}
-      />
-    </label>
-  ))}
-</div>
-
-<label>
-  Internal notes
-  <textarea
-    name="notes"
-    value={ticketForm.notes}
-    onChange={updateTicketField}
-    rows="3"
-  />
-</label>
-              <div className="admin-login-actions"><button type="submit">{editingTicketId ? "Update Ticket" : "Create Ticket"}</button>{editingTicketId && <button type="button" onClick={() => { setEditingTicketId(""); setTicketForm(initialTicketForm); }}>Cancel</button>}</div>
-            </form>
             <div className="admin-ticket-side">
+              <button
+  type="button"
+   className="admin-create-ticket-btn"
+  onClick={() => {
+    window.location.href = "/admin/tickets/create";
+  }}
+>
+  Create Ticket
+</button>
               <section className="admin-panel"><div className="admin-panel-title-row"><h2>Campaign analysis</h2><small>{data.stats.activeTickets || 0} active</small></div><AnalyticsChart title="Ticket status" items={data.analytics.ticketStatuses} emptyMessage="Create a ticket to see campaign status analysis." /><div className="admin-ticket-summary"><article><span>Total reach</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.reach || 0), 0).toLocaleString()}</strong></article><article><span>Total engagements</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.engagements || 0), 0).toLocaleString()}</strong></article><article><span>Conversions</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.conversions || 0), 0).toLocaleString()}</strong></article></div></section>
-              <section className="admin-panel"><h2>Brand campaign tickets</h2><div className="admin-blog-list">{data.tickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions</small></div><div className="admin-row-actions"><button type="button" onClick={() => editTicket(ticket)}>Edit</button><button type="button" onClick={() => removeTicket(ticket._id)}>Delete</button></div></article>; })}{data.tickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section>
-            </div>
+              <section className="admin-panel">
+                <h2>Brand campaign tickets</h2>
+                <div className="admin-blog-list">{data.tickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions</small></div>
+                <div className="admin-row-actions">
+<button
+  type="button"
+  className="admin-view-creators-btn"
+  onClick={(e) => {
+    e.stopPropagation();
+
+    window.location.href =
+      `/admin/tickets/creators?ticket=${ticket._id}`;
+  }}
+>
+  View Details
+</button>
+  <button
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+
+      sessionStorage.setItem(
+        "influnexa_edit_brand_ticket",
+        JSON.stringify(ticket)
+      );
+
+      window.location.href = `/admin/tickets/create?edit=${ticket._id}`;
+    }}
+  >
+    Edit
+  </button>
+
+  <button
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+      removeTicket(ticket._id);
+    }}
+  >
+    Delete
+  </button>
+</div>
+</article>; })}{data.tickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section> </div>
           </div>
         )}
 
@@ -2818,7 +2669,8 @@ return allTabs;
         )}
 
 {activeTab === "csv-creators" && (
-  <CsvCreatorSection  key={csvRefreshKey} />
+  <CsvCreatorSection  key={csvRefreshKey}
+  adminRole={currentUserRole} />
 )}
 
 {activeTab === "upload-csv" && (
@@ -3090,46 +2942,34 @@ return allTabs;
 
         {activeTab === "users" && (
           <div className="admin-blog-grid">
-            <form className="admin-panel admin-blog-form" onSubmit={submitPassword}>
-              <h2>Change my password</h2>
-              <label>
-                Current password
-                <input
-                  autoComplete="current-password"
-                  name="currentPassword"
-                  type="password"
-                  value={passwordForm.currentPassword}
-                  onChange={updatePasswordField}
-                  required
-                />
-              </label>
-              <label>
-                New password
-                <input
-                  name="password"
-                  autoComplete="new-password"
-                  type="password"
-                  value={passwordForm.password}
-                  onChange={updatePasswordField}
-                  required
-                  placeholder="Minimum 8 characters"
-                />
-              </label>
-              <label>
-                Confirm new password
-                <input
-                  autoComplete="new-password"
-                  name="confirmPassword"
-                  type="password"
-                  value={passwordForm.confirmPassword}
-                  onChange={updatePasswordField}
-                  required
-                />
-              </label>
-              <div className="admin-login-actions">
-                <button type="submit">Update Password</button>
-              </div>
-            </form>
+            
+<div className="admin-users-header">
+  <div>
+    <h2>Users & Access</h2>
+    <p>Manage your account password and team members.</p>
+  </div>
+
+  <div className="admin-users-header-actions">
+    <button
+      type="button"
+      className="admin-user-header-button"
+      onClick={() => setShowPasswordModal(true)}
+    >
+      Change Password
+    </button>
+
+    {canManageUsers && (
+      <button
+        type="button"
+        className="admin-user-header-button primary"
+        onClick={() => setShowAddUserModal(true)}
+      >
+        + Add Team Member
+      </button>
+    )}
+  </div>
+</div>
+
 
            {loginHistoryUser && (
   <div
@@ -3239,49 +3079,279 @@ return allTabs;
     </div>
   </div>
 )}
+
+{showPasswordModal && (
+  <div
+    className="admin-history-overlay"
+    onClick={() => setShowPasswordModal(false)}
+  >
+    <div
+      className="admin-history-panel admin-user-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+<div className="admin-history-header">
+  <div>
+    <div className="admin-modal-icon">
+      🔐
+    </div>
+
+    <h2>Change my password</h2>
+
+    <p>
+      Keep your account secure by updating your password.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    className="admin-history-close"
+    onClick={() => setShowPasswordModal(false)}
+    aria-label="Close password modal"
+  >
+    ×
+  </button>
+</div>
+
+      <form
+        className="admin-blog-form"
+        onSubmit={async (event) => {
+          await submitPassword(event);
+          setShowPasswordModal(false);
+        }}
+      >
+        <label>
+          Current password
+          <input
+            autoComplete="current-password"
+            name="currentPassword"
+            type="password"
+            value={passwordForm.currentPassword}
+            onChange={updatePasswordField}
+            required
+          />
+        </label>
+
+        <label>
+          New password
+          <input
+            name="password"
+            autoComplete="new-password"
+            type="password"
+            value={passwordForm.password}
+            onChange={updatePasswordField}
+            required
+            placeholder="Minimum 8 characters"
+          />
+        </label>
+
+        <label>
+          Confirm new password
+          <input
+            autoComplete="new-password"
+            name="confirmPassword"
+            type="password"
+            value={passwordForm.confirmPassword}
+            onChange={updatePasswordField}
+            required
+          />
+        </label>
+
+        <div className="admin-login-actions">
+          <button
+            type="button"
+            onClick={() => setShowPasswordModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button type="submit">
+            Update Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
             {canManageUsers ? (
               <>
-                <form className="admin-panel admin-blog-form" onSubmit={submitUser}>
-                  <h2>{editingUserId ? "Edit team member" : "Add team member"}</h2>
-                  <label>Name<input name="name" value={userForm.name} onChange={updateUserField} required /></label>
-                  <label>Email<input name="email" type="email" value={userForm.email} onChange={updateUserField} required /></label>
-                  {!editingUserId && (
-                    <label>
-                      Initial password
-                      <input
-                        autoComplete="new-password"
-                        name="password"
-                        type="password"
-                        value={userForm.password}
-                        onChange={updateUserField}
-                        required
-                        placeholder="Minimum 8 characters"
-                      />
-                    </label>
-                  )}
-                  <div className="admin-form-row">
-                    <label>Role<select name="role" value={userForm.role} onChange={updateUserField} disabled={isEditingOwner}>
-                      <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                        <option value="lead">Lead</option>
-                      {(currentUserRole === "owner" || userForm.role === "owner") && <option value="owner">Owner</option>}
-                    </select></label>
-                    <label>Status<select name="status" value={userForm.status} onChange={updateUserField} disabled={isEditingOwner}>
-                      <option value="active">Active</option>
-                      <option value="disabled">Disabled</option>
-                    </select></label>
-                  </div>
-                  <p className="admin-owner-help">
-                    Passwords can only be changed by the signed-in user from the password form.
-                  </p>
-                  {isEditingOwner && <p className="admin-owner-help">Owner role and active access are protected.</p>}
-                  <div className="admin-login-actions">
-                    <button type="submit">{editingUserId ? "Update User" : "Add User"}</button>
-                    {editingUserId && <button type="button" onClick={cancelUserEdit}>Cancel</button>}
-                  </div>
-                </form>
+               {showAddUserModal && (
+  <div
+    className="admin-history-overlay"
+    onClick={() => {
+      setShowAddUserModal(false);
+      cancelUserEdit();
+    }}
+  >
+    <div
+      className="admin-history-panel admin-user-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
 
-                <div className="admin-panel">
+      {/* MODAL HEADER */}
+      <div className="admin-history-header">
+        <div>
+          <div className="admin-modal-icon">
+            👤
+          </div>
+
+    <h2>
+  {editingUserId ? "Edit team member" : "Add team member"}
+</h2>
+
+<p>
+  {editingUserId
+    ? "Update the team member account and access."
+    : "Create a new team member account and assign access."}
+</p>
+        </div>
+
+        <button
+          type="button"
+          className="admin-history-close"
+          onClick={() => {
+            setShowAddUserModal(false);
+            cancelUserEdit();
+          }}
+          aria-label="Close add user modal"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* FORM */}
+      <form
+        className="admin-blog-form"
+        onSubmit={async (event) => {
+          await submitUser(event);
+          setShowAddUserModal(false);
+        }}
+      >
+
+        <label>
+          Name
+
+          <input
+            name="name"
+            value={userForm.name}
+            onChange={updateUserField}
+            required
+            placeholder="Enter full name"
+          />
+        </label>
+
+        <label>
+          Email
+
+          <input
+            name="email"
+            type="email"
+            value={userForm.email}
+            onChange={updateUserField}
+            required
+            placeholder="Enter email address"
+          />
+        </label>
+
+        <label>
+          Initial password
+
+          <input
+            autoComplete="new-password"
+            name="password"
+            type="password"
+            value={userForm.password}
+            onChange={updateUserField}
+            required={!editingUserId}
+            placeholder="Minimum 8 characters"
+          />
+        </label>
+
+        <div className="admin-form-row">
+
+          <label>
+            Role
+
+            <select
+              name="role"
+              value={userForm.role}
+              onChange={updateUserField}
+            >
+              <option value="admin">
+                Admin
+              </option>
+
+              <option value="creator">
+                Creator
+              </option>
+
+              <option value="lead">
+                Lead
+              </option>
+
+              {(currentUserRole === "owner" ||
+                userForm.role === "owner") && (
+                <option value="owner">
+                  Owner
+                </option>
+              )}
+            </select>
+          </label>
+
+          <label>
+            Status
+
+            <select
+              name="status"
+              value={userForm.status}
+              onChange={updateUserField}
+            >
+              <option value="active">
+                Active
+              </option>
+
+              <option value="disabled">
+                Disabled
+              </option>
+            </select>
+          </label>
+
+        </div>
+
+        <div className="admin-owner-help">
+          <strong>Account security</strong>
+
+          <span>
+            Passwords can only be changed by the signed-in user
+            from the password form.
+          </span>
+        </div>
+
+        {/* ACTIONS */}
+        <div className="admin-login-actions">
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowAddUserModal(false);
+              cancelUserEdit();
+            }}
+          >
+            Cancel
+          </button>
+
+         <button type="submit">
+  {editingUserId ? "Update User" : "Add User"}
+</button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
+                <div className="admin-panel admin-user-list-panel">
                   <h2>Team access</h2>
                   <div className="admin-blog-list admin-user-list">
                     {data.users.map((user) => (
@@ -3329,7 +3399,7 @@ return allTabs;
                 </div>
               </>
             ) : (
-              <div className="admin-panel">
+              <div className="admin-panel admin-user-list-panel">
                 <h2>Team access</h2>
                 <div className="admin-blog-list admin-user-list">
                   <article>
@@ -3343,9 +3413,17 @@ return allTabs;
                 </div>
               </div>
             )}
+
+
+            
           </div>
         )}
+
       </section>
     </main>
   );
 }
+
+
+
+
