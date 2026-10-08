@@ -1379,11 +1379,11 @@ const resetFilters = async () => {
         <div>
 
           <p className="availability-eyebrow">
-            DATA AVAILABILITY
+            CREATOR NETWORK
           </p>
 
           <h2>
-            Check Creator Data Availability
+            Check Creators Network
           </h2>
 
         </div>
@@ -1426,9 +1426,20 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            👥
-          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
 
           <div>
 
@@ -1451,9 +1462,19 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            ◎
-          </div>
+           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+              </svg>
+            </div>
 
           <div>
 
@@ -1476,9 +1497,15 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            ▶
-          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
+              <svg
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.9V8.1l6.6 3.9-6.6 3.9Z" />
+              </svg>
+            </div>
 
           <div>
 
@@ -1501,9 +1528,9 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            IG
-          </div>
+           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+              <span className="text-sm font-bold">IG</span>
+            </div>
 
           <div>
 
@@ -1526,9 +1553,18 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            📍
-          </div>
+           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </div>
 
           <div>
 
@@ -1551,9 +1587,18 @@ const resetFilters = async () => {
 
         <article className="availability-stat-card">
 
-          <div className="stat-icon">
-            📍
-          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </div>
 
           <div>
 

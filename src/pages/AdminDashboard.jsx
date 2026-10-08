@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
-
+import { FaHistory } from "react-icons/fa";
 import {
   createBlogPost,
   createAdminUser,
@@ -1600,6 +1600,8 @@ function formatLoginHistoryDateTime(value) {
 }
 
 export default function AdminDashboard() {
+  const [showBlogModal, setShowBlogModal] = useState(false);
+  const [showJobModal, setShowJobModal] = useState(false);
 const [showPasswordModal, setShowPasswordModal] = useState(false);
 const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -1623,7 +1625,7 @@ const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
     "upload-csv",
     "csv-brands",
     "upload-csv-brands",
-    "data-availability",
+    "creator-network",
     "blogs",
     "testimonials",
     "users",
@@ -2018,7 +2020,7 @@ useEffect(() => {
  const selectTab = (id) => {
   if (
     isLead &&
-    !["overview", "brands", "tickets", "csv-brands", "data-availability",].includes(id)
+    !["overview", "brands", "tickets", "csv-brands", "creator-network",].includes(id)
   ) {
     return;
   }
@@ -2184,7 +2186,7 @@ useEffect(() => {
     [ "brands",
     "upload-csv",
     "csv-brands",
-    "upload-csv-brands","data-availability", "lead-workflow"].includes(activeTab)
+    "upload-csv-brands","creator-network", "lead-workflow"].includes(activeTab)
   ) {
     setActiveTab("overview");
     window.history.replaceState(null, "", "#overview");
@@ -2199,7 +2201,7 @@ useEffect(() => {
       "brands",
       "tickets",
       "csv-brands",
-      "data-availability",
+      "creator-network",
     ].includes(activeTab)
   ) {
     setActiveTab("overview");
@@ -2219,7 +2221,7 @@ useEffect(() => {
       ["upload-csv", `CSV Upload Creators`],
       ["csv-brands", `CSV Brands`],
       ["upload-csv-brands", `CSV Upload Brands`],
-      ["data-availability", `Data Availability`],
+      ["creator-network", `Creator Network`],
        ["lead-workflow", "Lead Workflow"],
       ["blogs", `Blogs (${data.blogs.length})`],
       ["testimonials", `Testimonials (${data.testimonials.length})`],
@@ -2229,7 +2231,7 @@ useEffect(() => {
     ];
 if (isLead) {
   return allTabs.filter(([id]) =>
-    ["overview", "tickets", "brands", "csv-brands", "data-availability"].includes(id)
+    ["overview", "tickets", "brands", "csv-brands", "creator-network"].includes(id)
   );
 }
 if (currentUserRole === "creator") {
@@ -2240,7 +2242,7 @@ if (currentUserRole === "creator") {
         "upload-csv",
         "csv-brands",
         "upload-csv-brands",
-        "data-availability",
+        "creator-network",
          "lead-workflow",
         "testimonials",
         "jobs",
@@ -2255,7 +2257,7 @@ if (!currentUserRole) {
   return allTabs.filter(
     ([id]) =>
       ![
-        "data-availability",
+        "creator-network",
         "testimonials",
         "jobs",
         "applications",
@@ -2686,7 +2688,7 @@ return allTabs;
 )}
 
 
-{activeTab === "data-availability" &&
+{activeTab === "creator-network" &&
   ["owner", "admin", "lead"].includes(currentUserRole) && (
     <CreatorDataAvailability key={csvRefreshKey} />
 )}
@@ -2698,154 +2700,92 @@ return allTabs;
   />
 )}
 
-     {activeTab === "blogs" && (
+{activeTab === "blogs" && (
   <div className="admin-blog-grid">
-    <form className="admin-panel admin-blog-form" onSubmit={submitBlog}>
-      <h2>{editingBlogId ? "Edit blog post" : "Create blog post"}</h2>
 
-      <label>
-        Title <span className="admin-required">*</span>
-        <input
-          name="title"
-          value={blogForm.title}
-          onChange={updateBlogField}
-          required
-        />
-      </label>
+    {/* =====================================================
+        BLOG PAGE HEADER - OUTSIDE CARD
+    ===================================================== */}
 
-      <label>
-        Category <span className="admin-required">*</span>
-        <input
-          name="category"
-          value={blogForm.category}
-          onChange={updateBlogField}
-          required
-        />
-      </label>
+    <div className="admin-users-header">
 
-      <label>
-        Excerpt <span className="admin-required">*</span>
-        <textarea
-          name="excerpt"
-          value={blogForm.excerpt}
-          onChange={updateBlogField}
-          required
-          rows="3"
-        />
-      </label>
-
-      <label>
-        Content <span className="admin-required">*</span>
-        <textarea
-          name="content"
-          value={blogForm.content}
-          onChange={updateBlogField}
-          required
-          rows="10"
-          placeholder={"Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"}
-        />
-
-        <small className="admin-field-note">
-          Supported formatting: ## section heading, ### subheading, - bullet
-          list, and 1. numbered list. Keep headings and list items on their own
-          lines.
-        </small>
-      </label>
-
-      <div className="admin-form-row">
-        <label>
-          Author <span className="admin-required">*</span>
-          <input
-            name="author"
-            value={blogForm.author}
-            onChange={updateBlogField}
-            required
-          />
-        </label>
-
-        <label>
-          Read time <span className="admin-required">*</span>
-          <input
-            name="readTime"
-            value={blogForm.readTime}
-            onChange={updateBlogField}
-            required
-          />
-        </label>
+      <div>
+        <h2>Blog posts</h2>
+        <p>Manage your blog posts and published content.</p>
       </div>
 
-      <label>
-        Cover image URL <span className="admin-required">*</span>
-        <input
-          name="coverImage"
-          value={blogForm.coverImage}
-          onChange={updateBlogField}
-          required
-        />
-      </label>
+      <div className="admin-users-header-actions">
 
-      <label>
-        Status <span className="admin-required">*</span>
-        <select
-          name="status"
-          value={blogForm.status}
-          onChange={updateBlogField}
-          required
+        <button
+          type="button"
+          className="admin-user-header-button primary"
+          onClick={() => {
+            setEditingBlogId("");
+            setBlogForm(initialBlogForm);
+            setShowBlogModal(true);
+          }}
         >
-          <option value="published">published</option>
-          <option value="draft">draft</option>
-        </select>
-      </label>
-
-      <div className="admin-login-actions">
-        <button type="submit">
-          {editingBlogId ? "Update Blog" : "Create Blog"}
+          + Create Blog
         </button>
 
-        {editingBlogId && (
-          <button type="button" onClick={cancelBlogEdit}>
-            Cancel
-          </button>
-        )}
       </div>
-    </form>
 
-    {/* Blog posts list - keep your existing code */}
+    </div>
+
+
+    {/* =====================================================
+        BLOG POSTS LIST CARD
+    ===================================================== */}
+
     <div className="admin-panel">
-      <h2>Blog posts</h2>
 
       <div className="admin-blog-list">
+
         {data.blogs.map((blog) => (
+
           <article key={blog._id}>
+
             <div>
+
               <Pill
                 tone={
-                  blog.status === "published" ? "success" : "default"
+                  blog.status === "published"
+                    ? "success"
+                    : "default"
                 }
               >
                 {blog.status}
               </Pill>
 
               <h3>{blog.title}</h3>
+
               <p>{blog.excerpt}</p>
 
               <span>
                 {blog.category} - {blog.readTime} -{" "}
                 {formatDate(blog.publishedAt)}
               </span>
+
             </div>
 
+
             <div className="admin-row-actions">
-              <button
-                type="button"
-                onClick={() => editBlog(blog)}
-              >
-                Edit
-              </button>
 
               <button
                 type="button"
                 onClick={() => {
+                  editBlog(blog);
+                  setShowBlogModal(true);
+                }}
+              >
+                Edit
+              </button>
+
+
+              <button
+                type="button"
+                onClick={() => {
+
                   const confirmed = window.confirm(
                     "Are you sure you want to delete this blog?"
                   );
@@ -2853,30 +2793,410 @@ return allTabs;
                   if (confirmed) {
                     removeBlog(blog._id);
                   }
+
                 }}
               >
                 Delete
               </button>
+
+            </div>
+
+          </article>
+
+        ))}
+
+        {data.blogs.length === 0 && (
+          <article>
+            <div>
+              <h3>No blog posts yet</h3>
+              <p>
+                Create your first blog post using the button above.
+              </p>
             </div>
           </article>
-        ))}
+        )}
+
+      </div>
+
+    </div>
+
+
+    {/* =====================================================
+        CREATE / EDIT BLOG MODAL
+    ===================================================== */}
+
+    {showBlogModal && (
+      <div
+        className="admin-history-overlay"
+        onClick={() => {
+          setShowBlogModal(false);
+          setEditingBlogId("");
+          setBlogForm(initialBlogForm);
+        }}
+      >
+
+        <div
+          className="admin-history-panel admin-user-modal"
+          onClick={(event) => event.stopPropagation()}
+        >
+
+          {/* =================================================
+              MODAL HEADER
+          ================================================= */}
+
+          <div className="admin-history-header">
+
+            <div>
+
+              <h2>
+                {editingBlogId
+                  ? "Edit blog post"
+                  : "Create blog post"}
+              </h2>
+
+              <p>
+                {editingBlogId
+                  ? "Update the blog post details."
+                  : "Create a new blog post."}
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              className="admin-history-close"
+              onClick={() => {
+                setShowBlogModal(false);
+                setEditingBlogId("");
+                setBlogForm(initialBlogForm);
+              }}
+              aria-label="Close blog modal"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          {/* =================================================
+              BLOG FORM
+          ================================================= */}
+
+          <form
+            className="admin-blog-form"
+            onSubmit={async (event) => {
+              await submitBlog(event);
+              setShowBlogModal(false);
+            }}
+          >
+
+            <label>
+              Title{" "}
+              <span className="admin-required">*</span>
+
+              <input
+                name="title"
+                value={blogForm.title}
+                onChange={updateBlogField}
+                required
+              />
+            </label>
+
+
+            <label>
+              Category{" "}
+              <span className="admin-required">*</span>
+
+              <input
+                name="category"
+                value={blogForm.category}
+                onChange={updateBlogField}
+                required
+              />
+            </label>
+
+
+            <label>
+              Excerpt{" "}
+              <span className="admin-required">*</span>
+
+              <textarea
+                name="excerpt"
+                value={blogForm.excerpt}
+                onChange={updateBlogField}
+                required
+                rows="3"
+              />
+            </label>
+
+
+            <label>
+              Content{" "}
+              <span className="admin-required">*</span>
+
+              <textarea
+                name="content"
+                value={blogForm.content}
+                onChange={updateBlogField}
+                required
+                rows="10"
+                placeholder={
+                  "Use headings and lists, for example:\n\n## Main heading\nParagraph text here.\n\n### Subheading\n- Bullet point\n- Bullet point\n\n1. Numbered step\n2. Numbered step"
+                }
+              />
+
+              <small className="admin-field-note">
+                Supported formatting: ## section heading, ### subheading, - bullet
+                list, and 1. numbered list. Keep headings and list items on their own
+                lines.
+              </small>
+            </label>
+
+
+            <div className="admin-form-row">
+
+              <label>
+                Author{" "}
+                <span className="admin-required">*</span>
+
+                <input
+                  name="author"
+                  value={blogForm.author}
+                  onChange={updateBlogField}
+                  required
+                />
+              </label>
+
+
+              <label>
+                Read time{" "}
+                <span className="admin-required">*</span>
+
+                <input
+                  name="readTime"
+                  value={blogForm.readTime}
+                  onChange={updateBlogField}
+                  required
+                />
+              </label>
+
+            </div>
+
+
+            <label>
+              Cover image URL{" "}
+              <span className="admin-required">*</span>
+
+              <input
+                name="coverImage"
+                value={blogForm.coverImage}
+                onChange={updateBlogField}
+                required
+              />
+            </label>
+
+
+            <label>
+              Status{" "}
+              <span className="admin-required">*</span>
+
+              <select
+                name="status"
+                value={blogForm.status}
+                onChange={updateBlogField}
+                required
+              >
+                <option value="published">
+                  published
+                </option>
+
+                <option value="draft">
+                  draft
+                </option>
+              </select>
+            </label>
+
+
+            {/* =================================================
+                ACTIONS
+            ================================================= */}
+
+            <div className="admin-login-actions">
+
+              <button
+                type="button"
+                onClick={() => {
+                  cancelBlogEdit();
+                  setShowBlogModal(false);
+                }}
+              >
+                Cancel
+              </button>
+
+
+              <button type="submit">
+                {editingBlogId
+                  ? "Update Blog"
+                  : "Create Blog"}
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+    )}
+
+  </div>
+)}
+        
+{activeTab === "jobs" && (
+  <div className="admin-blog-grid">
+
+    {/* JOB PAGE HEADER - OUTSIDE CARD */}
+    <div className="admin-users-header">
+      <div>
+        <h2>Job posts</h2>
+        <p>Manage your job openings and career opportunities.</p>
+      </div>
+
+      <div className="admin-users-header-actions">
+        <button
+          type="button"
+          className="admin-user-header-button primary"
+          onClick={() => {
+            setEditingJobId("");
+            setJobForm(initialJobForm);
+            setShowJobModal(true);
+          }}
+        >
+          + Post a Job
+        </button>
       </div>
     </div>
+
+
+    {/* JOB LIST CARD */}
+    <div className="admin-panel admin-user-list-panel">
+
+      <div className="admin-blog-list admin-user-list">
+
+        {data.jobs.map((job) => (
+          <article key={job._id}>
+
+            <div>
+              <Pill
+                tone={job.status === "open" ? "success" : "default"}
+              >
+                {job.status}
+              </Pill>
+
+              <h3>
+                {job.jobId} · {job.title}
+              </h3>
+
+              <p>
+                {job.department} · {job.location} · {job.type}
+              </p>
+            </div>
+
+            <div className="admin-row-actions">
+
+              <button
+                type="button"
+                onClick={() => {
+                  editJob(job);
+                  setShowJobModal(true);
+                }}
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                onClick={() => removeJob(job._id)}
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </article>
+        ))}
+
+        {data.jobs.length === 0 && (
+          <article>
+            <div>
+              <h3>No job posts yet</h3>
+              <p>
+                Post your first job opening using the button above.
+              </p>
+            </div>
+          </article>
+        )}
+
+      </div>
+    </div>
+
+
+    {/* JOB MODAL */}
+    {showJobModal && (
+      <div
+        className="admin-history-overlay"
+        onClick={() => {
+          setShowJobModal(false);
+          setEditingJobId("");
+          setJobForm(initialJobForm);
+        }}
+      >
+        <div
+          className="admin-history-panel admin-user-modal"
+          onClick={(event) => event.stopPropagation()}
+        >
+
+          <div className="admin-history-header">
+
+            <div>
+              <h2>
+                {editingJobId
+                  ? "Edit job post"
+                  : "Post a new job"}
+              </h2>
+
+              <p>
+                {editingJobId
+                  ? "Update the job posting details."
+                  : "Create a new job opening."}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="admin-history-close"
+              onClick={() => {
+                setShowJobModal(false);
+                setEditingJobId("");
+                setJobForm(initialJobForm);
+              }}
+              aria-label="Close job modal"
+            >
+              ×
+            </button>
+
+          </div>
+
+         {/* JOB FORM */} <form className="admin-blog-form" onSubmit={async (event) => { await submitJob(event); setShowJobModal(false); }} > <div className="admin-form-row"> <label> Job ID <input value={ editingJobId ? jobForm.jobId : "Auto-generated (INX-00001)" } readOnly /> </label> <label> Role title <input name="title" value={jobForm.title} onChange={updateJobField} required /> </label> </div> <div className="admin-form-row"> <label> Department <input name="department" value={jobForm.department} onChange={updateJobField} required /> </label> <label> Employment type <select name="type" value={jobForm.type} onChange={updateJobField} > <option>Full-time</option> <option>Part-time</option> <option>Internship</option> <option>Contract</option> </select> </label> </div> <div className="admin-form-row"> <label> Location <input name="location" value={jobForm.location} onChange={updateJobField} required /> </label> <label> Experience <input name="experience" value={jobForm.experience} onChange={updateJobField} required /> </label> </div> <label> Short summary <textarea name="summary" value={jobForm.summary} onChange={updateJobField} rows="2" required /> </label> <label> Job description <textarea name="description" value={jobForm.description} onChange={updateJobField} rows="4" required /> </label> <label> Responsibilities{" "} <small>(one per line)</small> <textarea name="responsibilities" value={jobForm.responsibilities} onChange={updateJobField} rows="4" /> </label> <label> Requirements{" "} <small>(one per line)</small> <textarea name="requirements" value={jobForm.requirements} onChange={updateJobField} rows="4" /> </label> <label> Status <select name="status" value={jobForm.status} onChange={updateJobField} > <option value="open"> Open </option> <option value="draft"> Draft </option> <option value="closed"> Closed </option> </select> </label> {/* ACTIONS */} <div className="admin-login-actions"> <button type="button" onClick={() => { setShowJobModal(false); setEditingJobId(""); setJobForm(initialJobForm); }} > Cancel </button> <button type="submit"> {editingJobId ? "Update Job" : "Post Job"} </button> </div> </form>
+
+        </div>
+      </div>
+    )}
+
   </div>
 )}
 
-        {activeTab === "jobs" && (
-          <div className="admin-blog-grid">
-            <form className="admin-panel admin-blog-form" onSubmit={submitJob}>
-              <h2>{editingJobId ? "Edit job post" : "Post a new job"}</h2>
-              <div className="admin-form-row"><label>Job ID<input value={editingJobId ? jobForm.jobId : "Auto-generated (INX-00001)"} readOnly /></label><label>Role title<input name="title" value={jobForm.title} onChange={updateJobField} required /></label></div>
-              <div className="admin-form-row"><label>Department<input name="department" value={jobForm.department} onChange={updateJobField} required /></label><label>Employment type<select name="type" value={jobForm.type} onChange={updateJobField}><option>Full-time</option><option>Part-time</option><option>Internship</option><option>Contract</option></select></label></div>
-              <div className="admin-form-row"><label>Location<input name="location" value={jobForm.location} onChange={updateJobField} required /></label><label>Experience<input name="experience" value={jobForm.experience} onChange={updateJobField} required /></label></div>
-              <label>Short summary<textarea name="summary" value={jobForm.summary} onChange={updateJobField} rows="2" required /></label><label>Job description<textarea name="description" value={jobForm.description} onChange={updateJobField} rows="4" required /></label><label>Responsibilities <small>(one per line)</small><textarea name="responsibilities" value={jobForm.responsibilities} onChange={updateJobField} rows="4" /></label><label>Requirements <small>(one per line)</small><textarea name="requirements" value={jobForm.requirements} onChange={updateJobField} rows="4" /></label><label>Status<select name="status" value={jobForm.status} onChange={updateJobField}><option value="open">Open</option><option value="draft">Draft</option><option value="closed">Closed</option></select></label><div className="admin-login-actions"><button type="submit">{editingJobId ? "Update Job" : "Post Job"}</button>{editingJobId && <button type="button" onClick={() => { setEditingJobId(""); setJobForm(initialJobForm); }}>Cancel</button>}</div>
-            </form>
-            <div className="admin-panel"><h2>Job posts</h2><div className="admin-blog-list">{data.jobs.map((job) => <article key={job._id}><div><Pill tone={job.status === "open" ? "success" : "default"}>{job.status}</Pill><h3>{job.jobId} · {job.title}</h3><p>{job.department} · {job.location} · {job.type}</p></div><div className="admin-row-actions"><button type="button" onClick={() => editJob(job)}>Edit</button><button type="button" onClick={() => removeJob(job._id)}>Delete</button></div></article>)}{data.jobs.length === 0 && <p>No job posts yet.</p>}</div></div>
-          </div>
-        )}
 
         {activeTab === "applications" && (
           <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2></div><form className="admin-registration-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, Email, Mobile, Role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
@@ -3091,9 +3411,7 @@ return allTabs;
     >
 <div className="admin-history-header">
   <div>
-    <div className="admin-modal-icon">
-      🔐
-    </div>
+    
 
     <h2>Change my password</h2>
 
@@ -3192,9 +3510,7 @@ return allTabs;
       {/* MODAL HEADER */}
       <div className="admin-history-header">
         <div>
-          <div className="admin-modal-icon">
-            👤
-          </div>
+         
 
     <h2>
   {editingUserId ? "Edit team member" : "Add team member"}
@@ -3372,7 +3688,7 @@ return allTabs;
     title="View login history"
     aria-label={`View ${user.name}'s login history`}
   >
-    🕘
+  <FaHistory />
   </button>
 </div>
 

@@ -3,7 +3,7 @@ import {
   getAssignedCreators,
   getBrandTickets,
 } from "../lib/api";
-
+import { FcSearch } from "react-icons/fc";
 const AssignedTicketCreators = () => {
 
   
@@ -61,6 +61,111 @@ const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
     }
   };
 
+
+
+  const getInstagramFollowersRange = (followers) => {
+  if (
+    followers === null ||
+    followers === undefined ||
+    followers === "" ||
+    Number(followers) <= 0
+  ) {
+    return "";
+  }
+
+  followers = Number(followers);
+
+  if (followers < 1000) return "Under 1K";
+  if (followers < 10000) return "1K - 10K";
+  if (followers < 50000) return "10K - 50K";
+  if (followers < 100000) return "50K - 100K";
+  if (followers < 500000) return "100K - 500K";
+  if (followers < 1000000) return "500K - 1M";
+  if (followers < 5000000) return "1M - 5M";
+
+  return "5M+";
+};
+
+
+
+
+
+
+const normalizeYoutubeSubscribersRange = (value) => {
+  if (!value) return "";
+
+  const text = String(value).trim().toUpperCase();
+
+  const convertToNumber = (val) => {
+    val = val.replace(/,/g, "").trim();
+
+    if (val.endsWith("K")) {
+      return parseFloat(val.replace("K", "")) * 1000;
+    }
+
+    if (val.endsWith("M")) {
+      return parseFloat(val.replace("M", "")) * 1000000;
+    }
+
+    return parseFloat(val);
+  };
+
+  // Handle ranges like:
+  // 10K - 50K
+  // 10.6K - 50K
+  // 50K-100K
+  if (text.includes("-")) {
+    const [minValue] = text.split("-");
+
+    const min = convertToNumber(minValue);
+
+    if (isNaN(min)) return "";
+
+    if (min < 1000) return "Under 1K";
+    if (min < 10000) return "1K - 10K";
+    if (min < 50000) return "10K - 50K";
+    if (min < 100000) return "50K - 100K";
+
+    return "100K+";
+  }
+
+  // Handle:
+  // 100K+
+  // 500K+
+  // 1M+
+  if (text.includes("+")) {
+    const numberPart = text.replace("+", "").trim();
+    const number = convertToNumber(numberPart);
+
+    if (isNaN(number)) return "";
+
+    if (number < 1000) return "Under 1K";
+    if (number < 10000) return "1K - 10K";
+    if (number < 50000) return "10K - 50K";
+    if (number < 100000) return "50K - 100K";
+
+    return "100K+";
+  }
+
+  // Handle:
+  // 103
+  // 999
+  // 1K
+  // 10.6K
+  // 50K
+  // 100K
+  // 1M
+  const number = convertToNumber(text);
+
+  if (isNaN(number)) return "";
+
+  if (number < 1000) return "Under 1K";
+  if (number < 10000) return "1K - 10K";
+  if (number < 50000) return "10K - 50K";
+  if (number < 100000) return "50K - 100K";
+
+  return "100K+";
+};
 
 /* =========================================================
    CREATOR ACTION / COMMERCIAL / READY TO CAMPAIGN
@@ -436,7 +541,8 @@ const handleReadyToCampaign = (creatorId, value) => {
           creator.fullName,
           creator.instagramUsername,
           creator.instagramProfileLink,
-          creator.instagramFollowerRange,
+creator.instagramFollowerRange ||
+  getInstagramFollowersRange(creator.exactFollowers),
           creator.exactFollowers,
           creator.phoneNumber,
           creator.whatsappNumber,
@@ -459,7 +565,8 @@ const handleReadyToCampaign = (creatorId, value) => {
           creator.pincode,
           creator.youtubeUsername,
           creator.youtubeChannelLink,
-          creator.youtubeSubscribersRange,
+creator.youtubeSubscribersRange ||
+  normalizeYoutubeSubscribersRange(creator.youtubeSubscribers),
           creator.commercialsFor1InstagramReel,
           creator.photoLink,
           creator.commercialsFor1InstagramStory,
@@ -650,7 +757,7 @@ const handleReadyToCampaign = (creatorId, value) => {
 
       <div
         className="
-          admin-panel
+        p-3
           mx-[1.75vw]
           mt-[1.25vw]
           mb-[1.25vw]
@@ -750,12 +857,15 @@ const handleReadyToCampaign = (creatorId, value) => {
 
             <div
               className="
-                min-w-[11.25vw]
-                px-[1.25vw]
-                py-[1vw]
-                rounded-[1.25vw]
+            
+              inline-flex
+                min-w-[12vw]
+                px-[1.30vw]
+                py-[0.6vw]
+                rounded-[0.9vw]
                 bg-emerald-50
                 border
+                
                 border-emerald-100
               "
             >
@@ -763,6 +873,8 @@ const handleReadyToCampaign = (creatorId, value) => {
                 className="
                   block
                   text-[0.7vw]
+                  py-1
+                  -ml-3
                   font-semibold
                   text-emerald-700
                   whitespace-nowrap
@@ -774,9 +886,10 @@ const handleReadyToCampaign = (creatorId, value) => {
               <strong
                 className="
                   block
-                  mt-[0.3vw]
-                  text-[1.5vw]
+                  -mt-[0.2vw]
+                  text-[1.1vw]
                   font-bold
+                  ml-2
                   text-slate-900
                 "
               >
@@ -849,7 +962,7 @@ const handleReadyToCampaign = (creatorId, value) => {
                 pointer-events-none
               "
             >
-              🔍
+              <FcSearch />
             </span>
 
             <input
@@ -1231,8 +1344,9 @@ const handleReadyToCampaign = (creatorId, value) => {
                           whitespace-nowrap
                         "
                       >
-                        {creator.instagramFollowerRange ||
-                          "—"}
+                       {creator.instagramFollowerRange ||
+  getInstagramFollowersRange(creator.exactFollowers) ||
+  "—"}
                       </td>
 
                       {/* 6. EXACT FOLLOWERS */}
@@ -1333,7 +1447,7 @@ const handleReadyToCampaign = (creatorId, value) => {
                           creator,
                           "campaignType",
                           creator.campaignType
-                        )}
+                        )||"-"}
                       </td>
 
                       {/* 12. INFLUENCER TYPE */}
@@ -1548,8 +1662,11 @@ const handleReadyToCampaign = (creatorId, value) => {
                           whitespace-nowrap
                         "
                       >
-                        {creator.youtubeSubscribersRange ||
-                          "—"}
+                        {
+  creator.youtubeSubscribersRange ||
+  normalizeYoutubeSubscribersRange(creator.youtubeSubscribers) ||
+  "—"
+}
                       </td>
 
                       {/* 25. COMMERCIALS INSTAGRAM REEL */}
