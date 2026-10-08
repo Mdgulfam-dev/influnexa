@@ -5064,17 +5064,7 @@ height: 52px;
   display: block !important;
 }
 
-.admin-blog-form label .admin-required {
-  display: inline !important;
-  width: auto !important;
-  height: auto !important;
-  margin-left: 3px !important;
-  padding: 0 !important;
-  position: static !important;
-  vertical-align: baseline !important;
-  white-space: nowrap !important;
-  color: #dc2626 !important;
-}
+
 
 
 .admin-blog-grid {
