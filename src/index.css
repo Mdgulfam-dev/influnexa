@@ -5062,8 +5062,28 @@ height: 52px;
 
 .admin-blog-form label {
   display: block !important;
+  width: 100%;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 850;
 }
 
+.admin-blog-form label .admin-required {
+  display: inline !important;
+  width: auto !important;
+  position: static !important;
+  vertical-align: baseline !important;
+  white-space: nowrap !important;
+  margin-left: 2px !important;
+}
+
+.admin-blog-form label input,
+.admin-blog-form label textarea,
+.admin-blog-form label select {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+}
 
 
 
@@ -5078,13 +5098,7 @@ height: 52px;
   gap: 14px;
 }
 
-.admin-blog-form label {
-  display: grid;
-  gap: 7px;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 850;
-}
+
 
 .admin-form-row {
   display: grid;
