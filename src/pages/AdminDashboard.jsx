@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
+import Select from "react-select";
 import {
   createBlogPost,
   createAdminUser,
@@ -27,6 +28,7 @@ import {
   getAdminLoginHistory,
   getBrandTickets,
   getAssignedCreators,
+  getInfluencerFilterOptions,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -1169,12 +1171,130 @@ function RegistrationDataTable({
     </div>
   );
 }
+
+
+const compactFilterStyles = {
+ control: (base) => ({
+  ...base,
+  minHeight: 40,
+  height: 40,
+  borderRadius: 12,
+  borderColor: "#cbd5e1",
+  boxShadow: "none",
+  fontSize: 13,
+  "&:hover": {
+    borderColor: "#cbd5e1",
+  },
+}),
+
+  valueContainer: (base) => ({
+    ...base,
+    padding: "0 12px",
+    overflow: "hidden",
+  }),
+
+  input: (base) => ({
+    ...base,
+    margin: 0,
+    padding: 0,
+  }),
+
+  placeholder: (base) => ({
+    ...base,
+    color: "#94a3b8",
+    whiteSpace: "nowrap",
+  }),
+
+  singleValue: (base) => ({
+    ...base,
+    color: "#172033",
+  }),
+
+  indicatorsContainer: (base) => ({
+    ...base,
+    height: 38,
+  }),
+
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+
+  menu: (base) => ({
+  ...base,
+  zIndex: 9999,
+  marginTop: 4,
+  borderRadius: 10,
+  overflow: "hidden",
+  width: "100%",
+}),
+
+menuList: (base) => ({
+  ...base,
+  maxHeight: 150,
+  padding: 4,
+  overflowY: "auto",
+}),
+
+option: (base, state) => ({
+  ...base,
+  minHeight: 26,
+  padding: "4px 9px",
+  fontSize: 12,
+  lineHeight: "18px",
+  borderRadius: 5,
+  backgroundColor: state.isSelected || state.isFocused || state.isActive
+    ? "#f8fafc"
+    : "#ffffff",
+  color: "#374151",
+  cursor: "pointer",
+  outline: "none",
+  boxShadow: "none",
+  "&:active": {
+    backgroundColor: "#f8fafc",
+  },
+}),
+}
+
 function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
+
+  
+const [influencerFilterOptions, setInfluencerFilterOptions] =
+  useState({
+    cities: [],
+    states: [],
+    countries: [],
+    categories: [],
+    languages: [],
+    platforms: [],
+  });
+
+useEffect(() => {
+  let cancelled = false;
+
+  const loadFilterOptions = async () => {
+    try {
+      const response = await getInfluencerFilterOptions();
+
+      if (!cancelled && response.success) {
+        setInfluencerFilterOptions(response.options);
+      }
+    } catch (error) {
+      console.error("Failed to load influencer filter options:", error);
+    }
+  };
+
+  loadFilterOptions();
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
   return (
     <form className="admin-registration-toolbar" onSubmit={onSearch}>
        <label>
         Global Search
         <input
+         className="registration-global-search"
           name="search"
            placeholder={
             type === "influencers"
@@ -1188,102 +1308,272 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
       </label>
        {type === "influencers" && (
         <>
-      <label>
+      {/* Followers */}
+<label>
   Followers
-  <select
-    value={filters.followerRange}
-    onChange={(event) => {
-      const selected = followerRanges.find(
-        (range) => range.label === event.target.value
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    isSearchable
+    isClearable
+    placeholder="All Followers"
+    options={followerRanges.map((range) => ({
+      value: range.label,
+      label: range.label,
+    }))}
+    value={
+      followerRanges
+        .map((range) => ({
+          value: range.label,
+          label: range.label,
+        }))
+        .find((option) => option.value === (filters.followerRange || "")) ||
+      null
+    }
+    onChange={(selected) => {
+      const selectedRange = followerRanges.find(
+        (range) => range.label === (selected?.value || "")
       );
 
-      onFilterChange("followerRange", event.target.value);
-      onFilterChange("followerMin", selected?.min ?? "");
-      onFilterChange("followerMax", selected?.max ?? "");
+      onFilterChange("followerRange", selected?.value || "");
+      onFilterChange("followerMin", selectedRange?.min ?? "");
+      onFilterChange("followerMax", selectedRange?.max ?? "");
     }}
-  >
-    <option value="">All Followers</option>
-
-    {followerRanges.map((range) => (
-      <option key={range.label} value={range.label}>
-        {range.label}
-      </option>
-    ))}
-  </select>
+    styles={compactFilterStyles}
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect
+    screenReaderStatus={() => ""}
+    ariaLiveMessages={{
+      guidance: () => "",
+      onChange: () => "",
+      onFocus: () => "",
+      onFilter: () => "",
+    }}
+    noOptionsMessage={() => "No options available"}
+  />
 </label>
- <label>
-            Campaign Type
-            <select
-              value={filters.campaignType || ""}
-              onChange={(event) =>
-                onFilterChange("campaignType", event.target.value)
-              }
-            >
-              <option value="">All Campaign Types</option>
-              <option value="Barter Collaboration">Barter Collaboration</option>
-              <option value="Paid Collaboration">Paid Promotion</option>
-              <option value="Affiliate">Affiliate</option>
-              <option value="Paid Collaboration + Barter Collaboration">Paid Collaboration + Barter Collaboration</option>
-              <option value="Brand Collaboration">
-                Brand Collaboration
-              </option>
-            </select>
-          </label>
 
-          {/* Influencer Type */}
-          <label>
-            Influencer Type
-            <select
-              value={filters.influencerType || ""}
-              onChange={(event) =>
-                onFilterChange("influencerType", event.target.value)
-              }
-            >
-    <option value="">All Influencer Types</option>
-    <option value="Nano Influencer">Nano Influencer</option>
-    <option value="Micro Influencer">	Micro Influencer</option>
-    <option value="Macro Influencer">Macro Influencer</option>
-    <option value="Mega Influencer">Mega Influencer</option>
-            </select>
-          </label>
+{/* Campaign Type */}
+<label>
+  Campaign Type
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    isSearchable
+    isClearable
+    placeholder="All Campaign Types"
+    options={[
+      { value: "Barter Collaboration", label: "Barter Collaboration" },
+      { value: "Paid Collaboration", label: "Paid Promotion" },
+      { value: "Affiliate", label: "Affiliate" },
+      {
+        value: "Paid Collaboration + Barter Collaboration",
+        label: "Paid Collaboration + Barter Collaboration",
+      },
+      { value: "Brand Collaboration", label: "Brand Collaboration" },
+    ]}
+    value={
+      [
+        { value: "Barter Collaboration", label: "Barter Collaboration" },
+        { value: "Paid Collaboration", label: "Paid Promotion" },
+        { value: "Affiliate", label: "Affiliate" },
+        {
+          value: "Paid Collaboration + Barter Collaboration",
+          label: "Paid Collaboration + Barter Collaboration",
+        },
+        { value: "Brand Collaboration", label: "Brand Collaboration" },
+      ].find((option) => option.value === (filters.campaignType || "")) ||
+      null
+    }
+    onChange={(selected) =>
+      onFilterChange("campaignType", selected?.value || "")
+    }
+    styles={compactFilterStyles}
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect
+    screenReaderStatus={() => ""}
+    ariaLiveMessages={{
+      guidance: () => "",
+      onChange: () => "",
+      onFocus: () => "",
+      onFilter: () => "",
+    }}
+    noOptionsMessage={() => "No options available"}
+  />
+</label>
 
+{/* Influencer Type */}
+<label>
+  Influencer Type
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    isSearchable
+    isClearable
+    placeholder="All Influencer Types"
+    options={[
+      { value: "Nano Influencer", label: "Nano Influencer" },
+      { value: "Micro Influencer", label: "Micro Influencer" },
+      { value: "Macro Influencer", label: "Macro Influencer" },
+      { value: "Mega Influencer", label: "Mega Influencer" },
+    ]}
+    value={
+      [
+        { value: "Nano Influencer", label: "Nano Influencer" },
+        { value: "Micro Influencer", label: "Micro Influencer" },
+        { value: "Macro Influencer", label: "Macro Influencer" },
+        { value: "Mega Influencer", label: "Mega Influencer" },
+      ].find((option) => option.value === (filters.influencerType || "")) ||
+      null
+    }
+    onChange={(selected) =>
+      onFilterChange("influencerType", selected?.value || "")
+    }
+    styles={compactFilterStyles}
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect
+    screenReaderStatus={() => ""}
+    ariaLiveMessages={{
+      guidance: () => "",
+      onChange: () => "",
+      onFocus: () => "",
+      onFilter: () => "",
+    }}
+    noOptionsMessage={() => "No options available"}
+  />
+</label>
+      
+{[
+  {
+    name: "location",
+    label: "City",
+    placeholder: "All Cities",
+    options: influencerFilterOptions.cities,
+  },
+  {
+    name: "state",
+    label: "State",
+    placeholder: "All States",
+    options: influencerFilterOptions.states,
+  },
+  {
+    name: "country",
+    label: "Country",
+    placeholder: "All Countries",
+    options: influencerFilterOptions.countries,
+  },
+  {
+    name: "category",
+    label: "Category",
+    placeholder: "All Categories",
+    options: influencerFilterOptions.categories,
+  },
+  {
+    name: "language",
+    label: "Language",
+    placeholder: "All Languages",
+    options: influencerFilterOptions.languages,
+  },
+ {
+  name: "whatAllPlatformsAreYouAvailableOn",
+  label: "Platform",
+  placeholder: "Platform",
+  options: influencerFilterOptions.platforms,
+},
+].map((field) => {
+  const options = (field.options || []).map((item) => ({
+    value: item,
+    label: item,
+  }));
+
+  return (
+    <label key={field.name}>
+      {field.label}
+
+      <Select
+  className="influencer-filter-select"
+  classNamePrefix="influencer-select"
+  isSearchable
+  isClearable
+   screenReaderStatus={() => ""}
+   ariaLiveMessages={{
+  guidance: () => "",
+  onChange: () => "",
+  onFocus: () => "",
+  onFilter: () => "",
+   }}
+  aria-live="off"
+  placeholder={field.placeholder}
+  options={options}
+  value={
+    options.find(
+      (option) => option.value === (filters[field.name] || "")
+    ) || null
+  }
+  onChange={(selected) =>
+    onFilterChange(field.name, selected?.value || "")
+  }
+  styles={compactFilterStyles}
+  maxMenuHeight={150}
+  menuPlacement="auto"
+  menuPosition="absolute"
+  closeMenuOnScroll={false}
+  blurInputOnSelect
+  noOptionsMessage={() => "No options available"}
+/>
+    </label>
+  );
+})}
       <label>
-            City
-            <input placeholder="City" value={filters.location} onChange={(event) => onFilterChange("location", event.target.value)} />
-          </label>
-           <label>
-            State
-            <input placeholder="State" value={filters.state} onChange={(event) => onFilterChange("state", event.target.value)} />
-          </label>
+  Status
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    isSearchable
+    isClearable
+    placeholder="All Statuses"
+    options={statusOptions.map((item) => ({
+      value: item,
+      label: formatStatus(item),
+    }))}
+    value={
+      statusOptions
+        .map((item) => ({
+          value: item,
+          label: formatStatus(item),
+        }))
+        .find((option) => option.value === (filters.status || "")) || null
+    }
+    onChange={(selected) =>
+      onFilterChange("status", selected?.value || "")
+    }
+    styles={compactFilterStyles}
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect
+    screenReaderStatus={() => ""}
+    ariaLiveMessages={{
+      guidance: () => "",
+      onChange: () => "",
+      onFocus: () => "",
+      onFilter: () => "",
+    }}
+    noOptionsMessage={() => "No options available"}
+  />
+</label>
 
-           <label>
-        Country
-        <input placeholder="Country" value={filters.country} onChange={(event) => onFilterChange("country", event.target.value)} />
-      </label>
 
-       <label>
-            Category
-            <input placeholder="Fashion, Beauty..." value={filters.category} onChange={(event) => onFilterChange("category", event.target.value)} />
-          </label>
-         <label>
-            Language
-            <input placeholder="English, Hindi..." value={filters.language} onChange={(event) => onFilterChange("language", event.target.value)} />
-          </label>
-
-           <label>
-            Platform
-            <input placeholder="Instagram, YouTube..." value={filters.platform} onChange={(event) => onFilterChange("platform", event.target.value)} />
-          </label>
-      <label>
-        Status
-        <select value={filters.status} onChange={(event) => onFilterChange("status", event.target.value)} >
-          <option value="">All Statuses</option>
-          {statusOptions.map((item) => (
-            <option key={item} value={item}>{formatStatus(item)}
-            </option>
-          ))}
-        </select>
-      </label>
      </>
        )}
       {type === "brands" && (
@@ -1291,6 +1581,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     <label>
       Country
       <input
+      className="registration-global-search"
         placeholder="Country"
         value={filters.country}
         onChange={(event) =>
@@ -1302,6 +1593,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
     <label>
       Industry
       <input
+      className="registration-global-search"
         placeholder="Industry"
         value={filters.industry}
         onChange={(event) =>
@@ -1315,6 +1607,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
 <label>
   From
   <input
+  className="registration-global-search"
     type="date"
     value={filters.from}
     onChange={(event) =>
@@ -1326,6 +1619,7 @@ function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, on
 <label>
   To
   <input
+  className="registration-global-search"
     type="date"
     value={filters.to}
     onChange={(event) =>
@@ -1621,6 +1915,8 @@ const [loginHistory, setLoginHistory] = useState([]);
 const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [csvRefreshKey, setCsvRefreshKey] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
+
+
   const [activeTab, setActiveTab] = useState(() => {
   const requestedTab = window.location.hash.replace("#", "");
 
@@ -1704,6 +2000,12 @@ const viewAssignedCreators = async (ticket) => {
     setLoadingAssignedCreators(false);
   }
 };
+
+
+
+
+
+
 
 
 const validateTicketForm = () => {
@@ -2325,7 +2627,7 @@ return allTabs;
               />
             </label>
             {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
-            <div className="admin-login-actions">
+            <div className="admin-login">
           <button type="submit" disabled={isSubmitting}>
   {isSubmitting ? "Logging in..." : "Login"}
 </button>

@@ -504,7 +504,10 @@ const selectStyles = {
 ========================================================= */
 
 export default function CreatorDataAvailability() {
-
+const [creators, setCreators] = useState([]);
+const [creatorsPage, setCreatorsPage] = useState(1);
+const [creatorsLimit, setCreatorsLimit] = useState(100);
+const [creatorsTotal, setCreatorsTotal] = useState(0);
   const [filters, setFilters] =
     useState(initialFilters);
 
@@ -529,6 +532,71 @@ export default function CreatorDataAvailability() {
   const [hasChecked, setHasChecked] =
     useState(false);
 
+
+
+    const displayValue = (value) => {
+  if (Array.isArray(value)) {
+    return value.length ? value.join(", ") : "-";
+  }
+
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+
+  return String(value);
+};
+
+const [expandedCells, setExpandedCells] = useState({});
+
+const renderExpandableText = (value, cellKey, maxLength = 50) => {
+  const text = Array.isArray(value)
+    ? value.join(", ")
+    : value === null || value === undefined || value === ""
+      ? ""
+      : String(value);
+
+  if (!text) return "-";
+
+  const isExpanded = Boolean(expandedCells[cellKey]);
+  const isLong = text.length > maxLength;
+
+  if (!isLong) return text;
+
+  return (
+    <div className="min-w-[150px] max-w-[280px] whitespace-normal break-words">
+      <span>
+        {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+      </span>
+
+      <button
+        type="button"
+        onClick={() =>
+          setExpandedCells((prev) => ({
+            ...prev,
+            [cellKey]: !prev[cellKey],
+          }))
+        }
+        className="ml-1 whitespace-nowrap text-xs font-bold text-blue-600 hover:underline"
+      >
+        {isExpanded ? "See less" : "See more"}
+      </button>
+    </div>
+  );
+};
+
+
+
+const getProfileUrl = (url) => {
+  if (!url || typeof url !== "string") return "";
+
+  const trimmedUrl = url.trim();
+
+  if (!trimmedUrl) return "";
+
+  return /^https?:\/\//i.test(trimmedUrl)
+    ? trimmedUrl
+    : `https://${trimmedUrl}`;
+};
 
   /* =========================================================
      FETCH DATABASE FILTER OPTIONS
@@ -1027,18 +1095,14 @@ export default function CreatorDataAvailability() {
        ONLY COUNT/STATS ARE NEEDED
     ------------------------------------------------------- */
 
-    params.set(
-      "page",
-      "1"
-    );
+  
+/* SMALL PAGE
+   ONLY COUNT/STATS ARE NEEDED */
 
-    params.set(
-      "limit",
-      "1"
-    );
+params.set("page", String(creatorsPage));
+params.set("limit", String(creatorsLimit));
 
-    return params;
-
+return params;
   };
 
 
@@ -1095,6 +1159,16 @@ export default function CreatorDataAvailability() {
           );
 
         }
+
+        // Load creator rows for the table
+const rows = Array.isArray(result.creators)
+  ? result.creators
+  : Array.isArray(result.data)
+    ? result.data
+    : [];
+
+setCreators(rows);
+setCreatorsTotal(Number(result.total || 0));
 
         const backendStats =
           result.stats || {};
@@ -1198,7 +1272,7 @@ export default function CreatorDataAvailability() {
 
     checkAvailability();
 
-  }, []);
+  }, [creatorsPage, creatorsLimit]);
 
 
   /* =========================================================
@@ -1219,7 +1293,10 @@ const resetFilters = async () => {
   setFilters({
     ...initialFilters,
   });
-
+  
+  setCreatorsPage(1);
+setCreators([]);
+setCreatorsTotal(0);
   setError("");
 
   // Temporarily show loading state
@@ -1233,10 +1310,9 @@ const resetFilters = async () => {
     // backend returns FULL database counts.
     const params = new URLSearchParams();
 
-    params.set("page", "1");
-    params.set("limit", "1");
-
-    const url =
+params.set("page", "1");
+params.set("limit", String(creatorsLimit));
+const url =
       `${API_BASE_URL}/csv-creators?${params.toString()}`;
 
     console.log(
@@ -1267,6 +1343,15 @@ const resetFilters = async () => {
           "Unable to reload creator availability."
       );
     }
+
+    const rows = Array.isArray(result.creators)
+  ? result.creators
+  : Array.isArray(result.data)
+    ? result.data
+    : [];
+
+setCreators(rows);
+setCreatorsTotal(Number(result.total || 0));
 
     const backendStats =
       result.stats || {};
@@ -1634,9 +1719,7 @@ const resetFilters = async () => {
 
           <div className="availability-filter-title">
 
-            <div className="filter-big-icon">
-              ▼
-            </div>
+            
 
             <div>
 
@@ -2228,7 +2311,281 @@ const resetFilters = async () => {
         </div>
 
       </section>
+{/* =====================================================
+    AVAILABLE CREATORS TABLE
+===================================================== */}
 
+<section className="mt-6 w-full min-w-0 px-4 sm:px-6">
+  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    
+
+    
+  </div>
+
+  <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="relative isolate max-h-[650px] w-full overflow-auto">
+      <table className="w-max min-w-[1900px] border-separate border-spacing-0 text-left text-sm">
+        <thead className="sticky top-0 z-30 bg-slate-100">
+          <tr>
+            {[
+              "SL No",
+              "Full Name",
+              "Instagram Username",
+              "Instagram Profile Link",
+              "Categories",
+              "Influencer Type",
+              "YouTube Username",
+              "YouTube Channel Link",
+              "Gender",
+              "Languages",
+              "City",
+              "State",
+              "Country",
+             
+            ].map((heading) => (
+              <th
+                key={heading}
+                className={`whitespace-nowrap border-b  border-slate-200 px-4 py-3 font-bold text-slate-500 ${
+                   heading === "SL No"
+    ? "w-[60px] min-w-[60px] max-w-[60px] px-2":
+                  heading === "Full Name"
+                    ? "sticky left-0 z-40 min-w-[190px] bg-slate-100 border-r"
+                    : "min-w-[150px]"
+                }`}
+              >
+                {heading}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {checkingAvailability && creators.length === 0 ? (
+            <tr>
+              <td
+                colSpan={14}
+                className="px-4 py-10 text-center text-slate-500"
+              >
+                Loading creators...
+              </td>
+            </tr>
+          ) : creators.length === 0 ? (
+            <tr>
+              <td
+                colSpan={14}
+                className="px-4 py-10 text-center text-slate-500"
+              >
+                No creators found. Click Check Availability to load results.
+              </td>
+            </tr>
+          ) : (
+            creators.map((creator, index) => {
+              const instagramUrl = getProfileUrl(
+                creator.instagramProfileLink ||
+                creator.instagramProfileUrl ||
+                creator.instagramUrl
+              );
+
+              const youtubeChannelUrl = getProfileUrl(
+                creator.youtubeChannelLink ||
+                creator.youtubeChannelUrl
+              );
+
+
+
+              return (
+                <tr
+                  key={
+                    creator._id ||
+                    creator.id ||
+                    `${creatorsPage}-${index}`
+                  }
+                  className="group"
+                >
+                 <td className="w-[60px] min-w-[60px] max-w-[60px] whitespace-nowrap border-b border-slate-100 px-4 py-3 text-slate-600">
+  {(creatorsPage - 1) * creatorsLimit + index + 1}
+</td>
+
+                  <td className="
+    sticky
+    left-0
+    z-20
+    w-[220px]
+    min-w-[220px]
+    max-w-[220px]
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    bg-white
+    border-b
+    border-r
+    border-slate-200
+     whitespace-normal
+    break-words
+    overflow-wrap-anywhere
+    align-middle
+    "
+  >
+                    {displayValue(creator.fullName || creator.name)}
+                  </td>
+
+                  <td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+                    {displayValue(creator.instagramUsername)}
+                  </td>
+
+                  <td className="border-b  border-slate-100 px-4 py-3 text-blue-500">
+                    {instagramUrl ? (
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whitespace-nowrap font-semibold text-blue-600 hover:underline"
+                      >
+                        Instagram Profile Link
+                      </a>
+                    ) : "-"}
+                  </td>
+
+                  <td className="
+  px-4
+  py-5
+  text-sm
+  text-slate-700
+  border-b
+  border-slate-200
+  align-middle
+  min-w-[250px]
+  max-w-[350px]
+">
+  {renderExpandableText(
+    creator.categories,
+    `${creator._id || creator.id || index}-categories`,
+    50
+  )}
+</td>
+
+                  <td className="whitespace-nowrap border-b  border-slate-100 px-4 py-3">
+                    {displayValue(creator.influencerType)}
+                  </td>
+
+                  <td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+                    {displayValue(creator.youtubeUsername)}
+                  </td>
+
+                  <td className="border-b  border-slate-100 px-4 py-3 text-blue-500">
+                    {youtubeChannelUrl ? (
+                      <a
+                        href={youtubeChannelUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whitespace-nowrap font-semibold text-red-600 hover:underline"
+                      >
+                        YouTube Channel
+                      </a>
+                    ) : "-"}
+                  </td>
+
+                  <td  className="   px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+                    {displayValue(creator.gender)}
+                  </td>
+<td className="max-w-[250px] border-b  border-slate-100 px-4 py-3">
+  {renderExpandableText(
+    creator.languages,
+    `${creator._id || creator.id || index}-languages`,
+    50
+  )}
+</td>
+
+                  <td className="whitespace-nowrap border-b  border-slate-100 px-4 py-3">
+                    {displayValue(creator.city)}
+                  </td>
+
+                  <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3">
+                    {displayValue(creator.state)}
+                  </td>
+
+                  <td className="whitespace-nowrap border-b  border-slate-100 px-4 py-3">
+                    {displayValue(creator.country)}
+                  </td>
+
+                 
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* PAGINATION */}
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
+      <p className="text-sm text-slate-500">
+        Showing{" "}
+        {creatorsTotal === 0
+          ? 0
+          : (creatorsPage - 1) * creatorsLimit + 1}
+        {" "}to{" "}
+        {Math.min(creatorsPage * creatorsLimit, creatorsTotal)}
+        {" "}of {formatNumber(creatorsTotal)}
+      </p>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={creatorsPage <= 1 || checkingAvailability}
+          onClick={() => setCreatorsPage((page) => page - 1)}
+          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Previous
+        </button>
+
+        <span className="text-sm font-semibold text-slate-700">
+          Page {creatorsPage} of{" "}
+          {Math.max(1, Math.ceil(creatorsTotal / creatorsLimit))}
+        </span>
+
+        <button
+          type="button"
+          disabled={
+            creatorsPage >= Math.ceil(creatorsTotal / creatorsLimit) ||
+            checkingAvailability
+          }
+          onClick={() => setCreatorsPage((page) => page + 1)}
+          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
 
   );

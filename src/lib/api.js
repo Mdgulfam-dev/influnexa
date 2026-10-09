@@ -505,6 +505,34 @@ export async function createAdminUser(payload) {
   return data.user;
 }
 
+
+export const getInfluencerFilterOptions = async () => {
+  const token =
+    sessionStorage.getItem("influnexa_admin_token") ||
+    localStorage.getItem("influnexa_admin_token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/influencer-filter-options`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-token": token,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to load influencer filter options.");
+  }
+
+  return data;
+};
+
+
+
 export async function updateAdminUser(id, payload) {
   const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
     method: "PATCH",

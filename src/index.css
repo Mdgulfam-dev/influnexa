@@ -2839,6 +2839,22 @@ justify-content: center;
 
 }
 
+.admin-login button{
+  display: flex;
+  flex-wrap: wrap;
+   border: 0;
+  border-radius: var(--admin-button-radius,8px);
+  background: #111827;
+  color: white;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 900;
+  gap: 10px;
+  margin-top: 1vw;
+justify-content: center;
+
+}
+
 
 .admin-login-actions .admin-home-link {
   margin-top: 0;
@@ -4338,6 +4354,9 @@ section.admin-content .admin-ticket-workspace .admin-panel {
   text-transform: none;
 }
 
+
+
+
 .admin-registration-toolbar select {
   -webkit-appearance: none;
   appearance: none;
@@ -4351,11 +4370,34 @@ section.admin-content .admin-ticket-workspace .admin-panel {
   padding-right: 42px;
 }
 
-.admin-registration-toolbar input:focus,
-.admin-registration-toolbar select:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+.registration-global-search {
+  min-height: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: #172033;
+  padding: 0 12px;
+  outline: none;
 }
+
+.registration-global-search::placeholder {
+  color:#94a3b8;
+  font-size: 13px;
+  font-weight: bolder;
+  opacity: 1;
+}
+
+.registration-global-search:hover,
+.registration-global-search:focus {
+  border-color: #cbd5e1;
+  box-shadow: none;
+}
+
+
 .admin-sidebar-logout {
   width:200px;
   margin: 15px 12px 0;
@@ -4717,9 +4759,26 @@ height: 52px;
 .admin-registration-toolbar select {
   width: 100%;
   max-width: 100%;
-
+  height: 40px;
+  min-height: 40px;
+  padding: 0 12px;
   box-sizing: border-box;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background-color: #fff;
+  color: #172033;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+
+
+
 
 /* Buttons should stay above table */
 .admin-registration-toolbar button,
@@ -7847,7 +7906,7 @@ font-weight: 700;
 
 
 .admin-row-actions button,
-.admin-login-actions button {
+.admin-login-actions button{
   border: 0;
   border-radius: var(--admin-button-radius,8px);
   background: #111827;
@@ -17835,3 +17894,78 @@ label,
     font-size: 11px;
   }
 }
+.influencer-filter-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.influencer-filter-select .influencer-select__menu {
+  z-index: 10000 !important;
+}
+
+.admin-registration-toolbar > label {
+  min-width: 0;
+}
+
+.influencer-filter-select {
+  min-width: 0;
+}
+
+.influencer-filter-select .influencer-select__menu {
+  z-index: 9999;
+}
+
+.influencer-filter-select .influencer-select__menu-list {
+  max-height: 150px;
+}
+
+.influencer-filter-select .influencer-select__input-container {
+  color: #334155;
+}
+
+.admin-registration-toolbar > label {
+  min-width: 0;
+}
+
+.influencer-filter-select .influencer-select__aria-live {
+  display: none !important;
+}
+
+/* Hide react-select keyboard instructions shown above filters */
+.influencer-filter-select__menu,
+.influencer-filter-select__live-region,
+.influencer-select__aria-live,
+.react-select__aria-live,
+div[aria-live="polite"]:not([role="alert"]) {
+  /* Do not hide general page announcements */
+}
+
+.influencer-filter-select .influencer-select__aria-live,
+.influencer-filter-select__live-region {
+  display: none !important;
+}
+
+/* react-select screen reader announcement container */
+.react-select__menu ~ .react-select__aria-live,
+body > div[id*="react-select-"][aria-live] {
+  display: none !important;
+}
+
+/* Remove extra focus outline from react-select search input */
+.influencer-filter-select .influencer-select__input-container {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.influencer-filter-select .influencer-select__input-container input {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Keep focus styling only on the main dropdown */
+.influencer-filter-select .influencer-select__control {
+  outline: none !important;
+}
+

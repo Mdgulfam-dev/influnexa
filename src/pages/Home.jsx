@@ -1001,6 +1001,53 @@ const heroImages = [
   heroImage3,
 ];
 
+
+const [verifiedCreatorsCount, setVerifiedCreatorsCount] = useState(0);
+
+useEffect(() => {
+  const fetchVerifiedCreatorsCount = async () => {
+    try {
+      const API_BASE_URL = (
+        import.meta.env.VITE_API_URL ||
+        "http://127.0.0.1:5001/api"
+      ).replace(/\/+$/, "");
+
+      const url = `${API_BASE_URL}/csv-creators?page=1&limit=1`;
+
+      const response = await fetch(url);
+      const contentType = response.headers.get("content-type") || "";
+
+      if (!response.ok) {
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}. URL: ${url}`
+        );
+      }
+
+      if (!contentType.includes("application/json")) {
+        const responseText = await response.text();
+
+        console.error("Expected JSON but received:", responseText.slice(0, 300));
+        throw new Error(`API returned HTML or another non-JSON response. URL: ${url}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setVerifiedCreatorsCount(Number(result.total || 0));
+      } else {
+        console.error("CSV creators API response:", result);
+      }
+    } catch (error) {
+      console.error("Failed to fetch verified creators:", error);
+    }
+  };
+
+  fetchVerifiedCreatorsCount();
+}, []);
+
+
+
+
 useEffect(() => {
   const interval = setInterval(() => {
     setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
@@ -1153,7 +1200,7 @@ const scrollCreators = (direction) => {
 <div className="hero-proof-row">
   {[
     [57, "+", "Campaigns Managed"],
-    [10000, "+", "Verified Creators"],
+    [verifiedCreatorsCount, "", "Verified Creators"],
     [93, "%", "Client Satisfaction"],
   ].map(([value, suffix, label]) => (
     <span key={label}>
