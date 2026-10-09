@@ -479,7 +479,8 @@ const isStepValid = (step) => {
 // At least Instagram OR YouTube is mandatory
 if (
   !selectedPlatforms.includes("Instagram") &&
-  !selectedPlatforms.includes("YouTube")
+  !selectedPlatforms.includes("YouTube")&&
+   !selectedPlatforms.includes("LinkedIn")
 ) {
   return false;
 }
