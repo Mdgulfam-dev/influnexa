@@ -124,6 +124,7 @@ const languages = [
 const availablePlatforms = [
   "Instagram",
   "YouTube",
+    "LinkedIn",
 ];
 
 const dealTypes = [
@@ -186,7 +187,12 @@ const initialForm = {
   commercialsFor1IntegratedYouTubeVideo: "",
   commercialsFor1DedicatedYouTubeShortsVideo: "",
   commercialsFor1IntegratedYouTubeShortsVideo: "",
-
+linkedinUsername: "",
+linkedinProfileLink: "",
+linkedinFollowersRange: "",
+linkedinAverageViews: "",
+commercialsFor1LinkedInPost: "",
+commercialsFor1LinkedInReel: "",
   whatKindOfDealDoYouParticipateIn:[],
   speakingVideoLink: "",
 
@@ -268,6 +274,7 @@ const [otherLanguage, setOtherLanguage] = useState("");
   const [platforms, setPlatforms] = useState({
     yt: false,
     insta: false,
+     linkedin: false,
   });
 
   useEffect(() => {
@@ -311,71 +318,73 @@ const [otherLanguage, setOtherLanguage] = useState("");
   };
 
   const togglePlatform = (platform) => {
-    const isYouTube = platform === "yt";
-    const platformName = isYouTube
-      ? "YouTube"
-      : "Instagram";
+  const platformNames = {
+    yt: "YouTube",
+    insta: "Instagram",
+    linkedin: "LinkedIn",
+  };
 
-    const nextValue = !platforms[platform];
+  const platformName = platformNames[platform];
+  const nextValue = !platforms[platform];
 
-    setPlatforms((current) => ({
+  setPlatforms((current) => ({
+    ...current,
+    [platform]: nextValue,
+  }));
+
+  setForm((current) => ({
+    ...current,
+    whatAllPlatformsAreYouAvailableOn: nextValue
+      ? [
+          ...new Set([
+            ...current.whatAllPlatformsAreYouAvailableOn,
+            platformName,
+          ]),
+        ]
+      : current.whatAllPlatformsAreYouAvailableOn.filter(
+          (item) => item !== platformName
+        ),
+  }));
+};
+
+
+
+const toggleAvailablePlatform = (platform) => {
+  setForm((current) => {
+    const nextPlatforms = toggleValue(
+      current.whatAllPlatformsAreYouAvailableOn,
+      platform
+    );
+
+    if (platform === "Instagram") {
+      setPlatforms((currentPlatforms) => ({
+        ...currentPlatforms,
+        insta: nextPlatforms.includes("Instagram"),
+      }));
+    }
+
+    if (platform === "YouTube") {
+      setPlatforms((currentPlatforms) => ({
+        ...currentPlatforms,
+        yt: nextPlatforms.includes("YouTube"),
+      }));
+    }
+
+    // Add LinkedIn support without changing existing logic
+    if (platform === "LinkedIn") {
+      setPlatforms((currentPlatforms) => ({
+        ...currentPlatforms,
+        linkedin: nextPlatforms.includes("LinkedIn"),
+      }));
+    }
+
+    return {
       ...current,
-      [platform]: nextValue,
-    }));
+      whatAllPlatformsAreYouAvailableOn: nextPlatforms,
+    };
+  });
+};
 
-    setForm((current) => {
-      const currentPlatforms =
-        current.whatAllPlatformsAreYouAvailableOn;
-
-      return {
-        ...current,
-        whatAllPlatformsAreYouAvailableOn:
-          nextValue
-            ? [
-                ...new Set([
-                  ...currentPlatforms,
-                  platformName,
-                ]),
-              ]
-            : currentPlatforms.filter(
-                (item) => item !== platformName
-              ),
-      };
-    });
-  };
-
-  const toggleAvailablePlatform = (platform) => {
-    setForm((current) => {
-      const nextPlatforms = toggleValue(
-        current.whatAllPlatformsAreYouAvailableOn,
-        platform
-      );
-
-      if (platform === "Instagram") {
-        setPlatforms((currentPlatforms) => ({
-          ...currentPlatforms,
-          insta: nextPlatforms.includes(
-            "Instagram"
-          ),
-        }));
-      }
-
-      if (platform === "YouTube") {
-        setPlatforms((currentPlatforms) => ({
-          ...currentPlatforms,
-          yt: nextPlatforms.includes(
-            "YouTube"
-          ),
-        }));
-      }
-
-      return {
-        ...current,
-        whatAllPlatformsAreYouAvailableOn:
-          nextPlatforms,
-      };
-    });
-  };
 const isStepValid = (step) => {
   const requiredFieldsByStep = {
     1: [
@@ -503,6 +512,17 @@ if (
         return false;
       }
     }
+
+    // LinkedIn selected
+if (selectedPlatforms.includes("LinkedIn")) {
+  if (
+    !form.linkedinUsername.trim() ||
+    !form.linkedinProfileLink.trim() ||
+    !form.linkedinFollowersRange.trim()
+  ) {
+    return false;
+  }
+}
   }
 
   // Step 7 - consent required before submission
@@ -706,6 +726,22 @@ youtubeAverageViews: numberOrZero(
         form.commercialsFor1IntegratedYouTubeShortsVideo
       ),
 
+
+      // LINKEDIN
+linkedinUsername: text(form.linkedinUsername),
+linkedinProfileLink: text(form.linkedinProfileLink),
+linkedinFollowersRange: text(form.linkedinFollowersRange),
+linkedinAverageViews: numberOrZero(
+  form.linkedinAverageViews
+),
+
+// LINKEDIN COMMERCIALS
+commercialsFor1LinkedInPost: numberOrZero(
+  form.commercialsFor1LinkedInPost
+),
+commercialsFor1LinkedInReel: numberOrZero(
+  form.commercialsFor1LinkedInReel
+),
     // ==========================================
     // OTHER INFORMATION
     // ==========================================
@@ -1592,6 +1628,13 @@ onClick={() => {
                       }
                     />
 
+                    <PlatformCard
+  type="linkedin"
+  title="Add LinkedIn rate card"
+  checked={platforms.linkedin}
+  onClick={() => togglePlatform("linkedin")}
+/>
+
                   </div>
 
                   {/* INSTAGRAM */}
@@ -1820,6 +1863,87 @@ onClick={() => {
                       </div>
                     </div>
                   )}
+
+
+                  
+{/* LINKEDIN */}
+{platforms.linkedin && (
+  <div className="mt-6 border-t border-dashed border-[#E7E3DA] pt-6">
+    <SubTitle
+      type="linkedin"
+      title="LinkedIn Details"
+    />
+
+    <div className="grid gap-[18px] md:grid-cols-2">
+      <Input
+        label="LinkedIn Username"
+        name="linkedinUsername"
+        value={form.linkedinUsername}
+        onChange={updateField}
+        placeholder="Your LinkedIn username"
+        required
+      />
+
+      <Input
+        label="LinkedIn Profile Link"
+        type="url"
+        name="linkedinProfileLink"
+        value={form.linkedinProfileLink}
+        onChange={updateField}
+        placeholder="https://www.linkedin.com/in/..."
+        required
+      />
+
+      <SelectInput
+        label="LinkedIn Followers Range"
+        name="linkedinFollowersRange"
+        value={form.linkedinFollowersRange}
+        onChange={updateField}
+        options={[
+          "Under 1K",
+          "1K - 10K",
+          "10K - 50K",
+          "50K - 100K",
+          "100K - 500K",
+          "500K - 1M",
+          "1M - 5M",
+          "5M+",
+        ]}
+        required
+      />
+
+      <Input
+        label="LinkedIn Average Views"
+        type="number"
+        min="0"
+        name="linkedinAverageViews"
+        value={form.linkedinAverageViews}
+        onChange={updateField}
+        placeholder="e.g. 25000"
+      />
+    </div>
+
+    <p className="mb-3 mt-6 text-[13px] font-semibold">
+      Commercials (₹)
+    </p>
+
+    <div className="grid gap-4 md:grid-cols-2">
+      <PriceInput
+        label="Commercials For 1 LinkedIn Post"
+        name="commercialsFor1LinkedInPost"
+        value={form.commercialsFor1LinkedInPost}
+        onChange={updateField}
+      />
+
+      <PriceInput
+        label="Commercials For 1 LinkedIn Reel"
+        name="commercialsFor1LinkedInReel"
+        value={form.commercialsFor1LinkedInReel}
+        onChange={updateField}
+      />
+    </div>
+  </div>
+)}
 
                   <Navigation
                     onBack={() => nextStep(3)}

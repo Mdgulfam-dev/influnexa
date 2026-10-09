@@ -128,6 +128,16 @@ const influencerDetailFields = [
   ["Commercials For 1 Integrated YouTube Video", "commercialsFor1IntegratedYouTubeVideo"],
   ["Commercials For 1 Dedicated YouTube Shorts Video", "commercialsFor1DedicatedYouTubeShortsVideo"],
   ["Commercials For 1 Integrated YouTube Shorts Video", "commercialsFor1IntegratedYouTubeShortsVideo"],
+  ["LinkedIn Username", "linkedinUsername"],
+
+  ["LinkedIn Profile Link", "linkedinProfileLink"],
+
+  ["LinkedIn Followers Range", "linkedinFollowersRange"],
+
+  ["LinkedIn Average Views", "linkedinAverageViews"],
+
+  ["Commercials For 1 LinkedIn Post", "commercialsFor1LinkedInPost"],
+  ["Commercials For 1 LinkedIn Reel", "commercialsFor1LinkedInReel"],
   ["What Kind Of Deal Do You Participate In", "whatKindOfDealDoYouParticipateIn"],
   ["Speaking Video Link", "speakingVideoLink"],
   ["Are you a TV/Film/OTT celebrity", "areYouATvMoviesOttCelebrity"],
