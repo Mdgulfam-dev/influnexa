@@ -54,6 +54,38 @@ export async function getAssignedCreators(brandTicketId) {
 }
 
 
+export async function saveAssignedCreatorDetails(
+  brandTicketId,
+  creatorId,
+  updates
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/brand-ticket-creators/${brandTicketId}/creator/${creatorId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...adminHeaders()
+      },
+      body: JSON.stringify(updates),
+      cache:"no-store",
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to save creator details."
+    );
+  }
+
+  return data;
+}
+
+
+
+
 export async function getBrandTickets() {
   const response = await fetch(`${API_BASE_URL}/admin/brand-tickets`, {
     method: "GET",
@@ -243,7 +275,13 @@ export const createJob = (payload) => adminJobRequest("/jobs", "POST", payload);
 export const updateJob = (id, payload) => adminJobRequest(`/jobs/${id}`, "PATCH", payload);
 export const deleteJob = (id) => adminJobRequest(`/jobs/${id}`, "DELETE");
 export const updateJobApplicationStatus = (id, status) => adminJobRequest(`/applications/${id}/status`, "PATCH", { status });
-export const createBrandTicket = (payload) => adminJobRequest("/brand-tickets", "POST", payload);
+
+export const createBrandTicket = (payload) =>
+  adminJobRequest("/brand-tickets", "POST", {
+    ...payload,
+    createdByEmail: localStorage.getItem("Email") || "",
+  });
+
 export const updateBrandTicket = (id, payload) => adminJobRequest(`/brand-tickets/${id}`, "PATCH", payload);
 export const deleteBrandTicket = (id) => adminJobRequest(`/brand-tickets/${id}`, "DELETE");
 
@@ -484,6 +522,43 @@ export async function deleteTestimonial(id) {
   return data;
 }
 
+
+export async function getBrandUsers() {
+  const response = await fetch(`${API_BASE_URL}/admin/users`, {
+    method: "GET",
+    headers: {
+      ...adminHeaders(),
+    },
+    cache: "no-store",
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(data.message || "Unable to load brand users.");
+  }
+
+  // Your backend returns users in data.data
+  const users = Array.isArray(data)
+    ? data
+    : Array.isArray(data.data)
+      ? data.data
+      : Array.isArray(data.users)
+        ? data.users
+        : [];
+
+  // Return only active users whose role is brand
+  return users.filter(
+    (user) =>
+      String(user.role || "").toLowerCase() === "brand"
+  );
+}
+
+
 export async function createAdminUser(payload) {
   const response = await fetch(`${API_BASE_URL}/admin/users`, {
     method: "POST",
@@ -574,6 +649,39 @@ export async function updateOwnAdminPassword(payload) {
 
   return data.user;
 }
+
+
+export async function updateOwnBrandPassword(payload) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/brand/me/password`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...adminHeaders(),
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (
+      response.status === 401 &&
+      data.message !== "Current password is incorrect."
+    ) {
+      clearAdminToken();
+    }
+
+    throw new Error(
+      data.message || "Unable to update brand password."
+    );
+  }
+
+  return data.user;
+}
+
 
 export async function deleteAdminUser(id) {
   const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {

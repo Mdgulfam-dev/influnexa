@@ -2,13 +2,44 @@ import React, { useEffect, useState } from "react";
 import {
   createBrandTicket,
   updateBrandTicket,
+  getBrandUsers,
 } from "../lib/api";
 
 function CreateBrandTicket() {
+
+const currentUserRole = (
+  sessionStorage.getItem("adminRole") ||
+  localStorage.getItem("adminRole") ||
+  ""
+).toLowerCase();
+  
+const params = new URLSearchParams(window.location.search);
+const loggedInBrandName = params.get("brandName") || "";
+const lockBrand =
+  currentUserRole === "brand" ||
+  Boolean(loggedInBrandName);
   const editId = new URLSearchParams(window.location.search).get("edit");
 
+const [brandUsers, setBrandUsers] = useState([]);
+
+
+
+
+useEffect(() => {
+  const loadBrandUsers = async () => {
+    try {
+      const users = await getBrandUsers();
+      setBrandUsers(users);
+    } catch (error) {
+      console.error("Failed to load brand users:", error);
+    }
+  };
+
+  loadBrandUsers();
+}, []);
+
   const [ticketForm, setTicketForm] = useState({
-    brandName: "",
+   brandName: loggedInBrandName,
     campaignName: "",
     fullName: "",
     contactEmail: "",
@@ -68,7 +99,10 @@ function CreateBrandTicket() {
         }
 
         setTicketForm({
-          brandName: ticket.brandName || "",
+brandName:
+  currentUserRole === "brand"
+    ? loggedInBrandName || ticket.brandName || ""
+    : ticket.brandName || "",
           campaignName: ticket.campaignName || "",
           fullName: ticket.fullName || "",
           contactEmail: ticket.contactEmail || "",
@@ -327,18 +361,28 @@ function CreateBrandTicket() {
 
         <div className="admin-form-row">
 
-          <label>
-            Brand name{" "}
-            <span className="admin-required">*</span>
+         
+<label>
+  Brand name{" "}
+  <span className="admin-required">*</span>
 
-            <input
-              name="brandName"
-              type="text"
-              value={ticketForm.brandName}
-              onChange={handleChange}
-              required
-            />
-          </label>
+<select
+  name="brandName"
+  value={ticketForm.brandName}
+  onChange={handleChange}
+  required
+    disabled={lockBrand}
+>
+  <option value="">Select brand</option>
+
+  {brandUsers.map((brand) => (
+    <option key={brand._id} value={brand.name}>
+      {brand.name}
+    </option>
+  ))}
+</select>
+</label>
+
           
 
           <label>

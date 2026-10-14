@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   getAssignedCreators,
   getBrandTickets,
+  saveAssignedCreatorDetails
 } from "../lib/api";
 import { FcSearch } from "react-icons/fc";
 const AssignedTicketCreators = () => {
@@ -27,39 +28,62 @@ const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
     loadData();
   }, [ticketId]);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
+ 
+const loadData = async () => {
+  try {
+    setLoading(true);
 
-      if (!ticketId) {
-        throw new Error("Brand ticket ID is missing.");
-      }
-
-      const [tickets, creators] = await Promise.all([
-        getBrandTickets(),
-        getAssignedCreators(ticketId),
-      ]);
-
-      const currentTicket = tickets.find(
-        (item) => item._id === ticketId
-      );
-
-      setTicket(currentTicket || null);
-      setAssignedCreators(creators || []);
-    } catch (error) {
-      console.error(
-        "GET ASSIGNED CREATORS ERROR:",
-        error
-      );
-
-      alert(
-        error.message ||
-          "Failed to load assigned creators."
-      );
-    } finally {
-      setLoading(false);
+    if (!ticketId) {
+      throw new Error("Brand ticket ID is missing.");
     }
-  };
+
+    const [tickets, creators] = await Promise.all([
+      getBrandTickets(),
+      getAssignedCreators(ticketId),
+    ]);
+
+    const currentTicket = tickets.find(
+      (item) => String(item._id) === String(ticketId)
+    );
+
+    setTicket(currentTicket || null);
+
+    // Support either an array or the API response object.
+    const creatorList = Array.isArray(creators)
+      ? creators
+      : creators?.assignment?.creatorIds || [];
+
+    setAssignedCreators(creatorList);
+
+    const actionMap = {};
+    const commercialMap = {};
+    const readyMap = {};
+
+    creatorList.forEach((creator) => {
+      const id = String(creator._id);
+
+     actionMap[id] =
+  creator.assignedStatus ||
+  creator.status ||
+  "Pending";
+      commercialMap[id] = creator.commercial || "";
+      readyMap[id] = creator.readyToCampaign || "";
+    });
+
+    setCreatorActions(actionMap);
+    setCreatorCommercials(commercialMap);
+    setCreatorReadyStatus(readyMap);
+  } catch (error) {
+    console.error("GET ASSIGNED CREATORS ERROR:", error);
+
+    alert(
+      error.message || "Failed to load assigned creators."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
 
@@ -170,28 +194,77 @@ const normalizeYoutubeSubscribersRange = (value) => {
 /* =========================================================
    CREATOR ACTION / COMMERCIAL / READY TO CAMPAIGN
 ========================================================= */
+const handleCreatorAction = async (creatorId, value) => {
+  const id = String(creatorId);
+  const previousValue = creatorActions[id] || "";
 
-const handleCreatorAction = (creatorId, value) => {
   setCreatorActions((prev) => ({
     ...prev,
-    [creatorId]: value,
+    [id]: value,
   }));
+
+  try {
+    await saveAssignedCreatorDetails(ticketId, creatorId, {
+      status: value,
+    });
+  } catch (error) {
+    setCreatorActions((prev) => ({
+      ...prev,
+      [id]: previousValue,
+    }));
+
+    console.error("Failed to save creator status:", error);
+    alert(error.message || "Failed to save creator status.");
+  }
 };
 
-const handleCreatorCommercial = (creatorId, value) => {
+const handleCreatorCommercial = async (creatorId, value) => {
+  const id = String(creatorId);
+  const previousValue = creatorCommercials[id] || "";
+
   setCreatorCommercials((prev) => ({
     ...prev,
-    [creatorId]: value,
+    [id]: value,
   }));
+
+  try {
+    await saveAssignedCreatorDetails(ticketId, creatorId, {
+      commercial: value,
+    });
+  } catch (error) {
+    setCreatorCommercials((prev) => ({
+      ...prev,
+      [id]: previousValue,
+    }));
+
+    console.error("Failed to save commercial:", error);
+    alert(error.message || "Failed to save commercial.");
+  }
 };
 
-const handleReadyToCampaign = (creatorId, value) => {
+const handleReadyToCampaign = async (creatorId, value) => {
+  const id = String(creatorId);
+  const previousValue = creatorReadyStatus[id] || "";
+
   setCreatorReadyStatus((prev) => ({
     ...prev,
-    [creatorId]: value,
+    [id]: value,
   }));
-};
 
+  try {
+    await saveAssignedCreatorDetails(ticketId, creatorId, {
+      readyToCampaign: value,
+    });
+  } catch (error) {
+    setCreatorReadyStatus((prev) => ({
+      ...prev,
+      [id]: previousValue,
+    }));
+
+    console.error("Failed to save campaign readiness:", error);
+    alert(error.message || "Failed to save campaign readiness.");
+  }
+};
 
 
   /* =========================================================
@@ -586,16 +659,6 @@ creator.youtubeSubscribersRange ||
           creator.typeOfCelebrity,
           creator.amazonReviewsPerMonth,
           creator.platform,
-          creator.createdAt
-            ? new Date(
-                creator.createdAt
-              ).toLocaleString()
-            : "",
-          creator.updatedAt
-            ? new Date(
-                creator.updatedAt
-              ).toLocaleString()
-            : "",
           creator.bio,
           creator.InflunexaUserId ||
             creator.influnexaUserId,
@@ -896,20 +959,7 @@ creator.youtubeSubscribersRange ||
                 {assignedCreators.length.toLocaleString()}
               </strong>
 
-              {selectedCreatorIds.length > 0 && (
-                <span
-                  className="
-                    block
-                    mt-[0.15vw]
-                    text-[0.65vw]
-                    font-semibold
-                    text-emerald-600
-                    whitespace-nowrap
-                  "
-                >
-                  {selectedCreatorIds.length.toLocaleString()} selected
-                </span>
-              )}
+              
             </div>
 
             {/* DOWNLOAD CSV */}
@@ -1492,11 +1542,7 @@ creator.youtubeSubscribersRange ||
                           whitespace-nowrap
                         "
                       >
-                        {creator.dateOfBirth
-                          ? new Date(
-                              creator.dateOfBirth
-                            ).toLocaleDateString()
-                          : "—"}
+                         {creator.dateOfBirth || "-"}
                       </td>
 
                       {/* 15. LANGUAGES */}

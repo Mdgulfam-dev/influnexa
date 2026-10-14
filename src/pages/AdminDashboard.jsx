@@ -29,6 +29,7 @@ import {
   getBrandTickets,
   getAssignedCreators,
   getInfluencerFilterOptions,
+  updateOwnBrandPassword,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -672,6 +673,7 @@ if (key === "instagramFollowersRange") {
 
 const linkFields = [
     "instagramProfileLink",
+    "linkedinProfileLink", 
     "youtubeChannelLink",
     "photoLink",
     "speakingVideoLink",
@@ -1904,6 +1906,16 @@ function formatLoginHistoryDateTime(value) {
 }
 
 export default function AdminDashboard() {
+const [showBrandPasswordModal, setShowBrandPasswordModal] =
+  useState(false);
+
+const [brandPasswordForm, setBrandPasswordForm] = useState({
+  currentPassword: "",
+  password: "",
+  confirmPassword: "",
+});
+
+  const [loginHistoryReturnTab, setLoginHistoryReturnTab] = useState("users");
   const [showBlogModal, setShowBlogModal] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
 const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -1915,7 +1927,15 @@ const [loginHistory, setLoginHistory] = useState([]);
 const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [csvRefreshKey, setCsvRefreshKey] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
-
+const [showBrandModal, setShowBrandModal] = useState(false);
+const [editingBrandId, setEditingBrandId] = useState("");
+const [brandForm, setBrandForm] = useState({
+  name: "",
+  email: "",
+  password: "",
+  role: "brand",
+  status: "active",
+});
 
   const [activeTab, setActiveTab] = useState(() => {
   const requestedTab = window.location.hash.replace("#", "");
@@ -1935,6 +1955,7 @@ const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
     "blogs",
     "testimonials",
     "users",
+      "brand-registration",
     "jobs",
     "applications",
   ];
@@ -1969,6 +1990,22 @@ const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(hasAdminSession);
   const [status, setStatus] = useState({ type: "idle", message: "" });
 const [data, setData] = useState(emptyDashboardData);
+
+
+const currentUserRole = (
+  currentUser?.role ||
+  data?.currentUser?.role ||
+  data?.adminUser?.role ||
+  sessionStorage.getItem("adminRole") ||
+  ""
+).toLowerCase();
+
+  const isLead = currentUserRole === "lead";
+
+
+  const isBrand = currentUserRole === "brand";
+  const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
+
 
 useEffect(() => {
   if (!status.message) return;
@@ -2114,14 +2151,14 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 
 
   
-const openLoginHistory = async (user) => {
+const openLoginHistory = async (user, returnTab = activeTab) => {
   try {
     setLoginHistoryUser(user);
     setLoginHistory([]);
     setLoginHistoryLoading(true);
+    setLoginHistoryReturnTab(returnTab);
 
     const result = await getAdminLoginHistory(user._id);
-
     setLoginHistory(result.history || []);
   } catch (error) {
     console.error("Failed to load login history:", error);
@@ -2330,6 +2367,14 @@ useEffect(() => {
   };
 
  const selectTab = (id) => {
+
+  if (
+    currentUserRole === "brand" &&
+    !["tickets", "brand-registration"].includes(id)
+  ) {
+    return;
+  }
+
   if (
     isLead &&
     !["overview", "brands", "tickets", "csv-brands", "creator-network",].includes(id)
@@ -2371,12 +2416,76 @@ useEffect(() => {
   const nextInfluencerPage = () => loadRegistrationTable("influencers", influencerQuery, influencerTable.nextCursor, [...influencerTable.history, influencerTable.nextCursor]);
   const previousInfluencerPage = () => { const history = influencerTable.history.slice(0, -1); loadRegistrationTable("influencers", influencerQuery, history.at(-1) || null, history); };
 
+
+const visibleTickets =
+  currentUserRole === "brand"
+    ? (data.tickets || []).filter((ticket) => {
+        const brandName = String(
+          currentUser?.name ||
+          data?.currentUser?.name ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+        const ticketBrandName = String(
+          ticket.brandName || ""
+        )
+          .trim()
+          .toLowerCase();
+
+        return (
+          brandName !== "" &&
+          ticketBrandName === brandName
+        );
+      })
+    : data.tickets || [];
+
+
+
+const brandUsers = (data.users || []).filter((user) => {
+  if (String(user.role || "").toLowerCase() !== "brand") {
+    return false;
+  }
+
+  // Owner and admin can see every brand account
+  if (["owner", "admin"].includes(currentUserRole)) {
+    return true;
+  }
+
+  // Brand users can see only their own account
+  if (currentUserRole === "brand") {
+    const currentEmail = String(
+      currentUser?.email || data?.currentUser?.email || ""
+    ).trim().toLowerCase();
+
+    return (
+      currentEmail !== "" &&
+      String(user.email || "").trim().toLowerCase() === currentEmail
+    );
+  }
+
+  return false;
+});
+
+const regularUsers = (data.users || []).filter((user) => {
+  const role = String(user.role || "").trim().toLowerCase();
+  return role !== "brand";
+});
+
+
   const submitUser = async (event) => {
     event.preventDefault();
     setStatus({ type: "loading", message: editingUserId ? "Updating team member..." : "Adding team member..." });
 
     try {
       const payload = { ...userForm };
+
+
+  // Only set the role for the Brand Registration tab
+    if (activeTab === "brand-registration") {
+      payload.role = "brand";
+    }
 
       if (editingUserId) {
         delete payload.password;
@@ -2391,7 +2500,9 @@ useEffect(() => {
       setUserForm(initialUserForm);
       setEditingUserId("");
       await loadDashboard();
-      setActiveTab("users");
+       setActiveTab(
+      activeTab === "brand-registration" ? "brand-registration" : "users"
+    );
       setStatus({ type: "success", message: editingUserId ? "Team member updated." : "Team member added." });
     } catch (error) {
       setStatus({ type: "error", message: error.message });
@@ -2420,6 +2531,50 @@ useEffect(() => {
       setStatus({ type: "error", message: error.message });
     }
   };
+
+const submitBrandPassword = async (event) => {
+  event.preventDefault();
+
+ 
+
+  if (brandPasswordForm.password !== brandPasswordForm.confirmPassword) {
+    setStatus({
+      type: "error",
+      message: "New password and confirmation do not match.",
+    });
+    return;
+  }
+
+  setStatus({ type: "loading", message: "Updating brand password..." });
+
+  try {
+  await updateOwnBrandPassword({
+      currentPassword: brandPasswordForm.currentPassword,
+      password: brandPasswordForm.password,
+    });
+
+    setBrandPasswordForm({
+      currentPassword: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    setShowBrandPasswordModal(false);
+
+    setStatus({
+      type: "success",
+      message: "Brand password updated successfully.",
+    });
+  } catch (error) {
+    setStatus({
+      type: "error",
+      message: error.message,
+    });
+  }
+};
+
+
+
 
   const editUser = (user) => {
     setEditingUserId(user._id);
@@ -2476,21 +2631,22 @@ useEffect(() => {
   const editingUser = data.users.find((user) => user._id === editingUserId);
   const isEditingOwner = editingUser?.role === "owner";
   
-const currentUserRole = (
-  currentUser?.role ||
-  data?.currentUser?.role ||
-  data?.adminUser?.role ||
-  sessionStorage.getItem("adminRole") ||
-  ""
-).toLowerCase();
-
-  const isLead = currentUserRole === "lead";
-  const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
 
 
 useEffect(() => {
   // Wait until role is available
   if (!currentUserRole) return;
+
+ 
+  // Brand role: allow Tickets and Brand Registration
+  if (currentUserRole === "brand") {
+    if (!["tickets", "brand-registration"].includes(activeTab)) {
+      setActiveTab("tickets");
+      window.history.replaceState(null, "", "#tickets");
+    }
+    return;
+  }
+
 
   // creator cannot access Data Availability
   if (
@@ -2527,7 +2683,10 @@ useEffect(() => {
     const allTabs = [
       ["overview", "Dashboard"],
       ["brands", `Brands (${data.stats.brands || 0})`],
-      ["tickets", `Brand tickets (${data.stats.tickets || 0})`],
+[
+  "tickets",
+  `Brand tickets (${currentUserRole === "brand" ? visibleTickets.length : data.stats.tickets || 0})`,
+],
       ["influencers", `Influencers (${data.stats.influencers || 0})`],
       ["csv-creators", `CSV Creators`],
       ["upload-csv", `CSV Upload Creators`],
@@ -2539,13 +2698,25 @@ useEffect(() => {
       ["testimonials", `Testimonials (${data.testimonials.length})`],
       ["jobs", `Jobs (${data.jobs.length})`],
       ["applications", `Candidates (${data.applications.length})`],
-     ["users", canManageUsers ? `Users (${data.users.length})` : "Users"],
+   ["users", canManageUsers ? `Users (${regularUsers.length})` : "Users"],
+["brand-registration", "Brand Registration"],
     ];
+
 if (isLead) {
   return allTabs.filter(([id]) =>
     ["overview", "tickets", "brands", "csv-brands", "creator-network"].includes(id)
   );
 }
+
+
+if (currentUserRole === "brand") {
+  return allTabs.filter(([id]) =>
+    ["tickets", "brand-registration"].includes(id)
+  );
+}
+
+
+
 if (currentUserRole === "creator") {
   return allTabs.filter(
     ([id]) =>
@@ -2907,19 +3078,72 @@ return allTabs;
         {activeTab === "tickets" && (
           <div className="admin-ticket-workspace">
             <div className="admin-ticket-side">
-              <button
+            
+
+
+<button
   type="button"
-   className="admin-create-ticket-btn"
+  className="admin-create-ticket-btn"
   onClick={() => {
-    window.location.href = "/admin/tickets/create";
+    if (currentUserRole === "brand") {
+      const brandName =
+        currentUser?.name ||
+        data?.currentUser?.name ||
+        "";
+
+      window.location.href =
+        `/admin/tickets/create?brandName=${encodeURIComponent(
+          brandName
+        )}`;
+    } else {
+      window.location.href = "/admin/tickets/create";
+    }
   }}
 >
   Create Ticket
 </button>
-              <section className="admin-panel"><div className="admin-panel-title-row"><h2>Campaign analysis</h2><small>{data.stats.activeTickets || 0} active</small></div><AnalyticsChart title="Ticket status" items={data.analytics.ticketStatuses} emptyMessage="Create a ticket to see campaign status analysis." /><div className="admin-ticket-summary"><article><span>Total reach</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.reach || 0), 0).toLocaleString()}</strong></article><article><span>Total engagements</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.engagements || 0), 0).toLocaleString()}</strong></article><article><span>Conversions</span><strong>{data.tickets.reduce((sum, ticket) => sum + (ticket.metrics?.conversions || 0), 0).toLocaleString()}</strong></article></div></section>
+
+
+
+
+    {currentUserRole !== "brand" && (
+  <section className="admin-panel">
+    <div className="admin-panel-title-row">
+      <h2>Campaign analysis</h2>
+      <small>{data.stats.activeTickets || 0} active</small>
+    </div>
+
+    <AnalyticsChart
+      title="Ticket status"
+      items={data.analytics.ticketStatuses}
+      emptyMessage="Create a ticket to see campaign status analysis."
+    />
+  </section>
+)}
               <section className="admin-panel">
                 <h2>Brand campaign tickets</h2>
-                <div className="admin-blog-list">{data.tickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions</small></div>
+                <div className="admin-blog-list">{visibleTickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions </small><br></br>
+                
+{(() => {
+  const creator = (data.users || []).find(
+    (user) =>
+      String(user.email || "").trim().toLowerCase() ===
+      String(ticket.createdByEmail || "").trim().toLowerCase()
+  );
+
+  return (
+    <p className="text-black text-sm">
+      Created by: {creator?.name || "Unknown"}
+      {" | "}
+      Email: {ticket.createdByEmail || "Unknown"}
+      {" | "}
+       Role: {creator?.role || "Unknown"}
+      
+    </p>
+  );
+})()}
+
+  </div>
                 <div className="admin-row-actions">
 <button
   type="button"
@@ -2933,21 +3157,38 @@ return allTabs;
 >
   View Details
 </button>
-  <button
-    type="button"
-    onClick={(e) => {
-      e.stopPropagation();
 
-      sessionStorage.setItem(
-        "influnexa_edit_brand_ticket",
-        JSON.stringify(ticket)
+  
+<button
+  type="button"
+  onClick={(e) => {
+    e.stopPropagation();
+
+    sessionStorage.setItem(
+      "influnexa_edit_brand_ticket",
+      JSON.stringify(ticket)
+    );
+
+    const editUrl = new URL(
+      "/admin/tickets/create",
+      window.location.origin
+    );
+
+    editUrl.searchParams.set("edit", ticket._id);
+
+    if (currentUserRole === "brand") {
+      editUrl.searchParams.set(
+        "brandName",
+        currentUser?.name || data?.currentUser?.name || ""
       );
+    }
 
-      window.location.href = `/admin/tickets/create?edit=${ticket._id}`;
-    }}
-  >
-    Edit
-  </button>
+    window.location.href = editUrl.toString();
+  }}
+>
+  Edit
+</button>
+
 
   <button
     type="button"
@@ -2959,7 +3200,7 @@ return allTabs;
     Delete
   </button>
 </div>
-</article>; })}{data.tickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section> </div>
+</article>; })}{visibleTickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section> </div>
           </div>
         )}
 
@@ -3454,6 +3695,7 @@ return allTabs;
     </div>
 
 
+
     {/* JOB MODAL */}
     {showJobModal && (
       <div
@@ -3571,18 +3813,17 @@ return allTabs;
             </div>
           </div>
         )}
-
-        {activeTab === "users" && (
+   {activeTab === "users" && (
           <div className="admin-blog-grid">
             
-<div className="admin-users-header">
-  <div>
-    <h2>Users & Access</h2>
-    <p>Manage your account password and team members.</p>
-  </div>
+   <div className="admin-users-header">
+    <div>
+      <h2>Users & Access</h2>
+      <p>Manage your account password and team members.</p>
+      </div>
 
-  <div className="admin-users-header-actions">
-    <button
+      <div className="admin-users-header-actions">
+       <button
       type="button"
       className="admin-user-header-button"
       onClick={() => setShowPasswordModal(true)}
@@ -3603,7 +3844,7 @@ return allTabs;
 </div>
 
 
-           {loginHistoryUser && (
+         {loginHistoryUser && loginHistoryReturnTab === "users" && (
   <div
     className="admin-history-overlay"
     onClick={closeLoginHistory}
@@ -3711,6 +3952,11 @@ return allTabs;
     </div>
   </div>
 )}
+
+
+
+
+
 
 {showPasswordModal && (
   <div
@@ -3982,7 +4228,7 @@ return allTabs;
                 <div className="admin-panel admin-user-list-panel">
                   <h2>Team access</h2>
                   <div className="admin-blog-list admin-user-list">
-                    {data.users.map((user) => (
+                 {regularUsers.map((user) => (
                       <article key={user._id}>
                         <div>
                           <Pill tone={user.status === "active" ? "success" : "default"}>{user.status}</Pill>
@@ -3996,7 +4242,7 @@ return allTabs;
   <button
     type="button"
     className="admin-history-button"
-    onClick={() => openLoginHistory(user)}
+   onClick={() => openLoginHistory(user, "users")}
     title="View login history"
     aria-label={`View ${user.name}'s login history`}
   >
@@ -4015,7 +4261,7 @@ return allTabs;
                         </div>
                       </article>
                     ))}
-                    {data.users.length === 0 && (
+                   {regularUsers.length === 0 && (
                       <article>
                         <div>
                           <h3>No team members yet</h3>
@@ -4040,12 +4286,517 @@ return allTabs;
                   </article>
                 </div>
               </div>
-            )}
-
-
-            
+            )}  
           </div>
         )}
+
+
+
+        
+{activeTab === "brand-registration" &&  (
+  <div className="admin-blog-grid">
+    <div className="admin-users-header">
+      <div>
+        
+      </div>
+
+      <div className="admin-users-header-actions">
+
+
+  <button
+    type="button"
+    className="admin-user-header-button"
+    onClick={() => {
+      setBrandPasswordForm({
+        currentPassword: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setShowBrandPasswordModal(true);
+    }}
+  >
+    Change Password
+  </button>
+
+
+      {canManageUsers && (
+  <button
+    type="button"
+    className="admin-user-header-button primary"
+    onClick={() => {
+      setEditingBrandId("");
+      setBrandForm({
+        name: "",
+        email: "",
+        password: "",
+        role: "brand",
+        status: "active",
+      });
+      setShowBrandModal(true);
+    }}
+  >
+    + Add Brand
+  </button>
+)}
+      </div>
+    </div>
+
+    <div className="admin-panel admin-user-list-panel">
+      <h2>Brand accounts ({brandUsers.length})</h2>
+
+      <div className="admin-blog-list admin-user-list">
+        {brandUsers.map((user) => (
+          <article key={user._id}>
+            <div>
+              <Pill
+                tone={
+                  user.status === "active"
+                    ? "success"
+                    : "default"
+                }
+              >
+                {user.status}
+              </Pill>
+
+              <h3>{user.name}</h3>
+              <p>{user.email}</p>
+
+              <div className="admin-user-meta">
+                <span>
+                  Brand - Last login:{" "}
+                  {formatDate(user.lastLoginAt)}
+                </span>
+
+                <button
+                  type="button"
+                  className="admin-history-button"
+                onClick={() => openLoginHistory(user, "brand-registration")}
+                  title="View login history"
+                  aria-label={`View ${user.name}'s login history`}
+                >
+                  <FaHistory />
+                </button>
+              </div>
+            </div>
+
+            <div className="admin-row-actions">
+     
+<button
+  type="button"
+  onClick={() => {
+    setEditingBrandId(user._id);
+
+    setBrandForm({
+      name: user.name || "",
+      email: user.email || "",
+      password: "",
+      role: "brand",
+      status: user.status || "active",
+    });
+
+    setShowBrandModal(true);
+  }}
+>
+  Edit
+</button>
+
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Delete brand account for ${user.name}?`
+                    )
+                  ) {
+                    removeUser(user._id);
+                  }
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        ))}
+
+        {brandUsers.length === 0 && (
+          <article>
+            <div>
+              <h3>No brand accounts yet</h3>
+              <p>
+                Add a brand account to manage it here.
+              </p>
+            </div>
+          </article>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+ {loginHistoryUser && loginHistoryReturnTab === "brand-registration" && (
+  <div
+    className="admin-history-overlay"
+    onClick={closeLoginHistory}
+  >
+    <div
+      className="admin-history-panel"
+      onClick={(event) => event.stopPropagation()}
+    >
+
+      {/* HEADER */}
+      <div className="admin-history-header">
+        <div>
+          <h2>Login History</h2>
+
+          <p>{loginHistoryUser.name}</p>
+
+          <small>{loginHistoryUser.email}</small>
+        </div>
+
+        <button
+          type="button"
+          className="admin-history-close"
+          onClick={closeLoginHistory}
+          aria-label="Close history"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* SUBTITLE */}
+      <div className="admin-history-subtitle">
+        Activity from the last 7 days
+      </div>
+
+      {/* ONLY THIS AREA SCROLLS */}
+      {loginHistoryLoading ? (
+        <div className="admin-history-empty">
+          <div className="admin-history-spinner" />
+          <strong>Loading history...</strong>
+        </div>
+      ) : loginHistory.length === 0 ? (
+        <div className="admin-history-empty">
+          <div className="admin-history-empty-icon">
+            🕘
+          </div>
+
+          <strong>No activity found</strong>
+
+          <span>
+            No login/logout activity in the last 7 days.
+          </span>
+        </div>
+      ) : (
+        <div className="admin-history-list">
+          {loginHistory.map((item) => (
+            <div
+              key={item._id}
+              className="admin-history-item"
+            >
+              <div
+                className={`admin-history-icon ${
+                  item.action === "login"
+                    ? "login"
+                    : "logout"
+                }`}
+              >
+                {item.action === "login" ? "↗" : "↙"}
+              </div>
+
+              <div className="admin-history-content">
+                <strong>
+                  {item.action === "login"
+                    ? "Logged in"
+                    : "Logged out"}
+                </strong>
+
+                <span>
+                  {formatLoginHistoryDateTime(item.createdAt)}
+
+                  {/* Show active duration beside logout time */}
+        {item.action === "logout" && item.duration && (
+          <span className="admin-history-duration">
+            · Active for {item.duration}
+          </span>
+        )}
+                </span>
+              </div>
+
+              <span
+                className={`admin-history-status ${
+                  item.action === "login"
+                    ? "login"
+                    : "logout"
+                }`}
+              >
+                {item.action === "login"
+                  ? "Login"
+                  : "Logout"}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
+
+
+
+
+{showBrandPasswordModal &&
+ 
+    <div
+      className="admin-history-overlay"
+      onClick={() => setShowBrandPasswordModal(false)}
+    >
+      <div
+        className="admin-history-panel admin-user-modal"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="admin-history-header">
+          <div>
+            <h2>Change Brand Password</h2>
+            <p>Update your brand account password securely.</p>
+          </div>
+
+          <button
+            type="button"
+            className="admin-history-close"
+            onClick={() => setShowBrandPasswordModal(false)}
+            aria-label="Close brand password modal"
+          >
+            ×
+          </button>
+        </div>
+
+        <form
+          className="admin-blog-form"
+          onSubmit={submitBrandPassword}
+        >
+          <label>
+            Current password
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={brandPasswordForm.currentPassword}
+              onChange={(event) =>
+                setBrandPasswordForm((previous) => ({
+                  ...previous,
+                  currentPassword: event.target.value,
+                }))
+              }
+              required
+            />
+          </label>
+
+          <label>
+            New password
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={brandPasswordForm.password}
+              onChange={(event) =>
+                setBrandPasswordForm((previous) => ({
+                  ...previous,
+                  password: event.target.value,
+                }))
+              }
+              minLength={8}
+              placeholder="Minimum 8 characters"
+              required
+            />
+          </label>
+
+          <label>
+            Confirm new password
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={brandPasswordForm.confirmPassword}
+              onChange={(event) =>
+                setBrandPasswordForm((previous) => ({
+                  ...previous,
+                  confirmPassword: event.target.value,
+                }))
+              }
+              minLength={8}
+              required
+            />
+          </label>
+
+          <div className="admin-login-actions">
+            <button
+              type="button"
+              onClick={() => setShowBrandPasswordModal(false)}
+            >
+              Cancel
+            </button>
+
+            <button type="submit">
+              Update Brand Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+    
+{ showBrandModal && (
+  <div
+    className="admin-history-overlay"
+    onClick={() => setShowBrandModal(false)}
+  >
+    <div
+      className="admin-history-panel admin-user-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="admin-history-header">
+        <div>
+          <h2>
+            {editingBrandId ? "Edit Brand" : "Add Brand"}
+          </h2>
+          <p>
+            {editingBrandId
+              ? "Update the brand account details."
+              : "Create a new brand account."}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="admin-history-close"
+          onClick={() => setShowBrandModal(false)}
+        >
+          ×
+        </button>
+      </div>
+
+      <form
+        className="admin-blog-form"
+        onSubmit={async (event) => {
+          event.preventDefault();
+
+          try {
+            const payload = {
+  ...brandForm,
+  role: "brand",
+};
+
+if (editingBrandId) {
+  delete payload.password;
+  await updateAdminUser(editingBrandId, payload);
+} else {
+  await createAdminUser(payload);
+}
+
+            setShowBrandModal(false);
+            setEditingBrandId("");
+            setBrandForm({
+              name: "",
+              email: "",
+              password: "",
+              role: "brand",
+              status: "active",
+            });
+
+            await loadDashboard();
+          } catch (error) {
+            setStatus({
+              type: "error",
+              message: error.message,
+            });
+          }
+        }}
+      >
+        <label>
+          Name
+          <input
+            name="name"
+            value={brandForm.name}
+            onChange={(event) =>
+              setBrandForm((prev) => ({
+                ...prev,
+                name: event.target.value,
+              }))
+            }
+            required
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            name="email"
+            type="email"
+            value={brandForm.email}
+            onChange={(event) =>
+              setBrandForm((prev) => ({
+                ...prev,
+                email: event.target.value,
+              }))
+            }
+            required
+          />
+        </label>
+
+        <label>
+          Initial password
+          <input
+            name="password"
+            type="password"
+            value={brandForm.password}
+            onChange={(event) =>
+              setBrandForm((prev) => ({
+                ...prev,
+                password: event.target.value,
+              }))
+            }
+            required={!editingBrandId}
+          />
+        </label>
+
+        <label>
+          Status
+          <select
+            name="status"
+            value={brandForm.status}
+            onChange={(event) =>
+              setBrandForm((prev) => ({
+                ...prev,
+                status: event.target.value,
+              }))
+            }
+          >
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </label>
+
+        <div className="admin-login-actions">
+          <button
+            type="button"
+            onClick={() => setShowBrandModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button type="submit">
+            {editingBrandId ? "Update Brand" : "Add Brand"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+
 
       </section>
     </main>

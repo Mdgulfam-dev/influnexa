@@ -1228,28 +1228,6 @@ const selectStyles = {
 
 </div><br></br>
 
-      <button
-        onClick={resetFilters}
-        className="
-  h-11
-  w-fit
-  px-4
-  rounded-xl
-  border
-  border-slate-300
-  bg-white
-  text-slate-700
-  text-sm
-  font-semibold
-  hover:bg-slate-50
-  transition
-  lg:absolute
-  lg:right-7
-  lg:top-[165px]
-">
-        Reset Filters
-      </button>
-
     </div>
 
 
@@ -1593,51 +1571,72 @@ const selectStyles = {
       </div>
 
 
- {/* DOWNLOAD BUTTONS */}
+{/* DOWNLOAD BUTTONS */}
 {isFiltered && !loading && creators.length > 0 && (
-  <div className="flex justify-end gap-3 mt-3">
-
+  <div className="flex flex-wrap items-center justify-end gap-3 mt-3 mr-44">
     {adminRole !== "creator" && (
       <>
-      <button
-    
-        onClick={downloadCSV}
-        className="
-          h-11
-          px-5
-          rounded-xl
-          bg-emerald-600
-          hover:bg-emerald-700
-          text-white
-          text-sm
-          font-semibold
-          transition
-        "
-      >
-        Download CSV
-      </button>
-  
-          <button
-            onClick={downloadMaskedCSV}
-            className="
-              h-11
-              px-5
-              rounded-xl
-              bg-slate-700
-              hover:bg-slate-800
-              text-white
-              text-sm
-              font-semibold
-              transition
-            "
-          >
-            Download Masked CSV
-          </button>
-          </>
-          )}
+        <button
+          onClick={downloadCSV}
+          className="
+            h-11 px-5 rounded-xl
+            bg-emerald-600 hover:bg-emerald-700
+            text-white text-sm font-semibold
+            transition whitespace-nowrap
+          "
+        >
+          Download CSV
+        </button>
 
-        </div>
-      )}
+        <button
+          onClick={downloadMaskedCSV}
+          className="
+            h-11 px-5 rounded-xl
+            bg-slate-700 hover:bg-slate-800
+            text-white text-sm font-semibold
+            transition whitespace-nowrap
+          "
+        >
+          Download Masked CSV
+        </button>
+      </>
+    )}
+  </div>
+)}
+
+{/* FIXED RESET FILTERS BUTTON - ALWAYS VISIBLE */}
+<button
+  type="button"
+  onClick={resetFilters}
+  
+className="
+  absolute
+  right-3
+  sm:right-11
+  lg:right-15
+  top-[350px]
+  sm:top-[280px]
+  lg:top-[350px]
+  z-50
+  h-11
+  px-3
+  sm:px-4
+  rounded-xl
+  border border-slate-300
+  bg-white
+  text-slate-700
+  text-sm
+  font-semibold
+  hover:bg-slate-50
+  shadow-sm
+  transition
+  whitespace-nowrap
+"
+
+>
+  Reset Filters
+</button>
+
 
     </div>
 
