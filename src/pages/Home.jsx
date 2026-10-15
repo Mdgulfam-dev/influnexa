@@ -3018,7 +3018,7 @@ const scrollCreators = (direction) => {
 
         <section id="case-studies" className="px-4 py-20 lg:px-6">
           <SectionHeader
-            eyebrow="Case studies"
+            eyebrow="Our Recent Case Studies"
             title="Campaigns engineered around business outcomes"
           />
           <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">

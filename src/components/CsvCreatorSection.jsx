@@ -1133,7 +1133,7 @@ const selectStyles = {
 
 <div className="
   relative
-  z-[100]
+ 
   flex
   items-center
   gap-[1vw]
@@ -1147,33 +1147,32 @@ const selectStyles = {
     value={selectedBrandTicket}
     onChange={(e) => setSelectedBrandTicket(e.target.value)}
     className="
-      w-[20vw]
-      h-[3vw]
-      min-h-[44px]
-      max-h-[52px]
-      px-[1vw]
-      border
-      border-slate-200
-      rounded-[0.8vw]
-      bg-white
-      text-[0.9vw]
-      text-slate-700
-      shrink-0
+  w-[20vw]
+  h-[46px]
+  min-h-[44px]
+  max-h-[52px]
+  px-[12px]
+  border
+  border-slate-200
+  rounded-[10px]
+  bg-white
+  text-[14px]
+  text-slate-700
+  shrink-0
+  
+  
 
-      max-[1199px]:w-[25vw]
-      max-[1199px]:h-[3.5vw]
-      max-[1199px]:text-[1.1vw]
+  max-[1199px]:w-[25vw]
+  max-[1199px]:text-[13px]
 
-      max-[767px]:w-[55vw]
-      max-[767px]:h-[9vw]
-      max-[767px]:px-[3vw]
-      max-[767px]:text-[3vw]
-      max-[767px]:rounded-[2vw]
+  max-[767px]:w-[55vw]
+  max-[767px]:h-[44px]
+  max-[767px]:text-[13px]
 
-      max-[480px]:w-[55vw]
-      max-[480px]:h-[11vw]
-      max-[480px]:text-[3.5vw]
-    "
+  max-[480px]:w-[55vw]
+  max-[480px]:h-[44px]
+  max-[480px]:text-[12px]
+"
   >
     <option value="">Select Brand Ticket</option>
 
@@ -1193,7 +1192,7 @@ const selectStyles = {
   }}
   className="
     relative
-    z-[100]
+   
     pointer-events-auto
     shrink-0
     h-[3vw]
@@ -4029,7 +4028,7 @@ key={creator._id}
         bg-white
         w-full
         max-w-[700px]
-        max-h-[90vh]
+        max-h-[75vh]
         overflow-y-auto
         rounded-[24px]
         shadow-2xl

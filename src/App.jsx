@@ -11,6 +11,7 @@ import Industries from "./pages/Industries";
 import ShareExperience from "./pages/ShareExperience";
 import CreateBrandTicket from "./pages/CreateBrandTicket"
 import AssignedTicketCreators from "./pages/AssignedTicketCreators";
+import CreatorNetwork from "./pages/CreatorNetwork";
 function App() {
 
     const [theme, setTheme] = useState(() => {
@@ -60,6 +61,10 @@ if (path === "/admin/tickets/creators") {
 
   if (path.startsWith("/careers/")) {
     return <JobDetail />;
+  }
+
+  if(path === "/creators-roster"){
+    return <CreatorNetwork/>
   }
 
   if (path === "/blog" || path.startsWith("/blog/")) {

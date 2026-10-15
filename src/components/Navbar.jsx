@@ -5,8 +5,8 @@ import influnexaLogo from "../assets/influnexa-logo.png";
 const navItems = [
   ["Home", "/#home"],
   ["Services", "/#services"],
-  ["Workflow", "/#workflow"],
   ["Creators", "/#influencers"],
+  ["Creator Network", "/creators-roster"],
   ["Case Studies", "/#case-studies"],
   ["Blog", "/blog"],
   ["Careers", "/careers"],
@@ -29,12 +29,12 @@ export default function Navbar({ theme = "light", onToggleTheme }) {
     <nav
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "border-b border-white/10 bg-slate-950/82 shadow-2xl shadow-slate-950/15 backdrop-blur-2xl"
-          : "bg-transparent"
+          ? ""
+          : ""
       }`}
       aria-label="Primary navigation"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-6 ">
         <a href="/#home" className="brand-lockup flex items-center" aria-label="Influnexa home">
           <span className="brand-logo-frame">
             <img src={influnexaLogo} alt="Influnexa" />

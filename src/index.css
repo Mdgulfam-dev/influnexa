@@ -5112,6 +5112,15 @@ height: 52px;
 
 .admin-blog-list {
   width: 100% !important;
+  
+}
+
+.campaign-metrics {
+  display: block;
+  white-space: nowrap;
+  font-size: 13px;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .admin-blog-list article {
@@ -5239,6 +5248,8 @@ height: 52px;
   background: #ef4444;
   box-shadow: none;
 }
+
+
 
 @media (min-width: 769px) and (max-width: 1100px) {
 
@@ -7912,7 +7923,7 @@ font-weight: 700;
   background: #111827;
   color: white;
   padding: 10px 14px;
-  font-size: 13px;
+  font-size:13px;
   font-weight: 900;
 }
 
@@ -7929,13 +7940,102 @@ font-weight: 700;
 }
 
 .admin-row-actions button:last-child {
-  background: #dc2626;
+ background-color: #fef2f2; /* Light red background */
+  color: #ef4444;             /* Red trash icon */
+  border: none;
+  border-radius:8px;
+  padding: 12px;
+justify-items: center;
+  width:2vw;
+  height:2vw;
+  padding: 0;
+  color: #ef4444;
+font-size:20px;
+  cursor: pointer;
 }
+
+
+
+
+.admin-row-actions button:first-child {
+  border: 1px solid gray;
+  background: white;
+  color: black;
+  padding: 0;
+  width:2vw;
+  height:2vw;
+justify-items: center;
+
+font-size: 20px;
+  
+}
+
+@media (max-width: 900px) {
+.admin-row-actions button:last-child {
+ background-color: #fef2f2; /* Light red background */
+  color: #ef4444;             /* Red trash icon */
+height: 4vw;
+width: 4vw;
+border-radius:8x;
+justify-items: center;
+padding: auto;
+}
+
+.admin-row-actions button:first-child {
+  border: 1px solid gray;
+  background: white;
+  color: black;
+  padding: 0;
+  height: 4vw;
+width: 4vw;
+justify-items: center;
+font-size: medium;
+  
+}
+}
+
+
+
+@media (max-width: 480px) {
+  .admin-user-list article {
+    padding: 12px;
+  }
+
+  .admin-user-list article h3 {
+    font-size: 15px;
+  }
+
+  .admin-user-list article p,
+  .admin-current-user-note {
+    font-size: 12px;
+  }
+}
+
 
 .admin-user-list article {
   align-items: flex-start;
-  height: 11vw;
+  height:180px;
+  min-height: 100px;
+  box-sizing: border-box;
 }
+
+@media (max-width: 768px) {
+  .admin-user-list article {
+    height: 230px;
+    min-height: 100px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-user-list article {
+    height: auto;
+    min-height: 0;
+    padding: 12px;
+    gap: 12px;
+  }
+}
+
 
 .admin-panel-title-row {
   display: flex;
@@ -17015,12 +17115,31 @@ label,
 
 .admin-view-creators-btn {
   position: relative;
-  z-index: 10;
-  border-radius:8px !important;
-  pointer-events: auto !important;
-  cursor: pointer !important;
+  border-radius:8px;
+  pointer-events: auto;
+  cursor: pointer;
+  background-color: #000;
+  color: white ;
+  height:2.4vw ;
+  width:7vw;
+  margin-left:700px;
 }
 
+
+@media(max-width:1100px){
+  .admin-view-creators-btn {
+  position: relative;
+  border-radius:8px;
+  pointer-events: auto;
+  cursor: pointer;
+  background-color: #000;
+  color: white ;
+  height: 3.6vw ;
+  width:16vw;
+  margin-left:auto;
+}
+
+}
 
 /* =========================================================
    USERS & ACCESS HEADER
@@ -17737,6 +17856,13 @@ label,
   width: 100%;
 }
 
+
+
+
+
+
+
+
 @media (max-width: 768px) {
 
   .admin-history-overlay:has(.admin-user-modal) {
@@ -17968,4 +18094,5 @@ body > div[id*="react-select-"][aria-live] {
 .influencer-filter-select .influencer-select__control {
   outline: none !important;
 }
+
 

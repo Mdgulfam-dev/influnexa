@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
 import Select from "react-select";
+import { MdEdit } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
 import {
   createBlogPost,
   createAdminUser,
@@ -3122,7 +3124,8 @@ return allTabs;
 )}
               <section className="admin-panel">
                 <h2>Brand campaign tickets</h2>
-                <div className="admin-blog-list">{visibleTickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small>Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions </small><br></br>
+                <div className="admin-blog-list">
+                  {visibleTickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small >Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions </small><br></br>
                 
 {(() => {
   const creator = (data.users || []).find(
@@ -3144,8 +3147,8 @@ return allTabs;
 })()}
 
   </div>
-                <div className="admin-row-actions">
-<button
+  <div>
+    <button
   type="button"
   className="admin-view-creators-btn"
   onClick={(e) => {
@@ -3157,6 +3160,9 @@ return allTabs;
 >
   View Details
 </button>
+  </div>
+                <div className="admin-row-actions">
+
 
   
 <button
@@ -3186,7 +3192,7 @@ return allTabs;
     window.location.href = editUrl.toString();
   }}
 >
-  Edit
+  <MdEdit />
 </button>
 
 
@@ -3197,7 +3203,7 @@ return allTabs;
       removeTicket(ticket._id);
     }}
   >
-    Delete
+   <MdDeleteOutline />
   </button>
 </div>
 </article>; })}{visibleTickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section> </div>
@@ -4252,11 +4258,11 @@ return allTabs;
 
                         </div>
                         <div className="admin-row-actions">
-                          <button type="button" onClick={() => editUser(user)}>Edit</button>
+                          <button type="button" onClick={() => editUser(user)}><MdEdit /></button>
                           {user.role === "owner" ? (
                             <span className="admin-protected-note">Protected owner</span>
                           ) : (
-                            <button type="button" onClick={() => removeUser(user._id)}>Delete</button>
+                            <button type="button" onClick={() => removeUser(user._id)}><MdDeleteOutline /></button>
                           )}
                         </div>
                       </article>
@@ -4397,7 +4403,7 @@ return allTabs;
     setShowBrandModal(true);
   }}
 >
-  Edit
+  <MdEdit />
 </button>
 
 
@@ -4413,7 +4419,7 @@ return allTabs;
                   }
                 }}
               >
-                Delete
+                <MdDeleteOutline />
               </button>
             </div>
           </article>

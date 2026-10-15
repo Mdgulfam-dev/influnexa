@@ -1460,19 +1460,6 @@ setCreatorsTotal(Number(result.total || 0));
       ===================================================== */}
 
       <section className="availability-header">
-
-        <div>
-
-          <p className="availability-eyebrow">
-            CREATOR NETWORK
-          </p>
-
-          <h2>
-            Check Creators Network
-          </h2>
-
-        </div>
-
       </section>
 
 
