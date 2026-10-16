@@ -3110,6 +3110,11 @@ justify-content: center;
   gap: 10px;
 }
 
+
+.overview-campaign{
+  font-size:13px;
+}
+
 .admin-heading .admin-action-button {
   display: inline-flex;
   align-items: center;

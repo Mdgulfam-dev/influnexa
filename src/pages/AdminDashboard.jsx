@@ -32,6 +32,8 @@ import {
   getAssignedCreators,
   getInfluencerFilterOptions,
   updateOwnBrandPassword,
+  getCampaigns,
+  saveCampaign,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -1908,6 +1910,18 @@ function formatLoginHistoryDateTime(value) {
 }
 
 export default function AdminDashboard() {
+
+const [campaigns, setCampaigns] = useState([]);
+const [showCampaignsModal, setShowCampaignsModal] =
+  useState(false);
+  const [showCreateCampaign, setShowCreateCampaign] = useState(false);
+
+const [campaignForm, setCampaignForm] = useState({
+  name: "",
+  description: "",
+});
+
+const [generatedCampaignLink, setGeneratedCampaignLink] = useState("");
 const [showBrandPasswordModal, setShowBrandPasswordModal] =
   useState(false);
 
@@ -2926,23 +2940,61 @@ return allTabs;
 </button>
       </aside>
 
-      <section className="admin-content">
-        <div className="admin-heading">
-          
-          <div>
-            <p>Influnexa workspace</p>
-            <h1>{activeTab === "overview" ? "Operations overview" : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}</h1>
-          </div>
-   
-            
-        </div>
+      
+<section className="admin-content">
+  <div className="admin-heading ">
+    <div>
+      <p>Influnexa workspace</p>
+
+      <h1>
+        {activeTab === "overview"
+          ? "Operations overview"
+          : tabs.find(([id]) => id === activeTab)?.[1] || "Admin workspace"}
+      </h1>
+    </div>
+
+{activeTab === "overview" && (
+  <div className="flex items-center gap-3 bg">
+    <button
+      type="button"
+      className="overview-campaign"
+      onClick={() => setShowCreateCampaign(true)}
+    >
+      Create Campaign
+    </button>
+
+    <button
+      type="button"
+        className="overview-campaign"
+      onClick={async () => {
+        try {
+          const campaigns = await getCampaigns();
+          setCampaigns(campaigns);
+          setShowCampaignsModal(true);
+        } catch (error) {
+          alert(error.message || "Failed to load campaigns");
+        }
+      }}
+    >
+      All Campaign Links
+    </button>
+  </div>
+)}
+
+  </div>
+
 
         {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
 
         {activeTab === "overview" && (
+          
           <div className="admin-overview">
             <section className="admin-overview-hero">
-              <div><p>Operations overview</p><h2>Everything that needs attention, in one place.</h2><span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span></div>
+              <div>
+                <p>Operations overview</p>
+                <h2>Everything that needs attention, in one place.</h2>
+                <span>Track incoming leads, creator registrations, active vacancies, and candidate decisions without switching between tabs.</span>
+                </div>
               <div className="admin-overview-priority"><span>Needs review</span><strong>{(data.stats.newBrands || 0) + (data.stats.newInfluencers || 0) + (data.stats.reviewApplications || 0)}</strong><small>New Brands, Influencers & Candidates</small></div>
             </section>
             <section className="admin-overview-metrics">
@@ -3055,7 +3107,221 @@ return allTabs;
             </section>
             <section className="admin-panel admin-overview-quick-actions"><div><h2>Quick actions</h2><p>Jump directly to your most common tasks.</p></div><div><button type="button" onClick={() => selectTab("tickets")}>Manage campaigns</button><button type="button" onClick={() => selectTab("applications")}>Review candidates</button><button type="button" onClick={() => selectTab("brands")}>View brand leads</button></div></section>
           </div>
+
         )}
+
+{showCreateCampaign && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-slate-900">
+          Create Campaign
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowCreateCampaign(false);
+            setGeneratedCampaignLink("");
+          }}
+          className="text-2xl text-slate-500 hover:text-slate-900"
+          aria-label="Close campaign form"
+        >
+          &times;
+        </button>
+      </div>
+
+      <form
+        onSubmit={async(e) => {
+          e.preventDefault();
+
+         const params = new URLSearchParams({
+  campaignName: campaignForm.name.trim(),
+  campaignDescription: campaignForm.description.trim(),
+});
+
+const link = `${window.location.origin}/register/influencer?${params.toString()}`;
+
+try {
+  const savedCampaign = await saveCampaign({
+    name: campaignForm.name.trim(),
+    description: campaignForm.description.trim(),
+    link,
+  });
+
+  setGeneratedCampaignLink(savedCampaign.link);
+  alert("Campaign saved successfully!");
+} catch (error) {
+  alert(error.message || "Failed to save campaign");
+}
+
+        }}
+
+
+        className="space-y-4"
+      >
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            Campaign Name *
+          </label>
+
+          <input
+            type="text"
+            required
+            value={campaignForm.name}
+            onChange={(e) =>
+              setCampaignForm((current) => ({
+                ...current,
+                name: e.target.value,
+              }))
+            }
+            placeholder="e.g. Diwali Fashion Campaign"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-700"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            Campaign Description *
+          </label>
+
+          <textarea
+            required
+            rows={4}
+            value={campaignForm.description}
+            onChange={(e) =>
+              setCampaignForm((current) => ({
+                ...current,
+                description: e.target.value,
+              }))
+            }
+            placeholder="Describe the campaign and the type of creators you need."
+            className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-700"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-[#08766e] px-4 py-3 text-sm font-semibold text-white hover:bg-[#06635c]"
+        >
+          Generate Registration Link
+        </button>
+      </form>
+
+      {generatedCampaignLink && (
+        <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 text-sm font-semibold text-slate-800">
+            Campaign Registration Link
+          </p>
+
+          <input
+            type="text"
+            readOnly
+            value={generatedCampaignLink}
+            className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-700"
+          />
+
+          <button
+  type="button"
+  onClick={async () => {
+    try {
+      await navigator.clipboard.writeText(generatedCampaignLink);
+      alert("Campaign registration link copied!");
+    } catch {
+      alert("Could not copy automatically. Please copy the link from the field.");
+    }
+  }}
+  className="mt-3 w-full rounded-lg bg-[#08766e] px-4 py-2.5 text-sm font-semibold text-white"
+>
+  Copy Link
+</button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+{showCampaignsModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-3xl rounded-xl bg-white p-6 shadow-xl">
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-xl font-bold">
+          All Campaign Links
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => setShowCampaignsModal(false)}
+          className="text-xl"
+        >
+          ×
+        </button>
+      </div>
+
+      {campaigns.length === 0 ? (
+        <p>No campaigns saved yet.</p>
+      ) : (
+        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
+          {campaigns.map((campaign) => (
+            <div
+              key={campaign._id}
+              className="rounded-lg border border-slate-200 p-4"
+            >
+              <h3 className="font-semibold">
+                {campaign.name}
+              </h3>
+
+              <p className="my-2 text-sm text-slate-600">
+                {campaign.description || "No description"}
+              </p>
+
+              <p className="break-all text-sm text-teal-700">
+                {campaign.link}
+              </p>
+
+            
+<button
+  type="button"
+  className="mt-3 rounded-lg bg-teal-700 px-4 py-2 text-sm text-white"
+  onClick={async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(campaign.link);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = campaign.link;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textArea);
+
+        if (!copied) {
+          throw new Error("Copy failed");
+        }
+      }
+
+      alert("Campaign link copied successfully!");
+    } catch (error) {
+      console.error("Copy link error:", error);
+      alert("Unable to copy the link. Please copy it manually:\n" + campaign.link);
+    }
+  }}
+>
+  Copy Link
+</button>
+
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
 
         {activeTab === "brands" && (
           <div className="admin-panel">
@@ -3337,7 +3603,7 @@ return allTabs;
                   setShowBlogModal(true);
                 }}
               >
-                Edit
+                <MdEdit/>
               </button>
 
 
@@ -3355,7 +3621,7 @@ return allTabs;
 
                 }}
               >
-                Delete
+                <MdDeleteOutline/>
               </button>
 
             </div>
@@ -3671,14 +3937,14 @@ return allTabs;
                   setShowJobModal(true);
                 }}
               >
-                Edit
+                <MdEdit/>
               </button>
 
               <button
                 type="button"
                 onClick={() => removeJob(job._id)}
               >
-                Delete
+                <MdDeleteOutline/>
               </button>
 
             </div>
@@ -3803,7 +4069,7 @@ return allTabs;
     }
   }}
 >
-  Delete
+  <MdDeleteOutline/>
 </button>
                   </div>
                 </article>
@@ -4262,7 +4528,20 @@ return allTabs;
                           {user.role === "owner" ? (
                             <span className="admin-protected-note">Protected owner</span>
                           ) : (
-                            <button type="button" onClick={() => removeUser(user._id)}><MdDeleteOutline /></button>
+                           <button
+  type="button"
+  onClick={() => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${user.name}?`
+    );
+
+    if (confirmed) {
+      removeUser(user._id);
+    }
+  }}
+>
+  <MdDeleteOutline />
+</button>
                           )}
                         </div>
                       </article>

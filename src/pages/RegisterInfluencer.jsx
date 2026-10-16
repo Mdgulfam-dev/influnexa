@@ -141,6 +141,17 @@ const dealTypes = [
 "UGC Content",
 ];
 
+
+const campaignParams = new URLSearchParams(
+  window.location.search
+);
+
+const campaignName =
+  campaignParams.get("campaignName") || "";
+
+const campaignDescription =
+  campaignParams.get("campaignDescription") || "";
+
 const initialForm = {
   fullName: "",
   instagramUsername: "",
@@ -607,6 +618,8 @@ if (selectedPlatforms.includes("LinkedIn")) {
     // ==========================================
     // BASIC INFORMATION
     // ==========================================
+     campaignName: campaignName,
+  campaignDescription: campaignDescription,
     fullName: text(form.fullName),
     instagramUsername: text(form.instagramUsername),
 
@@ -891,9 +904,19 @@ const nextStep = (step) => {
               Creator Onboarding
             </p>
 
-            <h1 className="mb-2  text-4xl font-bold tracking-tight">
-              Influencer Registration
-            </h1>
+           
+<div className="mb-2 flex flex-wrap items-center gap-3">
+  <h1 className="text-4xl font-bold tracking-tight">
+    Influencer Registration
+  </h1>
+
+  {campaignName && (
+    <span className="inline-flex items-center rounded-full border border-[#08766e]/30 bg-[#08766e]/10 px-3 py-1.5 text-sm font-semibold text-[#08766e]">
+      {campaignName}
+    </span>
+  )}
+</div>
+
 
             <p className="max-w-[600px] text-[15px] leading-6 text-[#8A8578]">
               Fill in your details once — we'll only

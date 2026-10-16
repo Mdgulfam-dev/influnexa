@@ -13,7 +13,7 @@ export default function CreatorNetwork() {
 Creators Network
 </h1>
 
-  <CreatorDataAvailability />
+  <CreatorDataAvailability hideUserFilters={true} />
 </div>
   );
 }

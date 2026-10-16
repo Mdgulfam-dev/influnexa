@@ -503,7 +503,9 @@ const selectStyles = {
    COMPONENT
 ========================================================= */
 
-export default function CreatorDataAvailability() {
+export default function CreatorDataAvailability( {
+   hideUserFilters = false,
+  }){
 const [creators, setCreators] = useState([]);
 const [creatorsPage, setCreatorsPage] = useState(1);
 const [creatorsLimit, setCreatorsLimit] = useState(100);
@@ -1728,7 +1730,7 @@ setCreatorsTotal(Number(result.total || 0));
                 checkingAvailability
               }
             >
-              ↻ Reset Filters
+              Reset Filters
             </button>
 
 
@@ -1745,8 +1747,8 @@ setCreatorsTotal(Number(result.total || 0));
             >
 
               {checkingAvailability
-                ? "⏳ Checking..."
-                : "🔍 Check Availability"}
+                ? " Checking..."
+                : " Check Availability"}
 
             </button>
 
@@ -1767,7 +1769,7 @@ setCreatorsTotal(Number(result.total || 0));
 {/* =================================================
     INSTAGRAM FOLLOWERS RANGE
 ================================================= */}
-
+{!hideUserFilters && (
 <label>
   Instagram Followers Range
 
@@ -1813,7 +1815,7 @@ setCreatorsTotal(Number(result.total || 0));
   />
 </label>
 
-
+  )}
 
           {/* CATEGORIES */}
 
@@ -2007,7 +2009,7 @@ setCreatorsTotal(Number(result.total || 0));
 
 
           {/* PLATFORM */}
-
+{!hideUserFilters && (
           <label>
 
             Platform
@@ -2046,10 +2048,11 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
+)}
 
 
           {/* TYPE OF CELEBRITY */}
-
+{!hideUserFilters && (
           <label>
 
             Type Of Celebrity
@@ -2088,7 +2091,7 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
-
+)}
 
           {/* LANGUAGES */}
 
@@ -2133,7 +2136,7 @@ setCreatorsTotal(Number(result.total || 0));
 
 
           {/* CAMPAIGN TYPE */}
-
+{!hideUserFilters && (
           <label>
 
             Campaign Type
@@ -2172,7 +2175,7 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
-
+)}
 
           {/* INFLUENCER TYPE */}
 
@@ -2216,7 +2219,7 @@ setCreatorsTotal(Number(result.total || 0));
 
 
           {/* CONTACT STATUS */}
-
+{!hideUserFilters && (
           <label>
 
             Contact Status
@@ -2253,10 +2256,10 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
-
+)}
 
           {/* AGE */}
-
+{!hideUserFilters && (
           <label>
 
             Age
@@ -2294,7 +2297,7 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
-
+)}
         </div>
 
       </section>

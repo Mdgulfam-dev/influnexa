@@ -2,12 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   getAssignedCreators,
   getBrandTickets,
-  saveAssignedCreatorDetails
+  saveAssignedCreatorDetails,
+  deleteAssignedTicketCreator,
 } from "../lib/api";
 import { FcSearch } from "react-icons/fc";
+
 const AssignedTicketCreators = () => {
 
-  
+const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [deleteStatus, setDeleteStatus] = useState("Pending");
+const [deleteCreatorId, setDeleteCreatorId] = useState("");
+const [deletingCreator, setDeletingCreator] = useState(false);  
 const [creatorActions, setCreatorActions] = useState({});
 const [creatorCommercials, setCreatorCommercials] = useState({});
 const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
@@ -267,6 +272,82 @@ const handleReadyToCampaign = async (creatorId, value) => {
 };
 
 
+
+const handleDeleteAssignedCreator = async () => {
+  if (!ticketId) {
+    alert("Brand ticket ID is missing.");
+    return;
+  }
+
+  const creator = assignedCreators.find((item) => {
+    const currentStatus =
+      creatorActions[String(item._id)] ||
+      item.assignedStatus ||
+      item.status ||
+      "Pending";
+
+    return (
+      currentStatus === deleteStatus &&
+      currentStatus !== "Approved"
+    );
+  });
+
+  if (!creator) {
+    alert(`No creators found with status "${deleteStatus}".`);
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Are you sure remove this creator from this brand ticket?`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setDeletingCreator(true);
+
+    await deleteAssignedTicketCreator(ticketId, creator._id);
+
+    setAssignedCreators((prev) =>
+      prev.filter(
+        (item) => String(item._id) !== String(creator._id)
+      )
+    );
+
+    setSelectedCreatorIds((prev) =>
+      prev.filter(
+        (id) => String(id) !== String(creator._id)
+      )
+    );
+
+    setCreatorActions((prev) => {
+      const updated = { ...prev };
+      delete updated[String(creator._id)];
+      return updated;
+    });
+
+    setCreatorCommercials((prev) => {
+      const updated = { ...prev };
+      delete updated[String(creator._id)];
+      return updated;
+    });
+
+    setCreatorReadyStatus((prev) => {
+      const updated = { ...prev };
+      delete updated[String(creator._id)];
+      return updated;
+    });
+
+    setShowDeleteModal(false);
+
+    alert("Creator removed from this brand ticket.");
+  } catch (error) {
+    console.error("Delete assigned creator error:", error);
+    alert(error.message || "Failed to delete creator.");
+  } finally {
+    setDeletingCreator(false);
+  }
+};
   /* =========================================================
      SEE MORE / SEE LESS
   ========================================================= */
@@ -704,6 +785,9 @@ creator.youtubeSubscribersRange ||
     URL.revokeObjectURL(url);
   };
 
+
+
+
   /* =========================================================
      LOADING
   ========================================================= */
@@ -987,6 +1071,42 @@ creator.youtubeSubscribersRange ||
                 ? `Download Selected (${selectedCreatorIds.length})`
                 : "Download CSV"}
             </button>
+
+<button
+  type="button"
+  onClick={() => {
+    setDeleteStatus("Pending");
+    setDeleteCreatorId("");
+    setShowDeleteModal(true);
+  }}
+  disabled={!assignedCreators.some((creator) => {
+    const status =
+      creatorActions[String(creator._id)] ||
+      creator.assignedStatus ||
+      creator.status ||
+      "Pending";
+
+    return status !== "Approved";
+  })}
+  className="
+    h-11
+    px-5
+    rounded-xl
+    bg-red-600
+    hover:bg-red-700
+    disabled:bg-slate-300
+    disabled:cursor-not-allowed
+    text-white
+    text-sm
+    font-semibold
+    transition
+    whitespace-nowrap
+    cursor-pointer
+  "
+>
+  Delete Creator
+</button>
+
           </div>
         </div>
 
@@ -2209,7 +2329,96 @@ creator.youtubeSubscribersRange ||
               )}
             </tbody>
           </table>
+
+{showDeleteModal && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Delete Assigned Creator
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Select a status to remove an assigned creator from this brand ticket.
+            Approved creators cannot be deleted.
+          </p>
         </div>
+
+        <button
+          type="button"
+          disabled={deletingCreator}
+          onClick={() => setShowDeleteModal(false)}
+          className="text-xl text-slate-400 hover:text-slate-700"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="mt-5">
+        <label className="mb-2 block text-sm font-semibold text-slate-700">
+          Creator Status
+        </label>
+
+        <select
+          value={deleteStatus}
+          onChange={(e) => setDeleteStatus(e.target.value)}
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-red-500"
+        >
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="On-Discussion">On-Discussion</option>
+        </select>
+
+        {assignedCreators.filter((creator) => {
+          const status =
+            creatorActions[String(creator._id)] ||
+            creator.assignedStatus ||
+            creator.status ||
+            "Pending";
+
+          return status === deleteStatus && status !== "Approved";
+        }).length === 0 && (
+          <p className="mt-2 text-sm text-slate-500">
+            No creators are available with this status.
+          </p>
+        )}
+      </div>
+
+      <div className="mt-6 flex justify-end gap-3">
+        <button
+          type="button"
+          disabled={deletingCreator}
+          onClick={() => setShowDeleteModal(false)}
+          className="h-10 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            deletingCreator ||
+            !assignedCreators.some((creator) => {
+              const status =
+                creatorActions[String(creator._id)] ||
+                creator.assignedStatus ||
+                creator.status ||
+                "Pending";
+
+              return status === deleteStatus && status !== "Approved";
+            })
+          }
+          onClick={handleDeleteAssignedCreator}
+          className="h-10 rounded-lg bg-red-600 px-4 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {deletingCreator ? "Deleting..." : "Delete Creator"}
+        </button>
+      </div>
+    </div>
+  </div>
+)} 
+</div>
       </div>
     </div>
   );

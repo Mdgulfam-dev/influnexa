@@ -83,7 +83,69 @@ export async function saveAssignedCreatorDetails(
   return data;
 }
 
+export async function deleteAssignedTicketCreator(
+  brandTicketId,
+  creatorId
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/brand-ticket-creators/${brandTicketId}/creator/${creatorId}`,
+    {
+      method: "DELETE",
+      headers: {
+        ...adminHeaders(),
+      },
+      cache: "no-store",
+    }
+  );
 
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearAdminToken();
+    }
+
+    throw new Error(
+      data.message || "Failed to remove assigned creator."
+    );
+  }
+
+  return data;
+}
+
+export async function saveCampaign(campaign) {
+  const response = await fetch(`${API_BASE_URL}/admin/campaigns`, {
+    method: "POST",
+    headers: {
+      ...adminHeaders(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(campaign),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to save campaign");
+  }
+
+  return data;
+}
+
+export async function getCampaigns() {
+  const response = await fetch(`${API_BASE_URL}/admin/campaigns`, {
+    headers: adminHeaders(),
+    cache: "no-store",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to load campaigns");
+  }
+
+  return data;
+}
 
 
 export async function getBrandTickets() {
