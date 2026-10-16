@@ -911,9 +911,9 @@ const nextStep = (step) => {
   </h1>
 
   {campaignName && (
-    <span className="inline-flex items-center rounded-full border border-[#08766e]/30 bg-[#08766e]/10 px-3 py-1.5 text-sm font-semibold text-[#08766e]">
+    <h1 className="inline-flex items-center text-4xl font-bold tracking-tight">
       {campaignName}
-    </span>
+    </h1>
   )}
 </div>
 
