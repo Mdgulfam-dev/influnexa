@@ -3343,138 +3343,220 @@ try {
           </div>
         )}
 
-        {activeTab === "tickets" && (
-          <div className="admin-ticket-workspace">
-            <div className="admin-ticket-side">
-            
+     
+{activeTab === "tickets" && (
+ <div className="admin-ticket-workspace admin-tickets-responsive">
+    <div className="admin-ticket-side">
 
+      <button
+        type="button"
+        className="admin-create-ticket-btn"
+        onClick={() => {
+          if (currentUserRole === "brand") {
+            const brandName =
+              currentUser?.name ||
+              data?.currentUser?.name ||
+              "";
 
-<button
-  type="button"
-  className="admin-create-ticket-btn"
-  onClick={() => {
-    if (currentUserRole === "brand") {
-      const brandName =
-        currentUser?.name ||
-        data?.currentUser?.name ||
-        "";
+            window.location.href =
+              `/admin/tickets/create?brandName=${encodeURIComponent(
+                brandName
+              )}`;
+          } else {
+            window.location.href = "/admin/tickets/create";
+          }
+        }}
+      >
+        Create Ticket
+      </button>
 
-      window.location.href =
-        `/admin/tickets/create?brandName=${encodeURIComponent(
-          brandName
-        )}`;
-    } else {
-      window.location.href = "/admin/tickets/create";
-    }
-  }}
->
-  Create Ticket
-</button>
-
-
-
-
-    {currentUserRole !== "brand" && (
-  <section className="admin-panel">
-    <div className="admin-panel-title-row">
-      <h2>Campaign analysis</h2>
-      <small>{data.stats.activeTickets || 0} active</small>
-    </div>
-
-    <AnalyticsChart
-      title="Ticket status"
-      items={data.analytics.ticketStatuses}
-      emptyMessage="Create a ticket to see campaign status analysis."
-    />
-  </section>
-)}
-              <section className="admin-panel">
-                <h2>Brand campaign tickets</h2>
-                <div className="admin-blog-list">
-                  {visibleTickets.map((ticket) => { const metrics = ticket.metrics || {}; const engagementRate = metrics.impressions ? ((metrics.engagements || 0) / metrics.impressions * 100).toFixed(2) : "0.00"; const daysLeft = campaignDaysLeft(ticket); return <article key={ticket._id}><div><Pill tone={ticket.status === "Completed" || ticket.status === "Active" ? "success" : ticket.status === "Cancelled" ? "error" : "default"}>{ticket.status}</Pill>{daysLeft !== null && <Pill tone={daysLeft < 0 ? "error" : daysLeft <= 3 ? "default" : "success"}>{daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` : daysLeft === 0 ? "Ends today" : `${daysLeft} days left`}</Pill>}<h3>{ticket.ticketNumber} · {ticket.brandName}</h3><p>{ticket.campaignName}</p><span>{ticket.platforms?.join(", ") || "No platforms"} · {formatDate(ticket.startDate)} — {formatDate(ticket.endDate)}</span><small >Reach {Number(metrics.reach || 0).toLocaleString()} · Engagement {engagementRate}% · {Number(metrics.conversions || 0).toLocaleString()} conversions </small><br></br>
-                
-{(() => {
-  const creator = (data.users || []).find(
-    (user) =>
-      String(user.email || "").trim().toLowerCase() ===
-      String(ticket.createdByEmail || "").trim().toLowerCase()
-  );
-
-  return (
-    <p className="text-black text-sm">
-      Created by: {creator?.name || "Unknown"}
-      {" | "}
-      Email: {ticket.createdByEmail || "Unknown"}
-      {" | "}
-       Role: {creator?.role || "Unknown"}
-      
-    </p>
-  );
-})()}
-
-  </div>
-  <div>
-    <button
-  type="button"
-  className="admin-view-creators-btn"
-  onClick={(e) => {
-    e.stopPropagation();
-
-    window.location.href =
-      `/admin/tickets/creators?ticket=${ticket._id}`;
-  }}
->
-  View Details
-</button>
-  </div>
-                <div className="admin-row-actions">
-
-
-  
-<button
-  type="button"
-  onClick={(e) => {
-    e.stopPropagation();
-
-    sessionStorage.setItem(
-      "influnexa_edit_brand_ticket",
-      JSON.stringify(ticket)
-    );
-
-    const editUrl = new URL(
-      "/admin/tickets/create",
-      window.location.origin
-    );
-
-    editUrl.searchParams.set("edit", ticket._id);
-
-    if (currentUserRole === "brand") {
-      editUrl.searchParams.set(
-        "brandName",
-        currentUser?.name || data?.currentUser?.name || ""
-      );
-    }
-
-    window.location.href = editUrl.toString();
-  }}
->
-  <MdEdit />
-</button>
-
-
-  <button
-    type="button"
-    onClick={(e) => {
-      e.stopPropagation();
-      removeTicket(ticket._id);
-    }}
-  >
-   <MdDeleteOutline />
-  </button>
-</div>
-</article>; })}{visibleTickets.length === 0 && <p>No brand tickets yet. Create one to manage a campaign from brief to results.</p>}</div></section> </div>
+      {currentUserRole !== "brand" && (
+        <section className="admin-panel">
+          <div className="admin-panel-title-row">
+            <h2>Campaign analysis</h2>
+            <small>{data.stats.activeTickets || 0} active</small>
           </div>
-        )}
+
+          <AnalyticsChart
+            title="Ticket status"
+            items={data.analytics.ticketStatuses}
+            emptyMessage="Create a ticket to see campaign status analysis."
+          />
+        </section>
+      )}
+
+      <section className="admin-panel">
+        <h2>Brand campaign tickets</h2>
+
+        <div className="admin-blog-list">
+          {visibleTickets.map((ticket) => {
+            const metrics = ticket.metrics || {};
+
+            const engagementRate = metrics.impressions
+              ? (
+                  ((metrics.engagements || 0) /
+                    metrics.impressions) *
+                  100
+                ).toFixed(2)
+              : "0.00";
+
+            const daysLeft = campaignDaysLeft(ticket);
+
+            return (
+              <article key={ticket._id}>
+                <div>
+                  <Pill
+                    tone={
+                      ticket.status === "Completed" ||
+                      ticket.status === "Active"
+                        ? "success"
+                        : ticket.status === "Cancelled"
+                        ? "error"
+                        : "default"
+                    }
+                  >
+                    {ticket.status}
+                  </Pill>
+
+                  {daysLeft !== null && (
+                    <Pill
+                      tone={
+                        daysLeft < 0
+                          ? "error"
+                          : daysLeft <= 3
+                          ? "default"
+                          : "success"
+                      }
+                    >
+                      {daysLeft < 0
+                        ? `${Math.abs(daysLeft)} days overdue`
+                        : daysLeft === 0
+                        ? "Ends today"
+                        : `${daysLeft} days left`}
+                    </Pill>
+                  )}
+
+                  <h3>
+                    {ticket.ticketNumber} · {ticket.brandName}
+                  </h3>
+
+                  <div className="ticket-info-line">
+                    <span className="ticket-campaign-name">
+                      {ticket.campaignName}
+                    </span>
+
+                    <span>
+                      {ticket.platforms?.join(", ") || "No platforms"} ·{" "}
+                      {formatDate(ticket.startDate)} —{" "}
+                      {formatDate(ticket.endDate)}
+                    </span>
+
+                    <small>
+                      Reach{" "}
+                      {Number(metrics.reach || 0).toLocaleString()} ·
+                      Engagement {engagementRate}% ·{" "}
+                      {Number(metrics.conversions || 0).toLocaleString()}{" "}
+                      conversions
+                    </small>
+                  </div>
+
+                  {(() => {
+                    const creator = (data.users || []).find(
+                      (user) =>
+                        String(user.email || "")
+                          .trim()
+                          .toLowerCase() ===
+                        String(ticket.createdByEmail || "")
+                          .trim()
+                          .toLowerCase()
+                    );
+
+                    return (
+                      <p className="text-black text-sm">
+                        Created by: {creator?.name || "Unknown"}
+                        {" | "}
+                        Email: {ticket.createdByEmail || "Unknown"}
+                        {" | "}
+                        Role: {creator?.role || "Unknown"}
+                      </p>
+                    );
+                  })()}
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    className="admin-view-creators-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      window.location.href =
+                        `/admin/tickets/creators?ticket=${ticket._id}`;
+                    }}
+                  >
+                    View Details
+                  </button>
+                </div>
+
+                <div className="admin-row-actions">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      sessionStorage.setItem(
+                        "influnexa_edit_brand_ticket",
+                        JSON.stringify(ticket)
+                      );
+
+                      const editUrl = new URL(
+                        "/admin/tickets/create",
+                        window.location.origin
+                      );
+
+                      editUrl.searchParams.set("edit", ticket._id);
+
+                      if (currentUserRole === "brand") {
+                        editUrl.searchParams.set(
+                          "brandName",
+                          currentUser?.name ||
+                            data?.currentUser?.name ||
+                            ""
+                        );
+                      }
+
+                      window.location.href = editUrl.toString();
+                    }}
+                  >
+                    <MdEdit />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeTicket(ticket._id);
+                    }}
+                  >
+                    <MdDeleteOutline />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+
+          {visibleTickets.length === 0 && (
+            <p>
+              No brand tickets yet. Create one to manage a campaign
+              from brief to results.
+            </p>
+          )}
+        </div>
+      </section>
+    </div>
+  </div>
+)}
+
 
         {activeTab === "influencers" && (
           <div className="admin-panel">
