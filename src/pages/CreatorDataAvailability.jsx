@@ -45,6 +45,7 @@ const initialFilters = {
   contactStatus: "",
 
   age: [],
+  youtubeSubscribersRange: [],
 };
 
 
@@ -1092,6 +1093,13 @@ const getProfileUrl = (url) => {
     }
 
 
+    if (filters.youtubeSubscribersRange?.length) {
+  params.set(
+    "youtubeSubscribersRange",
+    filters.youtubeSubscribersRange.join(",")
+  );
+}
+
     /* -------------------------------------------------------
        SMALL PAGE
        ONLY COUNT/STATS ARE NEEDED
@@ -1270,11 +1278,14 @@ setCreatorsTotal(Number(result.total || 0));
      LOAD FULL DATABASE COUNTS WHEN PAGE OPENS.
   ========================================================= */
 
-  useEffect(() => {
-
+ 
+useEffect(() => {
+  const timer = setTimeout(() => {
     checkAvailability();
+  }, 400);
 
-  }, [creatorsPage, creatorsLimit]);
+  return () => clearTimeout(timer);
+}, [filters, creatorsPage, creatorsLimit]);
 
 
   /* =========================================================
@@ -1734,23 +1745,7 @@ setCreatorsTotal(Number(result.total || 0));
             </button>
 
 
-            <button
-              type="button"
-              onClick={
-                checkAvailability
-              }
-              className="availability-check"
-              disabled={
-                checkingAvailability ||
-                loadingOptions
-              }
-            >
-
-              {checkingAvailability
-                ? " Checking..."
-                : " Check Availability"}
-
-            </button>
+            
 
           </div>
 
@@ -2297,6 +2292,36 @@ setCreatorsTotal(Number(result.total || 0));
             />
 
           </label>
+)}
+
+
+
+{/* YOUTUBE SUBSCRIBERS RANGE */}
+{!hideUserFilters && (
+  <label>
+    YouTube Subscribers Range
+
+    <Select
+      isMulti
+      isSearchable={false}
+      closeMenuOnSelect={false}
+      hideSelectedOptions={false}
+      options={makeOptions(options.youtubeSubscribersRange)}
+      value={makeOptions(
+        filters.youtubeSubscribersRange
+      )}
+      onChange={(selected) =>
+        updateSelectFilter(
+          "youtubeSubscribersRange",
+          selected
+        )
+      }
+      placeholder="YouTube Subscribers Range"
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      styles={selectStyles}
+    />
+  </label>
 )}
         </div>
 

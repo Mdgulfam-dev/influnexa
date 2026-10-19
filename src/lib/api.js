@@ -172,6 +172,29 @@ export async function getBrandTickets() {
 
 
 
+
+export async function deleteCampaign(campaignId) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/campaigns/${campaignId}`,
+    {
+      method: "DELETE",
+      headers: adminHeaders(),
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to delete campaign");
+  }
+
+  return data;
+}
+
+
+
+
+
 function adminHeaders() {
   const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 

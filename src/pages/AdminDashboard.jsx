@@ -34,6 +34,7 @@ import {
   updateOwnBrandPassword,
   getCampaigns,
   saveCampaign,
+  deleteCampaign,
 } from "../lib/api";
 import influnexaLogo from "../assets/influnexa-logo.png";
 import CsvCreatorSection from "../components/CsvCreatorSection";
@@ -1911,9 +1912,7 @@ function formatLoginHistoryDateTime(value) {
 
 export default function AdminDashboard() {
 
-const [campaigns, setCampaigns] = useState([]);
-const [showCampaignsModal, setShowCampaignsModal] =
-  useState(false);
+const [campaigns, setCampaigns] = useState([])
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
 
 const [campaignForm, setCampaignForm] = useState({
@@ -1972,6 +1971,7 @@ const [brandForm, setBrandForm] = useState({
     "testimonials",
     "users",
       "brand-registration",
+      "campaign-links",
     "jobs",
     "applications",
   ];
@@ -2056,6 +2056,22 @@ const viewAssignedCreators = async (ticket) => {
 
 
 
+
+const removeCampaign = async (campaignId) => {
+  try {
+    await deleteCampaign(campaignId);
+
+    setCampaigns((prevCampaigns) =>
+      prevCampaigns.filter(
+        (campaign) => campaign._id !== campaignId
+      )
+    );
+
+    alert("Campaign deleted successfully!");
+  } catch (error) {
+    alert(error.message || "Failed to delete campaign");
+  }
+};
 
 
 
@@ -2221,6 +2237,28 @@ console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
     }
   }
 };
+
+
+
+useEffect(() => {
+  if (!isAuthenticated || activeTab !== "campaign-links") {
+    return;
+  }
+
+  const loadCampaignLinks = async () => {
+    try {
+      const result = await getCampaigns();
+      setCampaigns(result);
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error.message || "Failed to load campaign links",
+      });
+    }
+  };
+
+  loadCampaignLinks();
+}, [isAuthenticated, activeTab]);
 
 useEffect(() => {
   if (!isAuthenticated) return;
@@ -2716,6 +2754,7 @@ useEffect(() => {
       ["applications", `Candidates (${data.applications.length})`],
    ["users", canManageUsers ? `Users (${regularUsers.length})` : "Users"],
 ["brand-registration", "Brand Registration"],
+["campaign-links", "Campaign Links"],
     ];
 
 if (isLead) {
@@ -2953,34 +2992,17 @@ return allTabs;
       </h1>
     </div>
 
-{activeTab === "overview" && (
-  <div className="flex items-center gap-3 bg">
-    <button
+    {activeTab === "overview" && (
+    <div className="flex items-center gap-3 ">
+     <button
       type="button"
       className="overview-campaign"
       onClick={() => setShowCreateCampaign(true)}
-    >
+     >
       Create Campaign
-    </button>
-
-    <button
-      type="button"
-        className="overview-campaign"
-      onClick={async () => {
-        try {
-          const campaigns = await getCampaigns();
-          setCampaigns(campaigns);
-          setShowCampaignsModal(true);
-        } catch (error) {
-          alert(error.message || "Failed to load campaigns");
-        }
-      }}
-    >
-      All Campaign Links
-    </button>
-  </div>
-)}
-
+     </button>
+   </div>
+    )}
   </div>
 
 
@@ -3111,7 +3133,7 @@ return allTabs;
         )}
 
 {showCreateCampaign && (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 h-200">
     <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
 
       <div className="mb-5 flex items-center justify-between">
@@ -3151,6 +3173,12 @@ try {
   });
 
   setGeneratedCampaignLink(savedCampaign.link);
+  // Reset the form after successful generation
+setCampaignForm({
+  name: "",
+  description: "",
+});
+
   alert("Campaign saved successfully!");
 } catch (error) {
   alert(error.message || "Failed to save campaign");
@@ -3161,7 +3189,7 @@ try {
 
         className="space-y-4"
       >
-        <div>
+        <div >
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             Campaign Name *
           </label>
@@ -3236,86 +3264,6 @@ try {
 >
   Copy Link
 </button>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-
-{showCampaignsModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-    <div className="w-full max-w-3xl rounded-xl bg-white p-6 shadow-xl">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-xl font-bold">
-          All Campaign Links
-        </h2>
-
-        <button
-          type="button"
-          onClick={() => setShowCampaignsModal(false)}
-          className="text-xl"
-        >
-          ×
-        </button>
-      </div>
-
-      {campaigns.length === 0 ? (
-        <p>No campaigns saved yet.</p>
-      ) : (
-        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
-          {campaigns.map((campaign) => (
-            <div
-              key={campaign._id}
-              className="rounded-lg border border-slate-200 p-4"
-            >
-              <h3 className="font-semibold">
-                {campaign.name}
-              </h3>
-
-              <p className="my-2 text-sm text-slate-600">
-                {campaign.description || "No description"}
-              </p>
-
-              <p className="break-all text-sm text-teal-700">
-                {campaign.link}
-              </p>
-
-            
-<button
-  type="button"
-  className="mt-3 rounded-lg bg-teal-700 px-4 py-2 text-sm text-white"
-  onClick={async () => {
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(campaign.link);
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = campaign.link;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.select();
-
-        const copied = document.execCommand("copy");
-        document.body.removeChild(textArea);
-
-        if (!copied) {
-          throw new Error("Copy failed");
-        }
-      }
-
-      alert("Campaign link copied successfully!");
-    } catch (error) {
-      console.error("Copy link error:", error);
-      alert("Unable to copy the link. Please copy it manually:\n" + campaign.link);
-    }
-  }}
->
-  Copy Link
-</button>
-
-            </div>
-          ))}
         </div>
       )}
     </div>
@@ -4803,6 +4751,114 @@ try {
 
 
 
+{activeTab === "campaign-links" && (
+  <div className="admin-panel">
+    <div className="admin-panel-title-row">
+      <h2>All Campaign Links</h2>
+
+
+    </div>
+
+    {campaigns.length === 0 ? (
+      <p>No campaigns saved yet.</p>
+    ) : (
+      <div className="space-y-4">
+        {campaigns.map((campaign) => (
+          <div
+            key={campaign._id}
+            className="rounded-lg border border-slate-200 p-4"
+          >
+            
+<div className="flex items-start justify-between gap-3 font-bold">
+  <h3>{campaign.name}</h3>
+
+
+<button
+  type="button"
+  className="rounded-lg border border-red-200 bg-red-50 p-2 text-red-500 hover:bg-red-100 "
+  onClick={() => {
+    if (
+      window.confirm(
+        `Delete campaign "${campaign.name}"?`
+      )
+    ) {
+      removeCampaign(campaign._id);
+    }
+  }}
+>
+  <MdDeleteOutline size={18} />
+</button>
+
+</div>
+
+
+            <p className="my-2 text-sm text-slate-600">
+              {campaign.description || "No description"}
+            </p>
+
+            <p className="break-all text-sm text-teal-700">
+              {campaign.link}
+            </p>
+
+            <button
+              type="button"
+              className="mt-3 rounded-lg bg-teal-700 px-4 py-2 text-sm text-white"
+              onClick={async () => {
+                try {
+                  if (
+                    navigator.clipboard &&
+                    window.isSecureContext
+                  ) {
+                    await navigator.clipboard.writeText(
+                      campaign.link
+                    );
+                  } else {
+                    const textArea =
+                      document.createElement("textarea");
+
+                    textArea.value = campaign.link;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-9999px";
+
+                    document.body.appendChild(textArea);
+                    textArea.select();
+
+                    const copied =
+                      document.execCommand("copy");
+
+                    document.body.removeChild(textArea);
+
+                    if (!copied) {
+                      throw new Error("Copy failed");
+                    }
+                  }
+
+                  alert("Campaign link copied successfully!");
+                } catch (error) {
+                  console.error("Copy link error:", error);
+
+                  alert(
+                    "Unable to copy the link. Please copy it manually:\n" +
+                      campaign.link
+                  );
+                }
+              }}
+            >
+              Copy Link
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+
+
+
+
+
+
  {loginHistoryUser && loginHistoryReturnTab === "brand-registration" && (
   <div
     className="admin-history-overlay"
@@ -5012,6 +5068,9 @@ try {
       </div>
     </div>
   }
+
+
+
 
     
 { showBrandModal && (
