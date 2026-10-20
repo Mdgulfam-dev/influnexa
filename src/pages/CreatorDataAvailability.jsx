@@ -1764,7 +1764,7 @@ setCreatorsTotal(Number(result.total || 0));
 {/* =================================================
     INSTAGRAM FOLLOWERS RANGE
 ================================================= */}
-{!hideUserFilters && (
+
 <label>
   Instagram Followers Range
 
@@ -1810,7 +1810,7 @@ setCreatorsTotal(Number(result.total || 0));
   />
 </label>
 
-  )}
+
 
           {/* CATEGORIES */}
 
@@ -2347,6 +2347,7 @@ setCreatorsTotal(Number(result.total || 0));
               "Full Name",
               "Instagram Username",
               "Instagram Profile Link",
+              "Instagram Followers Range",
               "Categories",
               "Influencer Type",
               "YouTube Username",
@@ -2378,7 +2379,7 @@ setCreatorsTotal(Number(result.total || 0));
           {checkingAvailability && creators.length === 0 ? (
             <tr>
               <td
-                colSpan={14}
+                colSpan={15}
                 className="px-4 py-10 text-center text-slate-500"
               >
                 Loading creators...
@@ -2387,7 +2388,7 @@ setCreatorsTotal(Number(result.total || 0));
           ) : creators.length === 0 ? (
             <tr>
               <td
-                colSpan={14}
+                colSpan={15}
                 className="px-4 py-10 text-center text-slate-500"
               >
                 No creators found. Click Check Availability to load results.
@@ -2470,6 +2471,14 @@ setCreatorsTotal(Number(result.total || 0));
                       </a>
                     ) : "-"}
                   </td>
+
+                  <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-sm text-slate-700">
+  {displayValue(
+    creator.instagramFollowersRange ??
+    creator.instagramFollowers ??
+    creator.instagramFollowerRange
+  )}
+</td>
 
                   <td className="
   px-4
