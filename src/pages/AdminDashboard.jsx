@@ -4,6 +4,7 @@ import { FaHistory } from "react-icons/fa";
 import Select from "react-select";
 import { MdEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
   createBlogPost,
   createAdminUser,
@@ -144,8 +145,18 @@ const influencerDetailFields = [
 
   ["LinkedIn Average Views", "linkedinAverageViews"],
 
+
+
   ["Commercials For 1 LinkedIn Post", "commercialsFor1LinkedInPost"],
   ["Commercials For 1 LinkedIn Reel", "commercialsFor1LinkedInReel"],
+
+   // Facebook fields
+  ["Facebook Username", "facebookUsername"],
+  ["Facebook Profile Link", "facebookProfileLink"],
+  ["Facebook Followers Range", "facebookFollowersRange"],
+  ["Facebook Average Views", "facebookAverageViews"],
+  ["Commercials For 1 Facebook Post", "commercialsFor1FacebookPost"],
+  ["Commercials For 1 Facebook Reel", "commercialsFor1FacebookReel"],
   ["What Kind Of Deal Do You Participate In", "whatKindOfDealDoYouParticipateIn"],
   ["Speaking Video Link", "speakingVideoLink"],
   ["Are you a TV/Film/OTT celebrity", "areYouATvMoviesOttCelebrity"],
@@ -684,6 +695,8 @@ const linkFields = [
     "speakingVideoLink",
      "productUrl",
   "website",
+  "facebookProfileLink",
+
   ];
 
   if (linkFields.includes(key)) {
@@ -1100,6 +1113,7 @@ function RegistrationDataTable({
   fields,
   items,
   emptyMessage,
+  cursorHistory = [],
   statusOptions,
   type,
   onUpdateStatus,
@@ -1128,8 +1142,8 @@ function RegistrationDataTable({
           {items.map((record,index) => (
             
             <tr key={record._id}>
-              <td className="admin-table-sl-no">
-  {index + 1}
+ <td className="admin-table-sl-no">
+  {(cursorHistory.length * 25) + index + 1}
 </td>
               {fields.map(([label, key, valueType]) => (
                 
@@ -1263,7 +1277,14 @@ option: (base, state) => ({
 }
 
 function RegistrationToolbar({ countLabel, filters, onFilterChange, onSearch, onReset, searchPlaceholder, statusOptions, type }) {
-
+const ageOptions = [
+  "Under 18",
+  "18 - 24",
+  "25 - 34",
+  "35 - 44",
+  "45 - 54",
+  "55+",
+];
   
 const [influencerFilterOptions, setInfluencerFilterOptions] =
   useState({
@@ -1273,6 +1294,12 @@ const [influencerFilterOptions, setInfluencerFilterOptions] =
     categories: [],
     languages: [],
     platforms: [],
+    // New dynamic filters
+    instagramAverageViews: [],
+    genders: [],
+    ages: [],
+    youtubeSubscribersRanges: [],
+    youtubeAverageViews: [],
   });
 
 useEffect(() => {
@@ -1322,30 +1349,51 @@ useEffect(() => {
     className="influencer-filter-select"
     classNamePrefix="influencer-select"
     isSearchable
+    isMulti
+closeMenuOnSelect={false}
+hideSelectedOptions={true}
     isClearable
     placeholder="All Followers"
     options={followerRanges.map((range) => ({
       value: range.label,
       label: range.label,
     }))}
-    value={
-      followerRanges
-        .map((range) => ({
-          value: range.label,
-          label: range.label,
-        }))
-        .find((option) => option.value === (filters.followerRange || "")) ||
-      null
-    }
-    onChange={(selected) => {
-      const selectedRange = followerRanges.find(
-        (range) => range.label === (selected?.value || "")
-      );
+ value={followerRanges
+  .filter((range) =>
+    (Array.isArray(filters.followerRange)
+      ? filters.followerRange
+      : filters.followerRange
+        ? [filters.followerRange]
+        : []
+    ).includes(range.label)
+  )
+  .map((range) => ({
+    value: range.label,
+    label: range.label,
+  }))
+}
+onChange={(selected) => {
+  const selectedRanges = selected || [];
 
-      onFilterChange("followerRange", selected?.value || "");
-      onFilterChange("followerMin", selectedRange?.min ?? "");
-      onFilterChange("followerMax", selectedRange?.max ?? "");
-    }}
+  onFilterChange(
+    "followerRange",
+    selectedRanges.map((item) => item.value)
+  );
+
+  onFilterChange(
+    "followerMin",
+    selectedRanges.map((item) =>
+      followerRanges.find((range) => range.label === item.value)?.min ?? ""
+    )
+  );
+
+  onFilterChange(
+    "followerMax",
+    selectedRanges.map((item) =>
+      followerRanges.find((range) => range.label === item.value)?.max ?? ""
+    )
+  );
+}}
     styles={compactFilterStyles}
     maxMenuHeight={150}
     menuPlacement="auto"
@@ -1364,6 +1412,8 @@ useEffect(() => {
 </label>
 
 {/* Campaign Type */}
+
+{/* Campaign Type */}
 <label>
   Campaign Type
   <Select
@@ -1371,6 +1421,9 @@ useEffect(() => {
     classNamePrefix="influencer-select"
     isSearchable
     isClearable
+    isMulti
+    closeMenuOnSelect={false}
+    hideSelectedOptions={true}
     placeholder="All Campaign Types"
     options={[
       { value: "Barter Collaboration", label: "Barter Collaboration" },
@@ -1382,28 +1435,35 @@ useEffect(() => {
       },
       { value: "Brand Collaboration", label: "Brand Collaboration" },
     ]}
-    value={
-      [
-        { value: "Barter Collaboration", label: "Barter Collaboration" },
-        { value: "Paid Collaboration", label: "Paid Promotion" },
-        { value: "Affiliate", label: "Affiliate" },
-        {
-          value: "Paid Collaboration + Barter Collaboration",
-          label: "Paid Collaboration + Barter Collaboration",
-        },
-        { value: "Brand Collaboration", label: "Brand Collaboration" },
-      ].find((option) => option.value === (filters.campaignType || "")) ||
-      null
-    }
+    value={[
+      { value: "Barter Collaboration", label: "Barter Collaboration" },
+      { value: "Paid Collaboration", label: "Paid Promotion" },
+      { value: "Affiliate", label: "Affiliate" },
+      {
+        value: "Paid Collaboration + Barter Collaboration",
+        label: "Paid Collaboration + Barter Collaboration",
+      },
+      { value: "Brand Collaboration", label: "Brand Collaboration" },
+    ].filter((option) =>
+      (Array.isArray(filters.campaignType)
+        ? filters.campaignType
+        : filters.campaignType
+          ? [filters.campaignType]
+          : []
+      ).includes(option.value)
+    )}
     onChange={(selected) =>
-      onFilterChange("campaignType", selected?.value || "")
+      onFilterChange(
+        "campaignType",
+        selected ? selected.map((item) => item.value) : []
+      )
     }
     styles={compactFilterStyles}
     maxMenuHeight={150}
     menuPlacement="auto"
     menuPosition="absolute"
     closeMenuOnScroll={false}
-    blurInputOnSelect
+    blurInputOnSelect={false}
     screenReaderStatus={() => ""}
     ariaLiveMessages={{
       guidance: () => "",
@@ -1415,6 +1475,9 @@ useEffect(() => {
   />
 </label>
 
+
+{/* Influencer Type */}
+
 {/* Influencer Type */}
 <label>
   Influencer Type
@@ -1423,6 +1486,9 @@ useEffect(() => {
     classNamePrefix="influencer-select"
     isSearchable
     isClearable
+    isMulti
+    closeMenuOnSelect={false}
+    hideSelectedOptions={true}
     placeholder="All Influencer Types"
     options={[
       { value: "Nano Influencer", label: "Nano Influencer" },
@@ -1430,24 +1496,31 @@ useEffect(() => {
       { value: "Macro Influencer", label: "Macro Influencer" },
       { value: "Mega Influencer", label: "Mega Influencer" },
     ]}
-    value={
-      [
-        { value: "Nano Influencer", label: "Nano Influencer" },
-        { value: "Micro Influencer", label: "Micro Influencer" },
-        { value: "Macro Influencer", label: "Macro Influencer" },
-        { value: "Mega Influencer", label: "Mega Influencer" },
-      ].find((option) => option.value === (filters.influencerType || "")) ||
-      null
-    }
+    value={[
+      { value: "Nano Influencer", label: "Nano Influencer" },
+      { value: "Micro Influencer", label: "Micro Influencer" },
+      { value: "Macro Influencer", label: "Macro Influencer" },
+      { value: "Mega Influencer", label: "Mega Influencer" },
+    ].filter((option) =>
+      (Array.isArray(filters.influencerType)
+        ? filters.influencerType
+        : filters.influencerType
+          ? [filters.influencerType]
+          : []
+      ).includes(option.value)
+    )}
     onChange={(selected) =>
-      onFilterChange("influencerType", selected?.value || "")
+      onFilterChange(
+        "influencerType",
+        selected ? selected.map((item) => item.value) : []
+      )
     }
     styles={compactFilterStyles}
     maxMenuHeight={150}
     menuPlacement="auto"
     menuPosition="absolute"
     closeMenuOnScroll={false}
-    blurInputOnSelect
+    blurInputOnSelect={false}
     screenReaderStatus={() => ""}
     ariaLiveMessages={{
       guidance: () => "",
@@ -1458,7 +1531,7 @@ useEffect(() => {
     noOptionsMessage={() => "No options available"}
   />
 </label>
-      
+
 {[
   {
     name: "location",
@@ -1496,6 +1569,47 @@ useEffect(() => {
   placeholder: "Platform",
   options: influencerFilterOptions.platforms,
 },
+
+
+{
+  name: "instagramAverageViews",
+  label: "Instagram Average Views",
+  placeholder: "All Instagram Average Views",
+  options: influencerFilterOptions.instagramAverageViews || [],
+},
+{
+  name: "gender",
+  label: "Gender",
+  placeholder: "All Genders",
+  options: influencerFilterOptions.genders || [],
+},
+{
+  name: "age",
+  label: "Age",
+  placeholder: "All Ages",
+  options: ageOptions,
+},
+{
+  name: "youtubeSubscribersRange",
+  label: "Youtube Subscriber Range",
+  placeholder: "All Youtube Subscriber Ranges",
+  options: [
+    "Under 1K",
+    "1K - 10K",
+    "10K - 50K",
+    "50K - 100K",
+    "100K - 500K",
+    "500K - 1M",
+    "1M - 5M",
+    "5M+",
+  ],
+},
+{
+  name: "youtubeAverageViews",
+  label: "Youtube Average Views",
+  placeholder: "All Youtube Average Views",
+  options: influencerFilterOptions.youtubeAverageViews || [],
+},
 ].map((field) => {
   const options = (field.options || []).map((item) => ({
     value: item,
@@ -1506,37 +1620,47 @@ useEffect(() => {
     <label key={field.name}>
       {field.label}
 
-      <Select
+<Select
   className="influencer-filter-select"
   classNamePrefix="influencer-select"
+  isMulti
   isSearchable
   isClearable
-   screenReaderStatus={() => ""}
-   ariaLiveMessages={{
-  guidance: () => "",
-  onChange: () => "",
-  onFocus: () => "",
-  onFilter: () => "",
-   }}
+  closeMenuOnSelect={false}
+  hideSelectedOptions={true}
+  screenReaderStatus={() => ""}
+  ariaLiveMessages={{
+    guidance: () => "",
+    onChange: () => "",
+    onFocus: () => "",
+    onFilter: () => "",
+  }}
   aria-live="off"
   placeholder={field.placeholder}
   options={options}
-  value={
-    options.find(
-      (option) => option.value === (filters[field.name] || "")
-    ) || null
-  }
+  value={options.filter((option) =>
+    (Array.isArray(filters[field.name])
+      ? filters[field.name]
+      : filters[field.name]
+        ? [filters[field.name]]
+        : []
+    ).includes(option.value)
+  )}
   onChange={(selected) =>
-    onFilterChange(field.name, selected?.value || "")
+    onFilterChange(
+      field.name,
+      selected ? selected.map((item) => item.value) : []
+    )
   }
   styles={compactFilterStyles}
   maxMenuHeight={150}
   menuPlacement="auto"
   menuPosition="absolute"
   closeMenuOnScroll={false}
-  blurInputOnSelect
+  blurInputOnSelect={false}
   noOptionsMessage={() => "No options available"}
 />
+
     </label>
   );
 })}
@@ -1583,6 +1707,9 @@ useEffect(() => {
 
      </>
        )}
+
+
+
       {type === "brands" && (
   <>
     <label>
@@ -1788,6 +1915,8 @@ return (
   </div>
 );
 }
+
+
 function AnalyticsChart({ title, items = [], emptyMessage }) {
   const total = items.reduce((sum, item) => sum + item.count, 0);
   const largest = Math.max(...items.map((item) => item.count), 1);
@@ -1911,7 +2040,14 @@ function formatLoginHistoryDateTime(value) {
 }
 
 export default function AdminDashboard() {
+const [visiblePasswords, setVisiblePasswords] = useState({});
 
+const togglePasswordVisibility = (field) => {
+  setVisiblePasswords((prev) => ({
+    ...prev,
+    [field]: !prev[field],
+  }));
+};
 const [campaigns, setCampaigns] = useState([])
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
 
@@ -1994,7 +2130,11 @@ const [brandForm, setBrandForm] = useState({
   const [expandedCoverLetters, setExpandedCoverLetters] = useState(() => new Set());
   const [expandedCandidates, setExpandedCandidates] = useState(() => new Set());
   const [brandFilters, setBrandFilters] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
-  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
+  const [influencerFilters, setInfluencerFilters] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "", instagramAverageViews: "",
+gender: "",
+age: "",
+youtubeSubscribersRange: "",
+youtubeAverageViews: "",});
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
   const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "", influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
@@ -2218,7 +2358,6 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
   try {
     const dashboard = await getAdminDashboard(dashboardParams);
 setCurrentUser(dashboard.currentUser);
-
 console.log("DASHBOARD CURRENT USER:", dashboard.currentUser);
 console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
     setData(normalizeDashboardData(dashboard));
@@ -2442,7 +2581,18 @@ useEffect(() => {
 
   const updateBrandFilter = (field, value) => setBrandFilters((current) => ({ ...current, [field]: value }));
 
-  const updateInfluencerFilter = (field, value) => setInfluencerFilters((current) => ({ ...current, [field]: value }));
+ const updateInfluencerFilter = (field, value) => {
+  setInfluencerFilters((current) => {
+    const updatedFilters = {
+      ...current,
+      [field]: value,
+    };
+
+    setInfluencerQuery(updatedFilters);
+
+    return updatedFilters;
+  });
+};
 
   const applyRegistrationSearch = (event) => {
     event.preventDefault();
@@ -2841,17 +2991,32 @@ return allTabs;
               />
             </label>
             <label>
-              Password
-              <input
-                autoComplete="current-password"
-                name="password"
-                placeholder="Enter admin password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
-            </label>
+  Password
+
+  <div className="password-input-wrapper">
+    <input
+      autoComplete="current-password"
+      name="password"
+      placeholder="Enter admin password"
+      type={visiblePasswords.login ? "text" : "password"}
+      value={password}
+      onChange={(event) => setPassword(event.target.value)}
+      required
+      className="password-input-field"
+    />
+
+    <button
+      type="button"
+      onClick={() => togglePasswordVisibility("login")}
+      className="password-toggle-icon"
+      aria-label={
+        visiblePasswords.login ? "Hide password" : "Show password"
+      }
+    >
+      {visiblePasswords.login ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+    </button>
+  </div>
+</label>
             {status.message && <div className={`admin-status ${status.type}`}>{status.message}</div>}
             <div className="admin-login">
           <button type="submit" disabled={isSubmitting}>
@@ -3286,7 +3451,7 @@ setCampaignForm({
               statusOptions={brandStatuses}
               type="brands"
             />
-            <RegistrationDataTable fields={brandDetailFields} items={brandTable.items}emptyMessage="No brand registrations match these filters." statusOptions={brandStatuses} type="brands" onUpdateStatus={updateStatus} />
+            <RegistrationDataTable fields={brandDetailFields} items={brandTable.items}emptyMessage="No brand registrations match these filters." statusOptions={brandStatuses} type="brands" onUpdateStatus={updateStatus}  cursorHistory={brandTable.history} />
             <RegistrationPager cursorHistory={brandTable.history} hasMore={brandTable.hasMore} onPrevious={previousBrandPage} onNext={nextBrandPage} />
           </div>
         )}
@@ -3520,7 +3685,7 @@ setCampaignForm({
               statusOptions={influencerStatuses}
               type="influencers"
             />
-            <RegistrationDataTable fields={influencerDetailFields} items={influencerTable.items} emptyMessage="No influencer registrations match these filters." statusOptions={influencerStatuses} type="influencers" onUpdateStatus={updateStatus} />
+            <RegistrationDataTable fields={influencerDetailFields} items={influencerTable.items} emptyMessage="No influencer registrations match these filters." statusOptions={influencerStatuses} type="influencers" onUpdateStatus={updateStatus} cursorHistory={influencerTable.history} />
             <RegistrationPager cursorHistory={influencerTable.history} hasMore={influencerTable.hasMore} onPrevious={previousInfluencerPage} onNext={nextInfluencerPage} />
           </div>
         )}
@@ -4299,39 +4464,72 @@ setCampaignForm({
       >
         <label>
           Current password
-          <input
-            autoComplete="current-password"
-            name="currentPassword"
-            type="password"
-            value={passwordForm.currentPassword}
-            onChange={updatePasswordField}
-            required
-          />
+         <div className="relative">
+  <input
+    autoComplete="current-password"
+    name="currentPassword"
+    type={visiblePasswords.userCurrent ? "text" : "password"}
+    value={passwordForm.currentPassword}
+    onChange={updatePasswordField}
+    required
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("userCurrent")}
+   className="password-toggle-icon"
+    aria-label="Toggle current password visibility"
+  >
+    {visiblePasswords.userCurrent ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
         </label>
 
         <label>
           New password
-          <input
-            name="password"
-            autoComplete="new-password"
-            type="password"
-            value={passwordForm.password}
-            onChange={updatePasswordField}
-            required
-            placeholder="Minimum 8 characters"
-          />
+         <div className="relative">
+  <input
+    name="password"
+    autoComplete="new-password"
+    type={visiblePasswords.userNew ? "text" : "password"}
+    value={passwordForm.password}
+    onChange={updatePasswordField}
+    required
+    placeholder="Minimum 8 characters"
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("userNew")}
+   className="password-toggle-icon"
+    aria-label="Toggle new password visibility"
+  >
+    {visiblePasswords.userNew ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
         </label>
 
         <label>
           Confirm new password
-          <input
-            autoComplete="new-password"
-            name="confirmPassword"
-            type="password"
-            value={passwordForm.confirmPassword}
-            onChange={updatePasswordField}
-            required
-          />
+        <div className="relative">
+  <input
+    autoComplete="new-password"
+    name="confirmPassword"
+    type={visiblePasswords.userConfirm ? "text" : "password"}
+    value={passwordForm.confirmPassword}
+    onChange={updatePasswordField}
+    required
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("userConfirm")}
+   className="password-toggle-icon"
+    aria-label="Toggle confirm password visibility"
+  >
+    {visiblePasswords.userConfirm ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
         </label>
 
         <div className="admin-login-actions">
@@ -4433,15 +4631,26 @@ setCampaignForm({
         <label>
           Initial password
 
-          <input
-            autoComplete="new-password"
-            name="password"
-            type="password"
-            value={userForm.password}
-            onChange={updateUserField}
-            required={!editingUserId}
-            placeholder="Minimum 8 characters"
-          />
+          <div className="relative">
+  <input
+    autoComplete="new-password"
+    name="password"
+    type={visiblePasswords.addUser ? "text" : "password"}
+    value={userForm.password}
+    onChange={updateUserField}
+    required={!editingUserId}
+    placeholder="Minimum 8 characters"
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("addUser")}
+   className="password-toggle-icon"
+    aria-label="Toggle initial password visibility"
+  >
+    {visiblePasswords.addUser ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
         </label>
 
         <div className="admin-form-row">
@@ -4618,6 +4827,7 @@ setCampaignForm({
       <div className="admin-users-header-actions">
 
 
+  {!["admin", "owner"].includes(currentUserRole) && (
   <button
     type="button"
     className="admin-user-header-button"
@@ -4632,7 +4842,7 @@ setCampaignForm({
   >
     Change Password
   </button>
-
+)}
 
       {canManageUsers && (
   <button
@@ -5003,53 +5213,86 @@ setCampaignForm({
         >
           <label>
             Current password
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={brandPasswordForm.currentPassword}
-              onChange={(event) =>
-                setBrandPasswordForm((previous) => ({
-                  ...previous,
-                  currentPassword: event.target.value,
-                }))
-              }
-              required
-            />
+            <div className="relative">
+  <input
+    type={visiblePasswords.brandCurrent ? "text" : "password"}
+    autoComplete="current-password"
+    value={brandPasswordForm.currentPassword}
+    onChange={(event) =>
+      setBrandPasswordForm((previous) => ({
+        ...previous,
+        currentPassword: event.target.value,
+      }))
+    }
+    required
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("brandCurrent")}
+   className="password-toggle-icon"
+    aria-label="Toggle current brand password visibility"
+  >
+    {visiblePasswords.brandCurrent ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
           </label>
 
           <label>
             New password
-            <input
-              type="password"
-              autoComplete="new-password"
-              value={brandPasswordForm.password}
-              onChange={(event) =>
-                setBrandPasswordForm((previous) => ({
-                  ...previous,
-                  password: event.target.value,
-                }))
-              }
-              minLength={8}
-              placeholder="Minimum 8 characters"
-              required
-            />
+           <div className="relative">
+  <input
+    type={visiblePasswords.brandNew ? "text" : "password"}
+    autoComplete="new-password"
+    value={brandPasswordForm.password}
+    onChange={(event) =>
+      setBrandPasswordForm((previous) => ({
+        ...previous,
+        password: event.target.value,
+      }))
+    }
+    minLength={8}
+    placeholder="Minimum 8 characters"
+    required
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("brandNew")}
+   className="password-toggle-icon"
+    aria-label="Toggle new brand password visibility"
+  >
+    {visiblePasswords.brandNew ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
           </label>
 
           <label>
             Confirm new password
-            <input
-              type="password"
-              autoComplete="new-password"
-              value={brandPasswordForm.confirmPassword}
-              onChange={(event) =>
-                setBrandPasswordForm((previous) => ({
-                  ...previous,
-                  confirmPassword: event.target.value,
-                }))
-              }
-              minLength={8}
-              required
-            />
+           <div className="relative">
+  <input
+    type={visiblePasswords.brandConfirm ? "text" : "password"}
+    autoComplete="new-password"
+    value={brandPasswordForm.confirmPassword}
+    onChange={(event) =>
+      setBrandPasswordForm((previous) => ({
+        ...previous,
+        confirmPassword: event.target.value,
+      }))
+    }
+    minLength={8}
+    required
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("brandConfirm")}
+   className="password-toggle-icon"
+    aria-label="Toggle confirm brand password visibility"
+  >
+    {visiblePasswords.brandConfirm ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
           </label>
 
           <div className="admin-login-actions">
@@ -5173,18 +5416,29 @@ if (editingBrandId) {
 
         <label>
           Initial password
-          <input
-            name="password"
-            type="password"
-            value={brandForm.password}
-            onChange={(event) =>
-              setBrandForm((prev) => ({
-                ...prev,
-                password: event.target.value,
-              }))
-            }
-            required={!editingBrandId}
-          />
+          <div className="relative">
+  <input
+    name="password"
+    type={visiblePasswords.addBrand ? "text" : "password"}
+    value={brandForm.password}
+    onChange={(event) =>
+      setBrandForm((prev) => ({
+        ...prev,
+        password: event.target.value,
+      }))
+    }
+    required={!editingBrandId}
+    className="w-full pr-10"
+  />
+  <button
+    type="button"
+    onClick={() => togglePasswordVisibility("addBrand")}
+   className="password-toggle-icon"
+    aria-label="Toggle initial brand password visibility"
+  >
+    {visiblePasswords.addBrand ? <FiEyeOff /> : <FiEye />}
+  </button>
+</div>
         </label>
 
         <label>

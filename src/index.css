@@ -5896,6 +5896,193 @@ body {
   background: linear-gradient(135deg, #0f172a, #1f3a5f 48%, #10b981);
 }
 
+
+
+/* Password eye icon only — preserve admin-blog-form design */
+.admin-blog-form .password-toggle-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 !important;
+  margin: 0;
+  width: auto;
+  height: auto;
+
+  color: #08766e;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  cursor: pointer;
+  line-height: 1;
+}
+
+.admin-blog-form .password-toggle-icon:hover,
+.admin-blog-form .password-toggle-icon:focus,
+.admin-blog-form .password-toggle-icon:active {
+  color: #06635c;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+
+
+/* Password input wrapper */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Password input */
+.password-input-wrapper .password-input-field {
+  width: 100%;
+  padding-right: 42px;
+  box-sizing: border-box;
+}
+
+/* Eye icon only — no background */
+.password-input-wrapper .password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  color: #08766e !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  cursor: pointer;
+  line-height: 1;
+}
+
+.password-input-wrapper .password-toggle-icon:hover,
+.password-input-wrapper .password-toggle-icon:focus,
+.password-input-wrapper .password-toggle-icon:active {
+  color: #06635c !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+/* Keep selected values in one horizontal row */
+.influencer-select__control {
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+}
+
+/* Make the selected values area horizontally scrollable */
+.influencer-select__value-container {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  scrollbar-width: thin;
+  min-width: 0 !important;
+}
+
+/* Prevent selected values from shrinking or overlapping */
+.influencer-select__multi-value {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+/* Keep each selected label on one line */
+.influencer-select__multi-value__label {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* Keep dropdown indicators visible */
+.influencer-select__indicators {
+  flex: 0 0 auto !important;
+  background: inherit;
+}
+
+
+/* Reduce selected option/tag size */
+.influencer-select__multi-value {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  margin: 2px 3px 2px 0 !important;
+  border-radius: 4px !important;
+}
+
+/* Reduce tag text size and padding */
+.influencer-select__multi-value__label {
+  font-size: 12px !important;
+  padding: 5px 4px !important;
+  line-height: 1.2 !important;
+}
+
+/* Make the cross button smaller */
+.influencer-select__multi-value__remove {
+  padding: 2px 3px !important;
+  border-radius: 0 3px 3px 0 !important;
+  color: #64748b !important;
+  background-color: transparent !important;
+}
+
+/* Remove red hover background from cross */
+.influencer-select__multi-value__remove:hover {
+  color: #64748b !important;
+  background-color: transparent !important;
+}
+
+/* Keep selected tags compact and horizontally scrollable */
+.influencer-select__value-container {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 1px !important;
+  padding: 2px 6px !important;
+  min-width: 0 !important;
+}
+
+/* Prevent tags from shrinking */
+.influencer-select__multi-value {
+  flex-shrink: 0 !important;
+}
+
+
+/* Keep the search input compact */
+.influencer-select__input-container {
+  flex: 0 0 8px !important;
+  min-width: 8px !important;
+  margin: 0 2px !important;
+}
+
+
+
+.password-input-wrapper .password-toggle-icon svg {
+  width: 15px;
+  height: 15px;
+}
 .service-card-head small,
 .process-mini-card span,
 .case-card > p:first-child,
@@ -8016,7 +8203,7 @@ justify-items: center;
   height:2vw;
   padding: 0;
   color: #ef4444;
-font-size:20px;
+font-size: 18px;
   cursor: pointer;
 }
 
@@ -8032,7 +8219,7 @@ font-size:20px;
   height:2vw;
 justify-items: center;
 
-font-size: 20px;
+font-size: 18px;
   
 }
 
@@ -16379,6 +16566,9 @@ margin-top: 0.2vw;
 }
 
 
+
+
+
 /* =========================================================
    LOGIN / LOGOUT ICON
    ========================================================= */
@@ -16763,6 +16953,8 @@ label,
   max-width: 100%;
   box-sizing: border-box;
 }
+
+
 
 
 /* =========================================================
@@ -17181,31 +17373,31 @@ label,
 
 .admin-view-creators-btn {
   position: relative;
-  border-radius:8px;
+  border-radius: 8px;
   pointer-events: auto;
   cursor: pointer;
   background-color: #000;
-  color: white ;
-  height:2.4vw ;
-  width:7vw;
-  margin-left:700px;
+  color: white;
+  height: 33px;
+  width: 100px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 12px;
 }
 
-
-@media(max-width:1100px){
+@media (max-width: 1100px) {
   .admin-view-creators-btn {
-  position: relative;
-  border-radius:8px;
-  pointer-events: auto;
-  cursor: pointer;
-  background-color: #000;
-  color: white ;
-  height: 3.6vw ;
-  width:16vw;
-  margin-left:auto;
+    position: relative;
+    height: 33px;
+    width: 100px;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 12px;
+  }
 }
 
-}
 
 /* =========================================================
    USERS & ACCESS HEADER
@@ -18208,6 +18400,8 @@ body > div[id*="react-select-"][aria-live] {
   min-width: 0;
 }
 
+
+
 /* Individual ticket card */
 
 .admin-tickets-responsive .admin-blog-list article {
@@ -18268,6 +18462,9 @@ body > div[id*="react-select-"][aria-live] {
   white-space: normal !important;
   overflow: visible !important;
 }
+
+
+
 
 .admin-tickets-responsive .ticket-info-line > span,
 .admin-tickets-responsive .ticket-info-line > small {
@@ -18343,8 +18540,8 @@ body > div[id*="react-select-"][aria-live] {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto !important;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 30px;
+  min-height: 30px;
   cursor: pointer;
 }
 
@@ -18410,26 +18607,59 @@ body > div[id*="react-select-"][aria-live] {
   position: relative !important;
 }
 
-/* Move View Details to the upper-right */
+/* View Details - right-middle */
 .admin-tickets-responsive .admin-blog-list article > div:nth-child(2) {
   position: absolute !important;
-  top: 12px !important;
+  top: 50% !important;
   right: 100px !important;
   left: auto !important;
   bottom: auto !important;
+  transform: translateY(-50%) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: auto !important;
   margin: 0 !important;
   z-index: 2;
 }
 
-/* Move Edit/Delete to the upper-right corner */
+/* Edit/Delete - right-middle */
 .admin-tickets-responsive .admin-blog-list article > .admin-row-actions {
   position: absolute !important;
-  top: 12px !important;
+  top: 50% !important;
   right: 12px !important;
   left: auto !important;
   bottom: auto !important;
+  transform: translateY(-50%) !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
   width: auto !important;
   margin: 0 !important;
   z-index: 2;
+}
+
+/* Mobile: keep buttons below the ticket details */
+@media (max-width: 768px) {
+  .admin-tickets-responsive .admin-blog-list article {
+    padding-bottom: 12px !important;
+  }
+
+  .admin-tickets-responsive .admin-blog-list article > div:nth-child(2) {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .admin-tickets-responsive .admin-blog-list article > .admin-row-actions {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Select from "react-select";
 import {
   getAssignedCreators,
   getBrandTickets,
@@ -7,7 +8,15 @@ import {
 } from "../lib/api";
 import { FcSearch } from "react-icons/fc";
 
+
+
+
 const AssignedTicketCreators = () => {
+const adminRole = (
+  sessionStorage.getItem("adminRole") || ""
+).trim().toLowerCase();
+
+const isBrandRole = adminRole === "brand"
 
 const [showDeleteModal, setShowDeleteModal] = useState(false);
 const [deleteStatus, setDeleteStatus] = useState("Pending");
@@ -33,7 +42,35 @@ const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
     loadData();
   }, [ticketId]);
 
- 
+ const initialCreatorFilters = {
+  instagramFollowersRange: [],
+  youtubeSubscribersRange: [],
+  categories: [],
+  influencerType: [],
+  gender: [],
+  languages: [],
+  age: [],
+  state: [],
+  city: [],
+};
+
+const [creatorFilters, setCreatorFilters] = useState(
+  initialCreatorFilters
+);
+
+const updateCreatorFilter = (name, selectedOptions) => {
+  setCreatorFilters((prev) => ({
+    ...prev,
+    [name]: (selectedOptions || []).map((option) => option.value),
+  }));
+};
+
+const resetCreatorFilters = () => {
+  setCreatorFilters(initialCreatorFilters);
+};
+
+
+
 const loadData = async () => {
   try {
     setLoading(true);
@@ -196,6 +233,396 @@ const normalizeYoutubeSubscribersRange = (value) => {
   return "100K+";
 };
 
+
+
+const getFilterValues = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim().toLowerCase());
+  }
+
+  if (value === null || value === undefined || value === "") {
+    return [];
+  }
+
+  return String(value)
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+
+const getCreatorAgeRange = (dateOfBirth) => {
+  if (!dateOfBirth) return "";
+
+  const value = String(dateOfBirth).trim();
+  let day, month, year;
+
+  // YYYY-MM-DD or YYYY/MM/DD
+  let match = value.match(
+    /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/
+  );
+
+  if (match) {
+    year = Number(match[1]);
+    month = Number(match[2]);
+    day = Number(match[3]);
+  } else {
+    // DD/MM/YY, DD/MM/YYYY, DD-MM-YY, DD-MM-YYYY
+    match = value.match(
+      /^(\d{1,2})[/-](\d{1,2})[/-](\d{2}|\d{4})$/
+    );
+
+    if (!match) return "";
+
+    day = Number(match[1]);
+    month = Number(match[2]);
+    year = Number(match[3]);
+
+    if (year < 100) {
+      year += year <= 29 ? 2000 : 1900;
+    }
+  }
+
+  // Validate the date
+  const dob = new Date(year, month - 1, day);
+
+  if (
+    dob.getFullYear() !== year ||
+    dob.getMonth() !== month - 1 ||
+    dob.getDate() !== day
+  ) {
+    return "";
+  }
+
+  const today = new Date();
+
+  let age = today.getFullYear() - year;
+
+  if (
+    today.getMonth() < dob.getMonth() ||
+    (today.getMonth() === dob.getMonth() &&
+      today.getDate() < dob.getDate())
+  ) {
+    age--;
+  }
+
+  if (age < 0) return "";
+  if (age < 18) return "Under 18";
+  if (age <= 24) return "18 - 24";
+  if (age <= 34) return "25 - 34";
+  if (age <= 44) return "35 - 44";
+  if (age <= 54) return "45 - 54";
+
+  return "55+";
+};
+
+const getCreatorFilterOptions = (field, fallback = null) => {
+  const values = assignedCreators.flatMap((creator) => {
+    const value = fallback
+      ? fallback(creator)
+      : creator[field];
+
+    return Array.isArray(value) ? value : [value];
+  });
+
+  return [...new Set(
+    values
+      .filter((value) => value !== null && value !== undefined && value !== "")
+      .map((value) => String(value).trim())
+      .filter(Boolean)
+  )]
+    .sort((a, b) => a.localeCompare(b))
+    .map((value) => ({
+      value,
+      label: value,
+    }));
+};
+
+const creatorFilterSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+
+    boxSizing: "border-box",
+    width: "100%",
+    minWidth: 0,
+    maxWidth: "100%",
+
+    minHeight: "46px",
+    height: "46px",
+    maxHeight: "46px",
+
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
+    backgroundColor: "#ffffff",
+
+    color: "#0f172a",
+    fontSize: "13px",
+    fontWeight: 850,
+
+    boxShadow: state.isFocused
+      ? "0 0 0 2px rgba(226,232,240,0.55)"
+      : "none",
+
+    outline: "none",
+
+    alignItems: "center",
+
+    // IMPORTANT
+    overflow: "hidden",
+
+    "&:hover": {
+      borderColor: "#cbd5e1",
+    },
+  }),
+
+  valueContainer: (base) => ({
+    ...base,
+
+    boxSizing: "border-box",
+
+    height: "44px",
+    minHeight: "44px",
+    maxHeight: "44px",
+
+    padding: "2px 9px",
+
+    display: "flex",
+    flexWrap: "nowrap",
+    alignItems: "center",
+
+    // IMPORTANT
+    minWidth: 0,
+    maxWidth: "100%",
+
+    overflowX: "auto",
+    overflowY: "hidden",
+
+    flex: "1 1 0%",
+
+    scrollbarWidth: "thin",
+
+    "&::-webkit-scrollbar": {
+      height: "4px",
+    },
+
+    "&::-webkit-scrollbar-track": {
+      background: "transparent",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "10px",
+    },
+  }),
+
+  placeholder: (base) => ({
+    ...base,
+
+    color: "#94a3b8",
+    fontSize: "13px",
+    fontWeight: 550,
+
+    whiteSpace: "nowrap",
+
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }),
+
+  input: (base) => ({
+    ...base,
+
+    margin: "0",
+    padding: "0",
+
+    minWidth: "2px",
+    width: "2px",
+
+    height: "20px",
+
+    flexShrink: 0,
+  }),
+
+  multiValue: (base) => ({
+    ...base,
+
+    backgroundColor: "#f1f5f9",
+
+    borderRadius: "7px",
+
+    margin: "2px 3px 2px 0",
+
+    height: "30px",
+
+    // IMPORTANT
+    width: "max-content",
+    minWidth: "max-content",
+    maxWidth: "none",
+
+    flexShrink: 0,
+
+    display: "flex",
+    alignItems: "center",
+  }),
+
+  multiValueLabel: (base) => ({
+    ...base,
+
+    color: "#475569",
+
+    fontSize: "13px",
+
+    padding: "5px 7px",
+
+    whiteSpace: "nowrap",
+
+    overflow: "visible",
+  }),
+
+  multiValueRemove: (base) => ({
+    ...base,
+
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    width: "26px",
+    height: "30px",
+
+    padding: "0",
+
+    color: "#64748b",
+
+    cursor: "pointer",
+
+    flexShrink: 0,
+
+    "&:hover": {
+      backgroundColor: "#e2e8f0",
+      color: "#334155",
+    },
+  }),
+
+  indicatorsContainer: (base) => ({
+    ...base,
+
+    height: "44px",
+
+    display: "flex",
+    alignItems: "center",
+
+    flexShrink: 0,
+
+    backgroundColor: "#ffffff",
+  }),
+
+  clearIndicator: (base) => ({
+    ...base,
+
+    padding: "6px",
+    color: "#94a3b8",
+
+    "&:hover": {
+      color: "#64748b",
+    },
+  }),
+
+  dropdownIndicator: (base) => ({
+    ...base,
+
+    padding: "8px",
+    color: "#94a3b8",
+
+    "&:hover": {
+      color: "#64748b",
+    },
+  }),
+
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+
+  // DROPDOWN OPTIONS
+  menu: (base) => ({
+    ...base,
+
+    width: "100%",
+    minWidth: "100%",
+    maxWidth: "100%",
+
+    zIndex: 9999,
+
+    borderRadius: "12px",
+
+    border: "1px solid #e2e8f0",
+
+    boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
+
+    overflow: "hidden",
+  }),
+
+  menuList: (base) => ({
+    ...base,
+
+    // IMPORTANT:
+    // Options become vertically scrollable
+    maxHeight: "250px",
+
+    overflowY: "auto",
+    overflowX: "hidden",
+
+    padding: "6px 0",
+
+    scrollbarWidth: "thin",
+
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+
+    "&::-webkit-scrollbar-track": {
+      background: "#f8fafc",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "10px",
+    },
+  }),
+
+  option: (base, state) => ({
+    ...base,
+
+    fontSize: "13px",
+    fontWeight: 600,
+
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+
+    padding: "9px 12px",
+
+    backgroundColor: state.isSelected
+      ? "#f0fdf4"
+      : state.isFocused
+        ? "#f8fafc"
+        : "#ffffff",
+
+    color: state.isSelected
+      ? "#047857"
+      : "#334155",
+
+    cursor: "pointer",
+
+    "&:active": {
+      backgroundColor: "#f0fdf4",
+    },
+  }),
+
+  menuPortal: (base) => ({
+    ...base,
+
+    zIndex: 99999,
+  }),
+};
+
 /* =========================================================
    CREATOR ACTION / COMMERCIAL / READY TO CAMPAIGN
 ========================================================= */
@@ -279,7 +706,8 @@ const handleDeleteAssignedCreator = async () => {
     return;
   }
 
-  const creator = assignedCreators.find((item) => {
+  // Find ALL creators matching the selected status
+  const creatorsToDelete = assignedCreators.filter((item) => {
     const currentStatus =
       creatorActions[String(item._id)] ||
       item.assignedStatus ||
@@ -292,13 +720,13 @@ const handleDeleteAssignedCreator = async () => {
     );
   });
 
-  if (!creator) {
+  if (creatorsToDelete.length === 0) {
     alert(`No creators found with status "${deleteStatus}".`);
     return;
   }
 
   const confirmed = window.confirm(
-    `Are you sure remove this creator from this brand ticket?`
+    `Are you sure you want to remove all ${creatorsToDelete.length} creators with status "${deleteStatus}" from this brand ticket?`
   );
 
   if (!confirmed) return;
@@ -306,48 +734,59 @@ const handleDeleteAssignedCreator = async () => {
   try {
     setDeletingCreator(true);
 
-    await deleteAssignedTicketCreator(ticketId, creator._id);
+    // Delete all matching creators using your existing API
+    for (const creator of creatorsToDelete) {
+      await deleteAssignedTicketCreator(ticketId, creator._id);
+    }
 
-    setAssignedCreators((prev) =>
-      prev.filter(
-        (item) => String(item._id) !== String(creator._id)
-      )
+    const deletedIds = new Set(
+      creatorsToDelete.map((creator) => String(creator._id))
     );
 
+    // Update the table
+    setAssignedCreators((prev) =>
+      prev.filter((item) => !deletedIds.has(String(item._id)))
+    );
+
+    // Clear selections for deleted creators
     setSelectedCreatorIds((prev) =>
-      prev.filter(
-        (id) => String(id) !== String(creator._id)
-      )
+      prev.filter((id) => !deletedIds.has(String(id)))
     );
 
     setCreatorActions((prev) => {
       const updated = { ...prev };
-      delete updated[String(creator._id)];
+      deletedIds.forEach((id) => delete updated[id]);
       return updated;
     });
 
     setCreatorCommercials((prev) => {
       const updated = { ...prev };
-      delete updated[String(creator._id)];
+      deletedIds.forEach((id) => delete updated[id]);
       return updated;
     });
 
     setCreatorReadyStatus((prev) => {
       const updated = { ...prev };
-      delete updated[String(creator._id)];
+      deletedIds.forEach((id) => delete updated[id]);
       return updated;
     });
 
     setShowDeleteModal(false);
 
-    alert("Creator removed from this brand ticket.");
+    alert(
+      `${creatorsToDelete.length} creator(s) removed from this brand ticket.`
+    );
   } catch (error) {
-    console.error("Delete assigned creator error:", error);
-    alert(error.message || "Failed to delete creator.");
+    console.error("Delete assigned creators error:", error);
+    alert(
+      error.message ||
+      "Failed to delete all matching creators. Please refresh and check the remaining creators."
+    );
   } finally {
     setDeletingCreator(false);
   }
 };
+
   /* =========================================================
      SEE MORE / SEE LESS
   ========================================================= */
@@ -360,6 +799,30 @@ const handleDeleteAssignedCreator = async () => {
       [key]: !prev[key],
     }));
   };
+
+
+  const brandVisibleHeaders = [
+  "SL.No.",
+  "Full Name",
+  "Instagram Username",
+  "Instagram Profile Link",
+  "Instagram Follower Range",
+  "Exact Followers",
+  "Categories",
+  "Influencer Type",
+  "Gender",
+  "Date of Birth",
+  "Languages",
+  "State",
+  "Country",
+  "Youtube Username",
+  "Youtube Channel Link",
+  "Youtube Subscribers Range",
+  "Platform",
+  "Commercial",
+  "Status",
+  "Action",
+];
 
   const renderLongText = (
     creator,
@@ -385,6 +848,8 @@ const handleDeleteAssignedCreator = async () => {
 
     const key = `${creator._id}-${field}`;
     const expanded = expandedCells[key];
+
+
 
     return (
       <div className="max-w-[18.75vw] leading-[1.6]">
@@ -513,17 +978,13 @@ const handleDeleteAssignedCreator = async () => {
   /* =========================================================
      SEARCH
   ========================================================= */
+const filteredCreators = useMemo(() => {
+  const search = creatorSearch.trim().toLowerCase();
 
-  const filteredCreators = useMemo(() => {
-    const search = creatorSearch
-      .trim()
-      .toLowerCase();
-
-    if (!search) {
-      return assignedCreators;
-    }
-
-    return assignedCreators.filter((creator) =>
+  return assignedCreators.filter((creator) => {
+    // EXISTING SEARCH
+    const matchesSearch =
+      !search ||
       [
         creator.fullName,
         creator.instagramUsername,
@@ -548,16 +1009,106 @@ const handleDeleteAssignedCreator = async () => {
       ]
         .filter(Boolean)
         .some((value) =>
-          String(value)
+          (Array.isArray(value) ? value.join(", ") : String(value))
             .toLowerCase()
             .includes(search)
-        )
-    );
-  }, [
-    assignedCreators,
-    creatorSearch,
-  ]);
+        );
 
+    if (!matchesSearch) return false;
+
+    const matchesMultiFilter = (selected, values) => {
+      if (!selected.length) return true;
+
+      const actualValues = getFilterValues(values);
+
+      return selected.some((value) =>
+        actualValues.includes(String(value).toLowerCase())
+      );
+    };
+
+    // INSTAGRAM FOLLOWER RANGE
+    const instagramRange =
+      creator.instagramFollowerRange ||
+      getInstagramFollowersRange(creator.exactFollowers);
+
+    if (
+      !matchesMultiFilter(
+        creatorFilters.instagramFollowersRange,
+        instagramRange
+      )
+    ) return false;
+
+    // YOUTUBE SUBSCRIBER RANGE
+    const youtubeRange =
+      creator.youtubeSubscribersRange ||
+      normalizeYoutubeSubscribersRange(creator.youtubeSubscribers);
+
+    if (
+      !matchesMultiFilter(
+        creatorFilters.youtubeSubscribersRange,
+        youtubeRange
+      )
+    ) return false;
+
+    // CATEGORY
+    if (
+      !matchesMultiFilter(
+        creatorFilters.categories,
+        creator.categories
+      )
+    ) return false;
+
+    // INFLUENCER TYPE
+    if (
+      !matchesMultiFilter(
+        creatorFilters.influencerType,
+        creator.influencerType
+      )
+    ) return false;
+
+    // GENDER
+    if (
+      !matchesMultiFilter(
+        creatorFilters.gender,
+        creator.gender
+      )
+    ) return false;
+
+    // LANGUAGE
+    if (
+      !matchesMultiFilter(
+        creatorFilters.languages,
+        creator.languages
+      )
+    ) return false;
+
+    // AGE
+    if (
+      !matchesMultiFilter(
+        creatorFilters.age,
+        getCreatorAgeRange(creator.dateOfBirth)
+      )
+    ) return false;
+
+    // STATE
+    if (
+      !matchesMultiFilter(
+        creatorFilters.state,
+        creator.state
+      )
+    ) return false;
+
+    // CITY
+    if (
+      !matchesMultiFilter(
+        creatorFilters.city,
+        creator.city
+      )
+    ) return false;
+
+    return true;
+  });
+}, [assignedCreators, creatorSearch, creatorFilters]);
   /* =========================================================
      CREATOR SELECTION
   ========================================================= */
@@ -625,7 +1176,30 @@ const handleDeleteAssignedCreator = async () => {
       return;
     }
 
-    const headers = [
+    const headers = isBrandRole
+  ? [
+      "SL.No.",
+      "Full Name",
+      "Instagram Username",
+      "Instagram Profile Link",
+      "Instagram Follower Range",
+      "Exact Followers",
+      "Categories",
+      "Influencer Type",
+      "Gender",
+      "Date of Birth",
+      "Languages",
+      "State",
+      "Country",
+      "Youtube Username",
+      "Youtube Channel Link",
+      "Youtube Subscribers Range",
+      "Platform",
+      "Quote Commercial",
+      "Status",
+      "Action",
+    ]
+  : [
       "SL.No.",
       "Full Name",
       "Instagram Username",
@@ -688,65 +1262,115 @@ const handleDeleteAssignedCreator = async () => {
     };
 
     // DOWNLOAD ONLY CURRENTLY SELECTED OR FILTERED CREATORS
-    const rows = creatorsToDownload.map(
-      (creator, index) =>
-        [
-          index + 1,
-          creator.fullName,
-          creator.instagramUsername,
-          creator.instagramProfileLink,
-creator.instagramFollowerRange ||
-  getInstagramFollowersRange(creator.exactFollowers),
-          creator.exactFollowers,
-          creator.phoneNumber,
-          creator.whatsappNumber,
-          creator.email,
-          creator.categories,
-          creator.campaignType,
-          creator.influencerType,
-          creator.gender,
-          creator.dateOfBirth
-            ? new Date(
-                creator.dateOfBirth
-              ).toLocaleDateString()
-            : "",
-          creator.languages,
-          creator.fullAddress,
-          creator.landmark,
-          creator.city,
-          creator.state,
-          creator.country,
-          creator.pincode,
-          creator.youtubeUsername,
-          creator.youtubeChannelLink,
-creator.youtubeSubscribersRange ||
-  normalizeYoutubeSubscribersRange(creator.youtubeSubscribers),
-          creator.commercialsFor1InstagramReel,
-          creator.photoLink,
-          creator.commercialsFor1InstagramStory,
-          creator.commercialsFor1InstagramPost,
-          creator.commercialsFor1DedicatedYoutubeVideo,
-          creator.commercialsFor1IntegratedYoutubeVideo,
-          creator.commercialsFor1DedicatedYoutubeShortsVideo,
-          creator.commercialsFor1IntegratedYoutubeShortsVideo,
-          creator.whatKindOfDealDoYouParticipateIn,
-          creator.speakingVideoLink,
-          creator.isCelebrity !== undefined
-            ? creator.isCelebrity
-              ? "Yes"
-              : "No"
-            : "",
-          creator.availablePlatforms,
-          creator.typeOfCelebrity,
-          creator.amazonReviewsPerMonth,
-          creator.platform,
-          creator.bio,
-          creator.InflunexaUserId ||
-            creator.influnexaUserId,
-        ]
-          .map(escapeCSV)
-          .join(",")
-    );
+const rows = creatorsToDownload.map((creator, index) => {
+  const platform =
+    creator.platform ||
+    (() => {
+      const hasInstagram = Boolean(
+        creator.instagramProfileLink?.trim()
+      );
+      const hasYoutube = Boolean(
+        creator.youtubeChannelLink?.trim()
+      );
+
+      if (hasInstagram && hasYoutube) return "Instagram, YouTube";
+      if (hasInstagram) return "Instagram";
+      if (hasYoutube) return "YouTube";
+
+      return "-";
+    })();
+
+  const status =
+    creatorActions[String(creator._id)] ||
+    creator.assignedStatus ||
+    creator.status ||
+    "Pending";
+
+  if (isBrandRole) {
+    return [
+      index + 1,
+      creator.fullName,
+      creator.instagramUsername,
+      creator.instagramProfileLink,
+      creator.instagramFollowerRange ||
+        getInstagramFollowersRange(creator.exactFollowers),
+      creator.exactFollowers,
+      creator.categories,
+      creator.influencerType,
+      creator.gender,
+      creator.dateOfBirth
+        ? new Date(creator.dateOfBirth).toLocaleDateString()
+        : "",
+      creator.languages,
+      creator.state,
+      creator.country,
+      creator.youtubeUsername,
+      creator.youtubeChannelLink,
+      creator.youtubeSubscribersRange ||
+        normalizeYoutubeSubscribersRange(creator.youtubeSubscribers),
+      platform,
+      creatorCommercials[String(creator._id)] ?? creator.commercial ?? "",
+      status,
+      status,
+    ]
+      .map(escapeCSV)
+      .join(",");
+  }
+
+  return [
+    index + 1,
+    creator.fullName,
+    creator.instagramUsername,
+    creator.instagramProfileLink,
+    creator.instagramFollowerRange ||
+      getInstagramFollowersRange(creator.exactFollowers),
+    creator.exactFollowers,
+    creator.phoneNumber,
+    creator.whatsappNumber,
+    creator.email,
+    creator.categories,
+    creator.campaignType,
+    creator.influencerType,
+    creator.gender,
+    creator.dateOfBirth
+      ? new Date(creator.dateOfBirth).toLocaleDateString()
+      : "",
+    creator.languages,
+    creator.fullAddress,
+    creator.landmark,
+    creator.city,
+    creator.state,
+    creator.country,
+    creator.pincode,
+    creator.youtubeUsername,
+    creator.youtubeChannelLink,
+    creator.youtubeSubscribersRange ||
+      normalizeYoutubeSubscribersRange(creator.youtubeSubscribers),
+    creator.commercialsFor1InstagramReel,
+    creator.photoLink,
+    creator.commercialsFor1InstagramStory,
+    creator.commercialsFor1InstagramPost,
+    creator.commercialsFor1DedicatedYoutubeVideo,
+    creator.commercialsFor1IntegratedYoutubeVideo,
+    creator.commercialsFor1DedicatedYoutubeShortsVideo,
+    creator.commercialsFor1IntegratedYoutubeShortsVideo,
+    creator.whatKindOfDealDoYouParticipateIn,
+    creator.speakingVideoLink,
+    creator.isCelebrity !== undefined
+      ? creator.isCelebrity
+        ? "Yes"
+        : "No"
+      : "",
+    creator.availablePlatforms,
+    creator.typeOfCelebrity,
+    creator.amazonReviewsPerMonth,
+    platform,
+    creator.bio,
+    creator.InflunexaUserId || creator.influnexaUserId,
+  ]
+    .map(escapeCSV)
+    .join(",");
+});
 
     const csvContent = [
       headers.map(escapeCSV).join(","),
@@ -1187,6 +1811,131 @@ creator.youtubeSubscribersRange ||
         </div>
       </div>
 
+      {/* CREATOR FILTERS */}
+<div className="p-3
+          mx-[1.75vw]
+          mt-[1.25vw]
+          mb-[1.25vw]
+          bg-white
+          border
+          border-slate-200
+          rounded-[1.5vw]
+          shadow-sm">
+  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h3 className="text-sm font-bold text-slate-800">
+        Filter Assigned Creators
+      </h3>
+    </div>
+
+    <button
+      type="button"
+      onClick={resetCreatorFilters}
+      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+    >
+      Reset Filters
+    </button>
+  </div>
+
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {[
+      {
+        name: "instagramFollowersRange",
+        label: "Instagram Follower Range",
+        options: [
+          "Under 1K",
+          "1K - 10K",
+          "10K - 50K",
+          "50K - 100K",
+          "100K - 500K",
+          "500K - 1M",
+          "1M - 5M",
+          "5M+",
+        ].map((value) => ({ value, label: value })),
+      },
+      {
+        name: "youtubeSubscribersRange",
+        label: "Youtube Subscriber Range",
+        options: [
+          "Under 1K",
+          "1K - 10K",
+          "10K - 50K",
+          "50K - 100K",
+          "100K+",
+        ].map((value) => ({ value, label: value })),
+      },
+      {
+        name: "categories",
+        label: "Category",
+        options: getCreatorFilterOptions("categories"),
+      },
+      {
+        name: "influencerType",
+        label: "Influencer Type",
+        options: getCreatorFilterOptions("influencerType"),
+      },
+      {
+        name: "gender",
+        label: "Gender",
+        options: getCreatorFilterOptions("gender"),
+      },
+      {
+        name: "languages",
+        label: "Language",
+        options: getCreatorFilterOptions("languages"),
+      },
+      {
+        name: "age",
+        label: "Age",
+        options: [
+          "Under 18",
+          "18 - 24",
+          "25 - 34",
+          "35 - 44",
+          "45 - 54",
+          "55+",
+        ].map((value) => ({ value, label: value })),
+      },
+      {
+        name: "state",
+        label: "State",
+        options: getCreatorFilterOptions("state"),
+      },
+      {
+        name: "city",
+        label: "City",
+        options: getCreatorFilterOptions("city"),
+      },
+    ].map((filter) => (
+      <label
+        key={filter.name}
+        className="min-w-0 text-xs font-semibold text-slate-600"
+      >
+        <span className="mb-1.5 block">{filter.label}</span>
+
+        <Select
+          isMulti
+          isSearchable
+          closeMenuOnSelect={false}
+          hideSelectedOptions={false}
+          options={filter.options}
+          value={filter.options.filter((option) =>
+            creatorFilters[filter.name].includes(option.value)
+          )}
+          onChange={(selected) =>
+            updateCreatorFilter(filter.name, selected)
+          }
+          placeholder={filter.label}
+          noOptionsMessage={() => "No options found"}
+          menuPortalTarget={document.body}
+          menuPosition="fixed"
+          styles={creatorFilterSelectStyles}
+        />
+      </label>
+    ))}
+  </div>
+</div>
+
       {/* =====================================================
           TABLE CONTAINER
       ===================================================== */}
@@ -1228,53 +1977,55 @@ creator.youtubeSubscribersRange ||
 
             <thead className="bg-slate-50">
               <tr>
-                {[
-                  "SL.No.",
-                  "Full Name",
-                  "Instagram Username",
-                  "Instagram Profile Link",
-                  "Instagram Follower Range",
-                  "Exact Followers",
-                  "Phone Number",
-                  "Whatsapp Number",
-                  "Email",
-                  "Categories",
-                  "Campaign Type",
-                  "Influencer Type",
-                  "Gender",
-                  "Date of Birth",
-                  "Languages",
-                  "Full Address",
-                  "Landmark",
-                  "City",
-                  "State",
-                  "Country",
-                  "Pincode",
-                  "Youtube Username",
-                  "Youtube Channel Link",
-                  "Youtube Subscribers Range",
-                  "Commercials For 1 Instagram Reel",
-                  "Photo Link",
-                  "Commercials For 1 Instagram Story",
-                  "Commercials For 1 Instagram Post",
-                  "Commercials For 1 Dedicated YouTube Video",
-                  "Commercials For 1 Integrated YouTube Video",
-                  "Commercials For 1 Dedicated YouTube Shorts Video",
-                  "Commercials For 1 Integrated YouTube Shorts Video",
-                  "What Kind Of Deal Do You Participate In",
-                  "Speaking Video Link",
-                  "Are you a TV/movies/OTT celebrity",
-                  "What all platforms are you avilable on",
-                  "Type Of Celebrity",
-                  "How many Amazon reviews you do per month",
-                  "Platform",
-                  "Commercial",
-                  "Ready to Campaign",
-                  "Status",
-                  "Action",
-                  "Bio",
-                  "InflunexaUserId",
-                ].map((header, index) => (
+   {[
+  "SL.No.",
+  "Full Name",
+  "Instagram Username",
+  "Instagram Profile Link",
+  "Instagram Follower Range",
+  "Exact Followers",
+  "Phone Number",
+  "Whatsapp Number",
+  "Email",
+  "Categories",
+  "Campaign Type",
+  "Influencer Type",
+  "Gender",
+  "Date of Birth",
+  "Languages",
+  "Full Address",
+  "Landmark",
+  "City",
+  "State",
+  "Country",
+  "Pincode",
+  "Youtube Username",
+  "Youtube Channel Link",
+  "Youtube Subscribers Range",
+  "Commercials For 1 Instagram Reel",
+  "Photo Link",
+  "Commercials For 1 Instagram Story",
+  "Commercials For 1 Instagram Post",
+  "Commercials For 1 Dedicated YouTube Video",
+  "Commercials For 1 Integrated YouTube Video",
+  "Commercials For 1 Dedicated YouTube Shorts Video",
+  "Commercials For 1 Integrated YouTube Shorts Video",
+  "What Kind Of Deal Do You Participate In",
+  "Speaking Video Link",
+  "Are you a TV/movies/OTT celebrity",
+  "What all platforms are you avilable on",
+  "Type Of Celebrity",
+  "How many Amazon reviews you do per month",
+  "Platform",
+  "Commercial",
+  "Ready to Campaign",
+  "Status",
+  "Action",
+  "Bio",
+  "InflunexaUserId",
+].filter((header) =>
+  !isBrandRole || brandVisibleHeaders.includes(header)
+).map((header, index) => (
                   <th
                     key={header}
                     className={`
@@ -1333,9 +2084,11 @@ creator.youtubeSubscribersRange ||
 
                         <span>{header}</span>
                       </div>
-                    ) : (
-                      header
-                    )}
+                   ) : (
+  isBrandRole && header === "Commercial"
+    ? "Quote Commercial"
+    : header
+)}
                   </th>
                 ))}
               </tr>
@@ -1349,7 +2102,7 @@ creator.youtubeSubscribersRange ||
               {filteredCreators.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={43}
+                    colSpan={isBrandRole ? 20 : 45}
                     className="
                       px-[1.5vw]
                       py-[4vw]
@@ -1537,7 +2290,7 @@ creator.youtubeSubscribersRange ||
                       </td>
 
                       {/* 7. PHONE NUMBER */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1551,8 +2304,10 @@ creator.youtubeSubscribersRange ||
                         {creator.phoneNumber || "—"}
                       </td>
 
-                      {/* 8. WHATSAPP NUMBER */}
+)}
 
+                      {/* 8. WHATSAPP NUMBER */}
+                {!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1565,9 +2320,10 @@ creator.youtubeSubscribersRange ||
                       >
                         {creator.whatsappNumber || "—"}
                       </td>
+                )}
 
                       {/* 9. EMAIL */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1583,6 +2339,7 @@ creator.youtubeSubscribersRange ||
                           creator.email
                         )}
                       </td>
+)}
 
                       {/* 10. CATEGORIES */}
 
@@ -1603,7 +2360,7 @@ creator.youtubeSubscribersRange ||
                       </td>
 
                       {/* 11. CAMPAIGN TYPE */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1619,6 +2376,7 @@ creator.youtubeSubscribersRange ||
                           creator.campaignType
                         )||"-"}
                       </td>
+)}
 
                       {/* 12. INFLUENCER TYPE */}
 
@@ -1684,7 +2442,7 @@ creator.youtubeSubscribersRange ||
                       </td>
 
                       {/* 16. FULL ADDRESS */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1701,9 +2459,10 @@ creator.youtubeSubscribersRange ||
                           45
                         )}
                       </td>
+)}
 
                       {/* 17. LANDMARK */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1719,9 +2478,10 @@ creator.youtubeSubscribersRange ||
                           creator.landmark
                         )}
                       </td>
+)}
 
                       {/* 18. CITY */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1734,6 +2494,7 @@ creator.youtubeSubscribersRange ||
                       >
                         {creator.city || "—"}
                       </td>
+)}
 
                       {/* 19. STATE */}
 
@@ -1766,7 +2527,7 @@ creator.youtubeSubscribersRange ||
                       </td>
 
                       {/* 21. PINCODE */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1779,6 +2540,7 @@ creator.youtubeSubscribersRange ||
                       >
                         {creator.pincode || "—"}
                       </td>
+)}
 
                       {/* 22. YOUTUBE USERNAME */}
 
@@ -1836,7 +2598,7 @@ creator.youtubeSubscribersRange ||
                       </td>
 
                       {/* 25. COMMERCIALS INSTAGRAM REEL */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1850,9 +2612,10 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1InstagramReel ||
                           "—"}
                       </td>
+)}
 
                       {/* 26. PHOTO LINK */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1868,9 +2631,10 @@ creator.youtubeSubscribersRange ||
                           creator.photoLink
                         )}
                       </td>
+)}
 
                       {/* 27. COMMERCIALS INSTAGRAM STORY */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1884,9 +2648,10 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1InstagramStory ||
                           "—"}
                       </td>
+)}
 
                       {/* 28. COMMERCIALS INSTAGRAM POST */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1900,9 +2665,10 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1InstagramPost ||
                           "—"}
                       </td>
+)}
 
                       {/* 29. DEDICATED YOUTUBE VIDEO */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1916,9 +2682,9 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1DedicatedYoutubeVideo ||
                           "—"}
                       </td>
-
+)}
                       {/* 30. INTEGRATED YOUTUBE VIDEO */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1932,9 +2698,10 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1IntegratedYoutubeVideo ||
                           "—"}
                       </td>
+)}
 
                       {/* 31. DEDICATED YOUTUBE SHORTS */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1948,9 +2715,10 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1DedicatedYoutubeShortsVideo ||
                           "—"}
                       </td>
+)}
 
                       {/* 32. INTEGRATED YOUTUBE SHORTS */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1964,9 +2732,9 @@ creator.youtubeSubscribersRange ||
                         {creator.commercialsFor1IntegratedYoutubeShortsVideo ||
                           "—"}
                       </td>
-
+)}
                       {/* 33. DEAL */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -1982,9 +2750,10 @@ creator.youtubeSubscribersRange ||
                           creator.whatKindOfDealDoYouParticipateIn
                         )}
                       </td>
+)}
 
                       {/* 34. SPEAKING VIDEO LINK */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2000,9 +2769,10 @@ creator.youtubeSubscribersRange ||
                           creator.speakingVideoLink
                         )}
                       </td>
+)}
 
                       {/* 35. CELEBRITY */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2020,9 +2790,10 @@ creator.youtubeSubscribersRange ||
                             : "No"
                           : "—"}
                       </td>
+)}
 
                       {/* 36. AVAILABLE PLATFORMS */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2038,9 +2809,10 @@ creator.youtubeSubscribersRange ||
                           creator.availablePlatforms
                         )}
                       </td>
+)}
 
                       {/* 37. TYPE OF CELEBRITY */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2054,9 +2826,10 @@ creator.youtubeSubscribersRange ||
                         {creator.typeOfCelebrity ||
                           "—"}
                       </td>
+)}
 
                       {/* 38. AMAZON REVIEWS */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2070,6 +2843,7 @@ creator.youtubeSubscribersRange ||
                         {creator.amazonReviewsPerMonth ||
                           "—"}
                       </td>
+)}
 
                       {/* 39. PLATFORM */}
 
@@ -2120,44 +2894,41 @@ creator.youtubeSubscribersRange ||
   "
 >
   <input
-    type="number"
-    min="0"
-    step="1"
-    value={creatorCommercials[creator._id] || ""}
-    onChange={(e) => {
-      const value = e.target.value;
+  type="number"
+  min="0"
+  step="1"
+  value={creatorCommercials[creator._id] || ""}
+  disabled={isBrandRole}
+  onChange={(e) => {
+    const value = e.target.value;
 
-      // Allow only numbers
-      if (/^\d*$/.test(value)) {
-        handleCreatorCommercial(
-          creator._id,
-          value
-        );
-      }
-    }}
-    placeholder="Enter amount"
-    inputMode="numeric"
-    className="
-      w-full
-      min-w-[11vw]
-      h-[2.7vw]
-      min-h-[40px]
-      px-[0.7vw]
-      rounded-[0.6vw]
-      border
-      border-slate-200
-      bg-white
-      text-[0.8vw]
-      text-slate-700
-      placeholder:text-slate-400
-      outline-none
-      focus:border-gray-500
-      focus:ring-[0.15vw]
-      focus:ring-gray-100
-    "
-  />
+    if (/^\d*$/.test(value)) {
+      handleCreatorCommercial(creator._id, value);
+    }
+  }}
+  placeholder="Enter amount"
+  inputMode="numeric"
+  className={`
+    w-full
+    min-w-[11vw]
+    h-[2.7vw]
+    min-h-[40px]
+    px-[0.7vw]
+    rounded-[0.6vw]
+    border
+    border-slate-200
+    text-[0.8vw]
+    outline-none
+    ${
+      isBrandRole
+        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+        : "bg-white text-slate-700 focus:border-gray-500 focus:ring-[0.15vw] focus:ring-gray-100"
+    }
+  `}
+/>
 </td>
 {/* 41. READY TO CAMPAIGN */}
+{!isBrandRole && (
 <td
   className="
     px-[1vw]
@@ -2200,6 +2971,7 @@ creator.youtubeSubscribersRange ||
     <option value="Disagreed">Disagreed</option>
   </select>
 </td>
+)}
 
 {/* 42. STATUS */}
 <td
@@ -2287,7 +3059,7 @@ creator.youtubeSubscribersRange ||
 </td>
                       
                       {/* 42. BIO */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2304,9 +3076,10 @@ creator.youtubeSubscribersRange ||
                           60
                         )}
                       </td>
+)}
 
                       {/* 43. INFLUNEXA USER ID */}
-
+{!isBrandRole && (
                       <td
                         className="
                           px-[1vw]
@@ -2323,6 +3096,7 @@ creator.youtubeSubscribersRange ||
                           creator.influnexaUserId ||
                           "—"}
                       </td>
+)}
                     </tr>
                   )
                 )

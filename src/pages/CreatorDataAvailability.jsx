@@ -2347,7 +2347,7 @@ setCreatorsTotal(Number(result.total || 0));
               "Full Name",
               "Instagram Username",
               "Instagram Profile Link",
-              "Instagram Followers Range",
+              "Instagram Follower Range",
               "Categories",
               "Influencer Type",
               "YouTube Username",
@@ -2382,7 +2382,7 @@ setCreatorsTotal(Number(result.total || 0));
                 colSpan={15}
                 className="px-4 py-10 text-center text-slate-500"
               >
-                Loading creators...
+                Loading Creators...
               </td>
             </tr>
           ) : creators.length === 0 ? (

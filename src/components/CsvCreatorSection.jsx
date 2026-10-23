@@ -10,6 +10,8 @@ import Select from "react-select";
 import { getBrandTickets } from "../lib/api";
 
 function CsvCreatorSection({adminRole}) {
+
+  const [showTicketOptions, setShowTicketOptions] = useState(false);
   const [selectedCreators, setSelectedCreators] = useState([]);
   const [selectAllCreators, setSelectAllCreators] = useState(false);
  const [brandTickets, setBrandTickets] = useState([]);
@@ -392,6 +394,67 @@ const toggleSelectAll = async () => {
 };
 
 
+const getCreatorsForDownload = async () => {
+  // If creators are selected, download only those creators
+  if (selectedCreators.length > 0) {
+    const selectedIds = new Set(selectedCreators.map(String));
+
+    const params = {};
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        if (value.length > 0) {
+          params[key] = value.join(",");
+        }
+      } else if (
+        value !== "" &&
+        value !== null &&
+        value !== undefined
+      ) {
+        params[key] = value;
+      }
+    });
+
+    params.download = true;
+
+    const res = await axios.get(
+      `${Config.API_URL}/csv-creators`,
+      { params }
+    );
+
+    return (res.data.data || []).filter((creator) =>
+      selectedIds.has(String(creator._id))
+    );
+  }
+
+  // No selection: preserve the existing filtered-download logic
+  const params = {};
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        params[key] = value.join(",");
+      }
+    } else if (
+      value !== "" &&
+      value !== null &&
+      value !== undefined
+    ) {
+      params[key] = value;
+    }
+  });
+
+  params.download = true;
+
+  const res = await axios.get(
+    `${Config.API_URL}/csv-creators`,
+    { params }
+  );
+
+  return res.data.data || [];
+};
+
+
 // =========================
 // DOWNLOAD FILTERED CSV
 // =========================
@@ -432,7 +495,7 @@ const downloadCSV = async () => {
       }
     );
 
-    const allCreators = res.data.data;
+   const allCreators = await getCreatorsForDownload();
 
 const formattedData = allCreators.map((creator) => ({
   "Timestamp": creator.timestamp || "",
@@ -629,7 +692,7 @@ const downloadMaskedCSV = async () => {
       }
     );
 
-    const allCreators = res.data.data;
+   const allCreators = await getCreatorsForDownload();
 
     if (allCreators.length === 0) {
       alert("No filtered data available to download.");
@@ -1143,45 +1206,97 @@ const selectStyles = {
   pointer-events-auto
 ">
 
-  <select
-    value={selectedBrandTicket}
-    onChange={(e) => setSelectedBrandTicket(e.target.value)}
+<div className="relative w-[20vw] shrink-0 max-[1199px]:w-[25vw] max-[767px]:w-[55vw]">
+
+  {/* Selected ticket */}
+  <button
+    type="button"
+    onClick={() => setShowTicketOptions((prev) => !prev)}
     className="
-  w-[20vw]
-  h-[46px]
-  min-h-[44px]
-  max-h-[52px]
-  px-[12px]
-  border
-  border-slate-200
-  rounded-[10px]
-  bg-white
-  text-[14px]
-  text-slate-700
-  shrink-0
-  
-  
-
-  max-[1199px]:w-[25vw]
-  max-[1199px]:text-[13px]
-
-  max-[767px]:w-[55vw]
-  max-[767px]:h-[44px]
-  max-[767px]:text-[13px]
-
-  max-[480px]:w-[55vw]
-  max-[480px]:h-[44px]
-  max-[480px]:text-[12px]
-"
+      flex w-full h-[46px] min-h-[44px] max-h-[52px]
+      items-center justify-between gap-2
+      rounded-[10px] border border-slate-200
+      bg-white px-[12px] text-left
+      text-[14px] text-slate-700
+      max-[1199px]:text-[13px]
+      max-[767px]:h-[44px]
+      max-[480px]:text-[12px]
+    "
   >
-    <option value="">Select Brand Ticket</option>
+    <span className="min-w-0 flex-1 truncate whitespace-nowrap">
+  {(() => {
+    const ticket = brandTickets.find(
+      (item) => item._id === selectedBrandTicket
+    );
 
-    {brandTickets.map((ticket) => (
-      <option key={ticket._id} value={ticket._id}>
-        {ticket.ticketNumber} · {ticket.brandName}
-      </option>
-    ))}
-  </select>
+    return ticket
+      ? `${ticket.ticketNumber} · ${ticket.brandName} · ${ticket.campaignName}`
+      : "Select Brand Ticket";
+  })()}
+</span>
+
+   <span className="shrink-0 text-slate-500">
+  <svg
+    className="h-4 w-4"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+  >
+    <path
+      d="m6 8 4 4 4-4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</span>
+  </button>
+
+  {/* Ticket options */}
+  {showTicketOptions && (
+    <div className="
+      absolute left-0 top-full z-50 mt-1
+      w-full max-h-[260px] overflow-y-auto
+      rounded-[10px] border border-slate-200
+      bg-white shadow-lg
+    ">
+      <button
+        type="button"
+        onClick={() => {
+          setSelectedBrandTicket("");
+          setShowTicketOptions(false);
+        }}
+        className="
+          block w-full px-3 py-2 text-left text-[13px]
+          whitespace-normal break-words
+          hover:bg-slate-100
+        "
+      >
+        Select Brand Ticket
+      </button>
+
+      {brandTickets.map((ticket) => (
+        <button
+          key={ticket._id}
+          type="button"
+          onClick={() => {
+            setSelectedBrandTicket(ticket._id);
+            setShowTicketOptions(false);
+          }}
+          className="
+            block w-full min-w-0 px-3 py-2
+            text-left text-[13px] leading-5
+            whitespace-normal break-words
+            [overflow-wrap:anywhere]
+            hover:bg-slate-100
+          "
+        >
+          {ticket.ticketNumber} · {ticket.brandName} · {ticket.campaignName}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
   {isFiltered && selectedBrandTicket && selectedCreators.length > 0 && (
    <button
@@ -1222,7 +1337,7 @@ const selectStyles = {
     max-[480px]:text-[3.5vw]
   "
 >
-  Assign to This Brand
+  Assign to This Brand ({selectedCreators.length})
 </button>  )}
 
 </div><br></br>
@@ -1610,10 +1725,10 @@ const selectStyles = {
   
 className="
   absolute
-  right-3
+  right-11
   sm:right-11
   lg:right-15
-  top-[350px]
+  top-[270px]
   sm:top-[280px]
   lg:top-[350px]
   z-50

@@ -227,6 +227,10 @@ export async function loginAdmin({ email, password }) {
 if (data.user?.email) {
   localStorage.setItem("Email", data.user.email);
 }
+
+if (data.user?.role) {
+  sessionStorage.setItem("adminRole", data.user.role.toLowerCase());
+}
   return data;
 }
 
@@ -282,6 +286,8 @@ export async function logoutAdmin() {
     };
   }
 }
+
+
 
 export async function getLeadWorkflow(query = "") {
   const response = await fetch(

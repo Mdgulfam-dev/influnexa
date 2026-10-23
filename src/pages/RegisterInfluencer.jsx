@@ -125,6 +125,7 @@ const availablePlatforms = [
   "Instagram",
   "YouTube",
     "LinkedIn",
+    "Facebook",
 ];
 
 const dealTypes = [
@@ -204,6 +205,13 @@ linkedinFollowersRange: "",
 linkedinAverageViews: "",
 commercialsFor1LinkedInPost: "",
 commercialsFor1LinkedInReel: "",
+
+facebookUsername: "",
+facebookProfileLink: "",
+facebookFollowersRange: "",
+facebookAverageViews: "",
+commercialsFor1FacebookPost: "",
+commercialsFor1FacebookReel: "",
   whatKindOfDealDoYouParticipateIn:[],
   speakingVideoLink: "",
 
@@ -286,6 +294,7 @@ const [otherLanguage, setOtherLanguage] = useState("");
     yt: false,
     insta: false,
      linkedin: false,
+     facebook: false,
   });
 
   useEffect(() => {
@@ -333,6 +342,7 @@ const [otherLanguage, setOtherLanguage] = useState("");
     yt: "YouTube",
     insta: "Instagram",
     linkedin: "LinkedIn",
+    facebook: "Facebook",
   };
 
   const platformName = platformNames[platform];
@@ -388,6 +398,13 @@ const toggleAvailablePlatform = (platform) => {
         linkedin: nextPlatforms.includes("LinkedIn"),
       }));
     }
+
+    if (platform === "Facebook") {
+  setPlatforms((currentPlatforms) => ({
+    ...currentPlatforms,
+    facebook: nextPlatforms.includes("Facebook"),
+  }));
+}
 
     return {
       ...current,
@@ -491,7 +508,8 @@ const isStepValid = (step) => {
 if (
   !selectedPlatforms.includes("Instagram") &&
   !selectedPlatforms.includes("YouTube")&&
-   !selectedPlatforms.includes("LinkedIn")
+   !selectedPlatforms.includes("LinkedIn")&&
+   !selectedPlatforms.includes("Facebook")
 ) {
   return false;
 }
@@ -531,6 +549,18 @@ if (selectedPlatforms.includes("LinkedIn")) {
     !form.linkedinUsername.trim() ||
     !form.linkedinProfileLink.trim() ||
     !form.linkedinFollowersRange.trim()
+  ) {
+    return false;
+  }
+}
+
+
+// Facebook selected
+if (selectedPlatforms.includes("Facebook")) {
+  if (
+    !form.facebookUsername.trim() ||
+    !form.facebookProfileLink.trim() ||
+    !form.facebookFollowersRange.trim()
   ) {
     return false;
   }
@@ -755,6 +785,24 @@ commercialsFor1LinkedInPost: numberOrZero(
 ),
 commercialsFor1LinkedInReel: numberOrZero(
   form.commercialsFor1LinkedInReel
+),
+
+
+
+// FACEBOOK
+facebookUsername: text(form.facebookUsername),
+facebookProfileLink: text(form.facebookProfileLink),
+facebookFollowersRange: text(form.facebookFollowersRange),
+facebookAverageViews: numberOrZero(
+  form.facebookAverageViews
+),
+
+commercialsFor1FacebookPost: numberOrZero(
+  form.commercialsFor1FacebookPost
+),
+
+commercialsFor1FacebookReel: numberOrZero(
+  form.commercialsFor1FacebookReel
 ),
     // ==========================================
     // OTHER INFORMATION
@@ -1659,6 +1707,13 @@ onClick={() => {
   onClick={() => togglePlatform("linkedin")}
 />
 
+<PlatformCard
+  type="facebook"
+  title="Add Facebook rate card"
+  checked={platforms.facebook}
+  onClick={() => togglePlatform("facebook")}
+/>
+
                   </div>
 
                   {/* INSTAGRAM */}
@@ -1968,6 +2023,88 @@ onClick={() => {
     </div>
   </div>
 )}
+
+
+
+{/* FACEBOOK */}
+{platforms.facebook && (
+  <div className="mt-6 border-t border-dashed border-[#E7E3DA] pt-6">
+    <SubTitle
+      type="facebook"
+      title="Facebook Details"
+    />
+
+    <div className="grid gap-[18px] md:grid-cols-2">
+      <Input
+        label="Facebook Username"
+        name="facebookUsername"
+        value={form.facebookUsername}
+        onChange={updateField}
+        placeholder="Your Facebook username"
+        required
+      />
+
+      <Input
+        label="Facebook Profile Link"
+        type="url"
+        name="facebookProfileLink"
+        value={form.facebookProfileLink}
+        onChange={updateField}
+        placeholder="https://www.facebook.com/..."
+        required
+      />
+
+      <SelectInput
+        label="Facebook Followers Range"
+        name="facebookFollowersRange"
+        value={form.facebookFollowersRange}
+        onChange={updateField}
+        options={[
+          "Under 1K",
+          "1K - 10K",
+          "10K - 50K",
+          "50K - 100K",
+          "100K - 500K",
+          "500K - 1M",
+          "1M - 5M",
+          "5M+",
+        ]}
+        required
+      />
+
+      <Input
+        label="Facebook Average Views"
+        type="number"
+        min="0"
+        name="facebookAverageViews"
+        value={form.facebookAverageViews}
+        onChange={updateField}
+        placeholder="e.g. 25000"
+      />
+    </div>
+
+    <p className="mb-3 mt-6 text-[13px] font-semibold">
+      Commercials (₹)
+    </p>
+
+    <div className="grid gap-4 md:grid-cols-2">
+      <PriceInput
+        label="Commercials For 1 Facebook Post"
+        name="commercialsFor1FacebookPost"
+        value={form.commercialsFor1FacebookPost}
+        onChange={updateField}
+      />
+
+      <PriceInput
+        label="Commercials For 1 Facebook Reel"
+        name="commercialsFor1FacebookReel"
+        value={form.commercialsFor1FacebookReel}
+        onChange={updateField}
+      />
+    </div>
+  </div>
+)}
+
 
                   <Navigation
                     onBack={() => nextStep(3)}
@@ -2653,6 +2790,54 @@ function Review({ form }) {
           )}
         </ReviewGroup>
       )}
+
+{form.whatAllPlatformsAreYouAvailableOn.includes(
+  "LinkedIn"
+) && (
+  <ReviewGroup title="LinkedIn">
+    {item("Username", form.linkedinUsername)}
+    {item("Profile Link", form.linkedinProfileLink)}
+    {item("Followers Range", form.linkedinFollowersRange)}
+    {item("Average Views", form.linkedinAverageViews)}
+    {item(
+      "Post Price",
+      form.commercialsFor1LinkedInPost
+        ? `₹${form.commercialsFor1LinkedInPost}`
+        : "₹0"
+    )}
+    {item(
+      "Reel Price",
+      form.commercialsFor1LinkedInReel
+        ? `₹${form.commercialsFor1LinkedInReel}`
+        : "₹0"
+    )}
+  </ReviewGroup>
+)}
+
+      
+{form.whatAllPlatformsAreYouAvailableOn.includes(
+  "Facebook"
+) && (
+  <ReviewGroup title="Facebook">
+    {item("Username", form.facebookUsername)}
+    {item("Profile Link", form.facebookProfileLink)}
+    {item("Followers Range", form.facebookFollowersRange)}
+    {item("Average Views", form.facebookAverageViews)}
+    {item(
+      "Post Price",
+      form.commercialsFor1FacebookPost
+        ? `₹${form.commercialsFor1FacebookPost}`
+        : "₹0"
+    )}
+    {item(
+      "Reel Price",
+      form.commercialsFor1FacebookReel
+        ? `₹${form.commercialsFor1FacebookReel}`
+        : "₹0"
+    )}
+  </ReviewGroup>
+)}
+
 
       <ReviewGroup title="Deals">
         {item(
