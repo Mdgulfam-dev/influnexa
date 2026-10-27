@@ -9,7 +9,9 @@ import { io } from "socket.io-client";
 import Select from "react-select";
 import { getBrandTickets } from "../lib/api";
 
-function CsvCreatorSection({adminRole}) {
+function CsvCreatorSection({adminRole,currentUser }) {
+
+ const isBrand = String(adminRole || "").toLowerCase() === "brand";
 
   const [showTicketOptions, setShowTicketOptions] = useState(false);
   const [selectedCreators, setSelectedCreators] = useState([]);
@@ -115,6 +117,22 @@ const [filterOptions, setFilterOptions] = useState({
   { label: "5M+", value: "5M+" },
 ],
 });
+
+
+const brandAllowedFilters = [
+  "fullName",
+ 
+  "instagramFollowersRange",
+  "instagramUsername",
+  "categories",
+  "gender",
+  "city",
+  "state",
+  "country",
+  "youtubeSubscribersRange",
+  "languages",
+  "influencerType",
+];
 
 
 const fetchFilterOptions = async () => {
@@ -1175,6 +1193,25 @@ const selectStyles = {
     zIndex: 99999,
   }),
 };
+
+const visibleBrandTickets = isBrand
+  ? brandTickets.filter((ticket) => {
+      const loggedInBrandName = String(currentUser?.name || "")
+        .trim()
+        .toLowerCase();
+
+      const ticketBrandName = String(ticket.brandName || "")
+        .trim()
+        .toLowerCase();
+
+      return (
+        loggedInBrandName !== "" &&
+        ticketBrandName === loggedInBrandName
+      );
+    })
+  : brandTickets;
+
+
   return (
 
 <div className=" csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
@@ -1275,7 +1312,7 @@ const selectStyles = {
         Select Brand Ticket
       </button>
 
-      {brandTickets.map((ticket) => (
+      {visibleBrandTickets.map((ticket) => (
         <button
           key={ticket._id}
           type="button"
@@ -1688,7 +1725,9 @@ const selectStyles = {
 {/* DOWNLOAD BUTTONS */}
 {isFiltered && !loading && creators.length > 0 && (
   <div className="flex flex-wrap items-center justify-end gap-3 mt-3 mr-44">
-    {adminRole !== "creator" && (
+    {!["creator", "brand"].includes(
+  String(adminRole || "").toLowerCase()
+) && (
       <>
         <button
           onClick={downloadCSV}
@@ -1794,6 +1833,7 @@ type:"text",
 label: "Email",
 placeholder:"Email"
 },
+
 
 {
 name:"phoneNumber",
@@ -1972,7 +2012,12 @@ options:filterOptions.languages
   ],
 },
 
-].map((field) => (
+]
+  .filter(
+    (field) =>
+      !isBrand || brandAllowedFilters.includes(field.name)
+  )
+  .map((field) => (
 
   <div key={field.name}>
 
@@ -2303,7 +2348,7 @@ sticky top-0 z-30
  Instagram Follower Range
 </th>
 
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2321,6 +2366,9 @@ sticky top-0 z-30
 ">
 Exact Followers
 </th>
+)}
+
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2338,7 +2386,9 @@ sticky top-0 z-30
 ">
 Phone Number
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2356,6 +2406,8 @@ sticky top-0 z-30
 ">
 Whatsapp Number
 </th>
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2373,6 +2425,8 @@ sticky top-0 z-30
 ">
 Email
 </th>
+)}
+
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2390,7 +2444,7 @@ sticky top-0 z-30
 ">
 Categories
 </th>
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2408,6 +2462,8 @@ sticky top-0 z-30
 ">
 Campaign Type
 </th>
+)}
+
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2443,7 +2499,7 @@ sticky top-0 z-30
 Gender
 </th>
 
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2461,6 +2517,7 @@ sticky top-0 z-30
 ">
 Date of Birth
 </th>
+)}
 
 <th  className="
 sticky top-0 z-30
@@ -2480,7 +2537,7 @@ sticky top-0 z-30
 Languages
 </th>
 
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2498,6 +2555,9 @@ sticky top-0 z-30
 ">
 Full Address
 </th>
+)}
+
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2515,6 +2575,7 @@ sticky top-0 z-30
 ">
 Landmark
 </th>
+)}
 
 
 <th  className="
@@ -2573,7 +2634,7 @@ sticky top-0 z-30
 Country
 </th>
 
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2591,6 +2652,7 @@ sticky top-0 z-30
 ">
 Pincode
 </th>
+)}
 
 <th  className="
 sticky top-0 z-30
@@ -2646,6 +2708,7 @@ sticky top-0 z-30
 Youtube Subscribers Range
 </th>
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2663,7 +2726,9 @@ sticky top-0 z-30
 ">
 Commercials For 1 Instagram Reel
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2681,6 +2746,8 @@ sticky top-0 z-30
 ">
 Photo Link
 </th>
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2698,7 +2765,8 @@ sticky top-0 z-30
 ">
 Commercials For 1 Instagram Story
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2716,7 +2784,9 @@ sticky top-0 z-30
 ">
 Commercials For 1 Instagram Post
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2734,7 +2804,8 @@ sticky top-0 z-30
 ">
 Commercials For 1 Dedicated YouTube Video
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2752,7 +2823,9 @@ sticky top-0 z-30
 ">
 Commercials For 1 Integrated YouTube Video
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2770,7 +2843,8 @@ sticky top-0 z-30
 ">
 Commercials For 1 Dedicated YouTube Shorts Video
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2788,6 +2862,8 @@ sticky top-0 z-30
 ">
 Commercials For 1 Integrated YouTube Shorts Video
 </th>
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2805,6 +2881,9 @@ sticky top-0 z-30
 ">
 What Kind Of Deal Do You Participate In
 </th>
+)}
+
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2822,6 +2901,9 @@ sticky top-0 z-30
 ">
 Speaking Video Link
 </th>
+)}
+
+{!isBrand && (
 
 <th  className="
 sticky top-0 z-30
@@ -2840,7 +2922,9 @@ sticky top-0 z-30
 ">
 Are you a TV/movies/OTT celebrity
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2858,7 +2942,8 @@ sticky top-0 z-30
 ">
 What all platforms are you avilable on
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2876,7 +2961,9 @@ sticky top-0 z-30
 ">
 Type Of Celebrity 
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2894,7 +2981,9 @@ sticky top-0 z-30
 ">
 How many Amazon reviews you do per month
 </th>
+)}
 
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2912,9 +3001,10 @@ sticky top-0 z-30
 ">
 Platform
 </th>
+)}
 
 
-
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2932,6 +3022,8 @@ sticky top-0 z-30
 ">
 Timestamp
 </th>
+)}
+{!isBrand && (
 <th
   className="
     sticky top-0 z-30
@@ -2950,7 +3042,8 @@ Timestamp
 >
   Updated At
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2968,7 +3061,8 @@ sticky top-0 z-30
 ">
 Bio
 </th>
-
+)}
+{!isBrand && (
 <th  className="
 sticky top-0 z-30
     px-4
@@ -2986,7 +3080,9 @@ sticky top-0 z-30
 ">
 InflunexaUserId
 </th>
+)}
 
+{!isBrand && (
 <th className="
 sticky top-0 z-30
     px-4
@@ -3004,7 +3100,8 @@ sticky top-0 z-30
 ">
   Rating
 </th>
-
+)}
+{!isBrand && (
  <th  className="
  sticky top-0 z-30
     px-4
@@ -3022,6 +3119,7 @@ sticky top-0 z-30
 ">
 Action
 </th>
+)}
 
 
 
@@ -3201,6 +3299,7 @@ key={creator._id}
   {creator.instagramFollowersRange || "-"}
 </td>
 
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3213,6 +3312,8 @@ key={creator._id}
 ">
   {creator.exactFollowers || "-"}
 </td>
+)}
+{!isBrand && (
 <td
   className="
     px-4
@@ -3260,6 +3361,9 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
+
+{!isBrand && (
 
 <td
   className="
@@ -3308,6 +3412,9 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
+
+{!isBrand && (
 <td
   className="
     px-4
@@ -3355,6 +3462,9 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
+
+
 
 <td className="
   px-4
@@ -3391,6 +3501,7 @@ key={creator._id}
     "-"
   )}
 </td>
+{!isBrand && (
 <td className="
   px-4
   py-5
@@ -3435,6 +3546,7 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
 
 <td className="
     px-4
@@ -3460,7 +3572,7 @@ key={creator._id}
 ">
   {creator.gender || "-"}
 </td>
-
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3473,6 +3585,7 @@ key={creator._id}
 ">
   {creator.dateOfBirth || "-"}
 </td>
+)}
 
 <td className="
     px-4
@@ -3486,7 +3599,7 @@ key={creator._id}
 ">
   {creator.languages?.join(", ") || "-"}
 </td>
-
+{!isBrand && (
 <td
   className="
     px-4
@@ -3542,7 +3655,8 @@ key={creator._id}
     )}
   </div>
 </td>
-
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3555,6 +3669,7 @@ key={creator._id}
 ">
   {creator.landmark || "-"}
 </td>
+)}
 
 <td className="
     px-4
@@ -3565,6 +3680,7 @@ key={creator._id}
     border-slate-200
     whitespace-nowrap
     align-middle
+    
 ">
   {creator.city || "-"}
 </td>
@@ -3594,7 +3710,7 @@ key={creator._id}
 ">
   {creator.country || "-"}
 </td>
-
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3607,6 +3723,7 @@ key={creator._id}
 ">
   {creator.pincode || "-"}
 </td>
+)}
 <td className="
     px-4
     py-5
@@ -3661,6 +3778,7 @@ key={creator._id}
 ">
   {creator.youtubeSubscribersRange || "-"}
 </td>
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3673,6 +3791,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1InstagramReel || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3697,6 +3817,8 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3710,6 +3832,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1InstagramStory || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3723,6 +3847,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1InstagramPost || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3736,6 +3862,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1DedicatedYouTubeVideo || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3749,6 +3877,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1IntegratedYouTubeVideo || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3761,6 +3891,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1DedicatedYouTubeShortsVideo || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3774,6 +3906,8 @@ key={creator._id}
 ">
   {creator.commercialsFor1IntegratedYouTubeShortsVideo || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3786,9 +3920,10 @@ key={creator._id}
 ">
   {creator.whatKindOfDealDoYouParticipateIn || "-"}
 </td>
+)}
 
 
-
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3813,6 +3948,8 @@ key={creator._id}
     "-"
   )}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3826,6 +3963,8 @@ key={creator._id}
 ">
   {creator.areYouATvMoviesOttCelebrity || "-"}
 </td>
+)}
+{!isBrand && (
 
 
 <td className="
@@ -3840,6 +3979,8 @@ key={creator._id}
 ">
   {creator.whatAllPlatformsAreYouAvailableOn?.join(", ") || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3852,6 +3993,8 @@ key={creator._id}
 ">
   {creator.typeOfCeleb || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -3864,6 +4007,8 @@ key={creator._id}
 ">
   {creator.howManyAmazonReviewsYouDoPerMonth || "-"}
 </td>
+)}
+{!isBrand && (
 <td className="
     px-4 
     py-5 
@@ -3898,6 +4043,8 @@ key={creator._id}
     return "-";
   })()}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3911,6 +4058,8 @@ key={creator._id}
 ">
   {creator.timestamp || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3926,6 +4075,8 @@ key={creator._id}
     ? new Date(creator.updatedAt).toLocaleString("en-IN")
     : "-"}
 </td>
+)}
+{!isBrand && (
 <td
   className="
     px-4
@@ -3972,6 +4123,8 @@ key={creator._id}
     )}
   </div>
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -3985,6 +4138,8 @@ key={creator._id}
 ">
   {creator.InflunexaUserId || "-"}
 </td>
+)}
+{!isBrand && (
 
 <td className="
     px-4
@@ -4006,8 +4161,11 @@ key={creator._id}
     </span>
   )}
 </td>
+)}
+
 
 {/* Action */}
+{!isBrand && (
 <td className="
     px-4
     py-5
@@ -4030,6 +4188,7 @@ key={creator._id}
     
   </div>
 </td>
+)}
 
 </tr>
 

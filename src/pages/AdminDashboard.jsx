@@ -169,6 +169,7 @@ const influencerDetailFields = [
   ["Updated At", "updatedAt"],
   ["Bio", "bio"],
   ["InflunexaUserId", "InflunexaUserId"],
+  ["Campaign", "campaignName"],
 ];
 
 const initialBlogForm = {
@@ -1300,6 +1301,7 @@ const [influencerFilterOptions, setInfluencerFilterOptions] =
     ages: [],
     youtubeSubscribersRanges: [],
     youtubeAverageViews: [],
+    campaigns:[],
   });
 
 useEffect(() => {
@@ -1701,6 +1703,61 @@ onChange={(selected) => {
       onFilter: () => "",
     }}
     noOptionsMessage={() => "No options available"}
+  />
+</label>
+{/* Campaign Filter */}
+<label>
+  Campaign
+
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    isSearchable
+    isClearable
+    aria-live="off"
+     ariaLiveMessages={{
+    guidance: () => "",
+    onChange: () => "",
+    onFocus: () => "",
+    onFilter: () => "",
+  }}
+    isMulti
+    closeMenuOnSelect={false}
+    hideSelectedOptions={true}
+    placeholder="All Campaigns"
+    options={(influencerFilterOptions.campaigns || []).map(
+      (campaign) => ({
+        value: campaign,
+        label: campaign,
+      })
+    )}
+    value={(influencerFilterOptions.campaigns || [])
+      .map((campaign) => ({
+        value: campaign,
+        label: campaign,
+      }))
+      .filter((option) =>
+        (Array.isArray(filters.campaignName)
+          ? filters.campaignName
+          : filters.campaignName
+            ? [filters.campaignName]
+            : []
+        ).includes(option.value)
+      )}
+    onChange={(selected) =>
+      onFilterChange(
+        "campaignName",
+        selected ? selected.map((item) => item.value) : []
+      )
+    }
+    styles={compactFilterStyles}
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect={false}
+    screenReaderStatus={() => ""}
+    noOptionsMessage={() => "No campaigns available"}
   />
 </label>
 
@@ -2563,7 +2620,7 @@ useEffect(() => {
 
   if (
     currentUserRole === "brand" &&
-    !["tickets", "brand-registration"].includes(id)
+    !["tickets", "csv-creators","brand-registration"].includes(id)
   ) {
     return;
   }
@@ -2844,7 +2901,7 @@ useEffect(() => {
  
   // Brand role: allow Tickets and Brand Registration
   if (currentUserRole === "brand") {
-    if (!["tickets", "brand-registration"].includes(activeTab)) {
+    if (!["tickets", "csv-creators","brand-registration"].includes(activeTab)) {
       setActiveTab("tickets");
       window.history.replaceState(null, "", "#tickets");
     }
@@ -2916,7 +2973,7 @@ if (isLead) {
 
 if (currentUserRole === "brand") {
   return allTabs.filter(([id]) =>
-    ["tickets", "brand-registration"].includes(id)
+    ["tickets", "csv-creators","brand-registration"].includes(id)
   );
 }
 
@@ -3692,7 +3749,8 @@ setCampaignForm({
 
 {activeTab === "csv-creators" && (
   <CsvCreatorSection  key={csvRefreshKey}
-  adminRole={currentUserRole} />
+  adminRole={currentUserRole}
+   currentUser={currentUser} />
 )}
 
 {activeTab === "upload-csv" && (
@@ -5358,7 +5416,10 @@ setCampaignForm({
 };
 
 if (editingBrandId) {
-  delete payload.password;
+  if (!payload.password?.trim()) {
+    delete payload.password;
+  }
+
   await updateAdminUser(editingBrandId, payload);
 } else {
   await createAdminUser(payload);
@@ -5414,32 +5475,41 @@ if (editingBrandId) {
           />
         </label>
 
-        <label>
-          Initial password
-          <div className="relative">
-  <input
-    name="password"
-    type={visiblePasswords.addBrand ? "text" : "password"}
-    value={brandForm.password}
-    onChange={(event) =>
-      setBrandForm((prev) => ({
-        ...prev,
-        password: event.target.value,
-      }))
-    }
-    required={!editingBrandId}
-    className="w-full pr-10"
-  />
-  <button
-    type="button"
-    onClick={() => togglePasswordVisibility("addBrand")}
-   className="password-toggle-icon"
-    aria-label="Toggle initial brand password visibility"
-  >
-    {visiblePasswords.addBrand ? <FiEyeOff /> : <FiEye />}
-  </button>
-</div>
-        </label>
+        
+<label>
+  {editingBrandId ? "Initial password" : "Initial password"}
+
+  <div className="relative">
+    <input
+      name="password"
+      type={visiblePasswords.addBrand ? "text" : "password"}
+      value={brandForm.password}
+      onChange={(event) =>
+        setBrandForm((prev) => ({
+          ...prev,
+          password: event.target.value,
+        }))
+      }
+      required={!editingBrandId}
+      minLength={editingBrandId ? undefined : 8}
+      placeholder={
+        editingBrandId
+          ? "Leave blank to keep current password"
+          : "Enter initial password"
+      }
+      className="w-full pr-10"
+    />
+
+    <button
+      type="button"
+      onClick={() => togglePasswordVisibility("addBrand")}
+      className="password-toggle-icon"
+      aria-label="Toggle password visibility"
+    >
+      {visiblePasswords.addBrand ? <FiEyeOff /> : <FiEye />}
+    </button>
+  </div>
+</label>
 
         <label>
           Status

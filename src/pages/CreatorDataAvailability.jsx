@@ -2352,6 +2352,7 @@ setCreatorsTotal(Number(result.total || 0));
               "Influencer Type",
               "YouTube Username",
               "YouTube Channel Link",
+              "Youtube Subscribers Range",
               "Gender",
               "Languages",
               "City",
@@ -2526,6 +2527,19 @@ setCreatorsTotal(Number(result.total || 0));
                         YouTube Channel
                       </a>
                     ) : "-"}
+                  </td>
+                  
+                  <td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle
+">
+                    {displayValue(creator.youtubeSubscribersRange)}
                   </td>
 
                   <td  className="   px-4

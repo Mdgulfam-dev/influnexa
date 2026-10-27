@@ -18,12 +18,17 @@ const adminRole = (
 
 const isBrandRole = adminRole === "brand"
 
+ const currentUserRole = (
+  sessionStorage.getItem("adminRole") || ""
+).trim().toLowerCase();
+
 const [showDeleteModal, setShowDeleteModal] = useState(false);
 const [deleteStatus, setDeleteStatus] = useState("Pending");
 const [deleteCreatorId, setDeleteCreatorId] = useState("");
 const [deletingCreator, setDeletingCreator] = useState(false);  
 const [creatorActions, setCreatorActions] = useState({});
 const [creatorCommercials, setCreatorCommercials] = useState({});
+const [creatorQuoteCommercials, setCreatorQuoteCommercials] = useState({});
 const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
 
 
@@ -99,6 +104,7 @@ const loadData = async () => {
 
     const actionMap = {};
     const commercialMap = {};
+    const quoteCommercialMap = {};
     const readyMap = {};
 
     creatorList.forEach((creator) => {
@@ -110,10 +116,12 @@ const loadData = async () => {
   "Pending";
       commercialMap[id] = creator.commercial || "";
       readyMap[id] = creator.readyToCampaign || "";
+      quoteCommercialMap[id] = creator.quoteCommercial || "";
     });
 
     setCreatorActions(actionMap);
     setCreatorCommercials(commercialMap);
+    setCreatorQuoteCommercials(quoteCommercialMap);
     setCreatorReadyStatus(readyMap);
   } catch (error) {
     console.error("GET ASSIGNED CREATORS ERROR:", error);
@@ -650,6 +658,23 @@ const handleCreatorAction = async (creatorId, value) => {
   }
 };
 
+
+
+const handleCreatorQuoteCommercial = async (creatorId, value) => {
+  setCreatorQuoteCommercials((prev) => ({
+    ...prev,
+    [creatorId]: value,
+  }));
+
+  try {
+    await saveAssignedCreatorDetails(ticketId, creatorId, {
+      quoteCommercial: value,
+    });
+  } catch (error) {
+    console.error("Failed to save quote commercial:", error);
+  }
+};
+
 const handleCreatorCommercial = async (creatorId, value) => {
   const id = String(creatorId);
   const previousValue = creatorCommercials[id] || "";
@@ -819,7 +844,7 @@ const handleDeleteAssignedCreator = async () => {
   "Youtube Channel Link",
   "Youtube Subscribers Range",
   "Platform",
-  "Commercial",
+  "Quote Commercial",
   "Status",
   "Action",
 ];
@@ -1239,6 +1264,10 @@ const filteredCreators = useMemo(() => {
       "Type Of Celebrity",
       "How many Amazon reviews you do per month",
       "Platform",
+      "Commercial",
+"Quote Commercial",
+"Ready to Campaign",
+      "Status",
       "Bio",
       "InflunexaUserId",
     ];
@@ -1298,9 +1327,7 @@ const rows = creatorsToDownload.map((creator, index) => {
       creator.categories,
       creator.influencerType,
       creator.gender,
-      creator.dateOfBirth
-        ? new Date(creator.dateOfBirth).toLocaleDateString()
-        : "",
+      creator.dateOfBirth,
       creator.languages,
       creator.state,
       creator.country,
@@ -1332,9 +1359,7 @@ const rows = creatorsToDownload.map((creator, index) => {
     creator.campaignType,
     creator.influencerType,
     creator.gender,
-    creator.dateOfBirth
-      ? new Date(creator.dateOfBirth).toLocaleDateString()
-      : "",
+    creator.dateOfBirth,
     creator.languages,
     creator.fullAddress,
     creator.landmark,
@@ -1365,6 +1390,17 @@ const rows = creatorsToDownload.map((creator, index) => {
     creator.typeOfCelebrity,
     creator.amazonReviewsPerMonth,
     platform,
+    // Commercial
+creatorCommercials[String(creator._id)] ??
+  creator.commercial ??
+  "",
+
+// Quote Commercial
+creatorQuoteCommercials[String(creator._id)] ??
+  creator.quoteCommercial ??
+  "",
+creatorReadyStatus[creator._id] || "",
+creatorActions[creator._id],
     creator.bio,
     creator.InflunexaUserId || creator.influnexaUserId,
   ]
@@ -1671,6 +1707,7 @@ const rows = creatorsToDownload.map((creator, index) => {
             </div>
 
             {/* DOWNLOAD CSV */}
+            {currentUserRole !== "creator" && (
 
             <button
               onClick={downloadCSV}
@@ -1695,6 +1732,7 @@ const rows = creatorsToDownload.map((creator, index) => {
                 ? `Download Selected (${selectedCreatorIds.length})`
                 : "Download CSV"}
             </button>
+            )}
 
 <button
   type="button"
@@ -2018,6 +2056,7 @@ const rows = creatorsToDownload.map((creator, index) => {
   "How many Amazon reviews you do per month",
   "Platform",
   "Commercial",
+ "Quote Commercial",
   "Ready to Campaign",
   "Status",
   "Action",
@@ -2085,9 +2124,7 @@ const rows = creatorsToDownload.map((creator, index) => {
                         <span>{header}</span>
                       </div>
                    ) : (
-  isBrandRole && header === "Commercial"
-    ? "Quote Commercial"
-    : header
+<span>{header}</span>
 )}
                   </th>
                 ))}
@@ -2102,7 +2139,7 @@ const rows = creatorsToDownload.map((creator, index) => {
               {filteredCreators.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={isBrandRole ? 20 : 45}
+                  colSpan={isBrandRole ? 21 : 45}
                     className="
                       px-[1.5vw]
                       py-[4vw]
@@ -2883,6 +2920,7 @@ const rows = creatorsToDownload.map((creator, index) => {
     })()}
 </td>
 {/* 40. COMMERCIAL */}
+{!isBrandRole && (
 <td
   className="
     px-[1vw]
@@ -2927,6 +2965,55 @@ const rows = creatorsToDownload.map((creator, index) => {
   `}
 />
 </td>
+
+  )}
+{/* QUOTE COMMERCIAL */}
+
+  <td
+  className="
+    px-[1vw]
+    py-[1vw]
+    border-b
+    border-slate-200
+    align-top
+    min-w-[13vw]
+  "
+>
+  <input
+  type="number"
+  min="0"
+  step="1"
+  value={creatorQuoteCommercials[creator._id] || ""}
+  disabled={isBrandRole}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+      handleCreatorQuoteCommercial(creator._id, value);
+    }
+  }}
+  placeholder="Enter amount"
+  inputMode="numeric"
+  className={`
+    w-full
+    min-w-[11vw]
+    h-[2.7vw]
+    min-h-[40px]
+    px-[0.7vw]
+    rounded-[0.6vw]
+    border
+    border-slate-200
+    text-[0.8vw]
+    outline-none
+    ${
+      isBrandRole
+        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+        : "bg-white text-slate-700 focus:border-gray-500 focus:ring-[0.15vw] focus:ring-gray-100"
+    }
+  `}
+/>
+</td>
+
 {/* 41. READY TO CAMPAIGN */}
 {!isBrandRole && (
 <td

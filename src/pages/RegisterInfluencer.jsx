@@ -836,6 +836,8 @@ commercialsFor1FacebookReel: numberOrZero(
       ),
 
     platform: text(form.platform),
+    campaignName: campaignName,
+  campaignDescription: campaignDescription,
 
     timestamp: new Date().toLocaleString(),
 
