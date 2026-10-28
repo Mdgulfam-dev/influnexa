@@ -21,7 +21,6 @@ const isBrandRole = adminRole === "brand"
  const currentUserRole = (
   sessionStorage.getItem("adminRole") || ""
 ).trim().toLowerCase();
-
 const [showDeleteModal, setShowDeleteModal] = useState(false);
 const [deleteStatus, setDeleteStatus] = useState("Pending");
 const [deleteCreatorId, setDeleteCreatorId] = useState("");
@@ -46,6 +45,67 @@ const [creatorReadyStatus, setCreatorReadyStatus] = useState({});
   useEffect(() => {
     loadData();
   }, [ticketId]);
+
+
+useEffect(() => {
+  if (!isBrandRole || !ticketId) return;
+
+  let isMounted = true;
+  let isFetching = false;
+
+  const refreshCreatorDetails = async () => {
+    if (isFetching) return;
+    isFetching = true;
+
+    try {
+      const latestCreators = await getAssignedCreators(ticketId);
+
+      if (!isMounted || !Array.isArray(latestCreators)) return;
+
+      // Refresh Quote Commercial
+      setCreatorQuoteCommercials((prev) => {
+        const updated = { ...prev };
+
+        latestCreators.forEach((creator) => {
+          const id = String(creator._id);
+          updated[id] = creator.quoteCommercial ?? "";
+        });
+
+        return updated;
+      });
+
+      // Refresh Status displayed in the table
+setCreatorActions((prev) => {
+  const updated = { ...prev };
+
+  latestCreators.forEach((creator) => {
+    const id = String(creator._id);
+
+    updated[id] =
+      creator.assignedStatus ??
+      creator.status ??
+      "Pending";
+  });
+
+  return updated;
+});
+    } catch (error) {
+      console.error("Failed to refresh creator details:", error);
+    } finally {
+      isFetching = false;
+    }
+  };
+
+  refreshCreatorDetails();
+
+  const intervalId = setInterval(refreshCreatorDetails,2000);
+
+  return () => {
+    isMounted = false;
+    clearInterval(intervalId);
+  };
+}, [isBrandRole, ticketId]);
+
 
  const initialCreatorFilters = {
   instagramFollowersRange: [],
@@ -670,6 +730,7 @@ const handleCreatorQuoteCommercial = async (creatorId, value) => {
     await saveAssignedCreatorDetails(ticketId, creatorId, {
       quoteCommercial: value,
     });
+    
   } catch (error) {
     console.error("Failed to save quote commercial:", error);
   }
@@ -688,6 +749,8 @@ const handleCreatorCommercial = async (creatorId, value) => {
     await saveAssignedCreatorDetails(ticketId, creatorId, {
       commercial: value,
     });
+    
+    
   } catch (error) {
     setCreatorCommercials((prev) => ({
       ...prev,
@@ -2920,6 +2983,7 @@ creatorActions[creator._id],
     })()}
 </td>
 {/* 40. COMMERCIAL */}
+
 {!isBrandRole && (
 <td
   className="
