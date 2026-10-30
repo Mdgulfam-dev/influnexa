@@ -3,6 +3,7 @@ import axios from "axios";
 import Config from "../config/Config";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
+let activeDropdownSetter = null;
 function MultiSelectDropdown({
   label,
   options = [],
@@ -11,6 +12,22 @@ function MultiSelectDropdown({
   placeholder = "Select options",
 }) {
   const [open, setOpen] = useState(false);
+
+  const handleDropdownToggle = () => {
+  if (open) {
+    setOpen(false);
+    activeDropdownSetter = null;
+  } else {
+    // Close the previously opened dropdown.
+    if (activeDropdownSetter) {
+      activeDropdownSetter(false);
+    }
+
+    // Register and open this dropdown.
+    activeDropdownSetter = setOpen;
+    setOpen(true);
+  }
+};
 
   const toggleOption = (option) => {
     const exists = value.includes(option);
@@ -48,7 +65,7 @@ function MultiSelectDropdown({
       {/* SELECT BOX */}
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+      onClick={handleDropdownToggle}
         className="
   box-border
     w-full
@@ -1404,53 +1421,80 @@ const completedByOptions = leadUsers.map((user) => ({
       )}
 
     {/* DOWNLOAD FILTERED */}
-    {hasActiveFilters && csvBrands.length > 0 && (
-      <button
-        type="button"
-        onClick={downloadFilteredBrands}
-        className="
-          h-11
-          px-5
-          rounded-xl
-          bg-slate-900
-          text-white
-          text-sm
-          font-semibold
-          shadow-sm
-          hover:bg-slate-800
-          transition
-          whitespace-nowrap
-        "
-      >
-        Download Filtered
-      </button>
-    )}
+{hasActiveFilters && csvBrands.length > 0 && (
+  <button
+    type="button"
+    onClick={downloadFilteredBrands}
+    className="
+      w-full
+      min-w-0
+      sm:w-auto
+      min-h-11
+      px-2
+      min-[360px]:px-3
+      
+      sm:px-5
+      py-2
+      rounded-xl
+      bg-slate-900
+      text-white
+      text-xs
+      min-[360px]:text-sm
+      font-semibold
+      shadow-sm
+      hover:bg-slate-800
+      transition
+      whitespace-normal
+      break-words
+      flex
+      items-center
+      justify-center
+      text-center
+      flex-shrink
+    "
+  >
+    Download Filtered
+  </button>
+)}
 
-    {/* DOWNLOAD MASKED */}
-    {hasActiveFilters && csvBrands.length > 0 && (
-      <button
-        type="button"
-        onClick={downloadMaskedFilteredBrands}
-        className="
-          h-11
-          px-5
-          rounded-xl
-          bg-white
-          text-slate-700
-          border
-          border-slate-300
-          text-sm
-          font-semibold
-          shadow-sm
-          hover:bg-slate-50
-          transition
-          whitespace-nowrap
-        "
-      >
-        Download Masked
-      </button>
-    )}
-
+{/* DOWNLOAD MASKED */}
+{hasActiveFilters && csvBrands.length > 0 && (
+  <button
+    type="button"
+    onClick={downloadMaskedFilteredBrands}
+    className="
+      w-full
+      min-w-0
+      sm:w-auto
+      min-h-11
+      px-2
+      min-[360px]:px-3
+      min-[427px]:px-7
+      sm:px-5
+      py-2
+      rounded-xl
+      bg-white
+      text-slate-700
+      border
+      border-slate-300
+      text-xs
+      min-[360px]:text-sm
+      font-semibold
+      shadow-sm
+      hover:bg-slate-50
+      transition
+      whitespace-normal
+      break-words
+      flex
+      items-center
+      justify-center
+      text-center
+      flex-shrink
+    "
+  >
+    Download Masked
+  </button>
+)}
   </div>
 </div>
 {/* ========================================

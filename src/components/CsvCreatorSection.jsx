@@ -9,10 +9,53 @@ import { io } from "socket.io-client";
 import Select from "react-select";
 import { getBrandTickets } from "../lib/api";
 
+const QC_REMARK_REQUIRED = [
+  "NEEDS_CORRECTION",
+  "REJECTED",
+  "NEEDS_UPDATE",
+  "ON_HOLD",
+];
+
+const QC_STATUSES = [
+  {
+    value: "PENDING_QC",
+    meaning: "Creator data has not been checked",
+  },
+  {
+    value: "IN_PROGRESS",
+    meaning: "QC team is checking the profile",
+  },
+  {
+    value: "VERIFIED",
+    meaning: "All required fields have passed QC",
+  },
+  {
+    value: "NEEDS_CORRECTION",
+    meaning: "Some information needs correction",
+  },
+  {
+    value: "REJECTED",
+    meaning: "Creator fails your quality criteria",
+  },
+ 
+  {
+    value: "NEEDS_UPDATE",
+    meaning: "Profile information is outdated",
+  },
+  {
+    value: "ON_HOLD",
+    meaning: "QC is blocked pending information",
+  },
+];
+
+
 function CsvCreatorSection({adminRole,currentUser }) {
 
  const isBrand = String(adminRole || "").toLowerCase() === "brand";
-
+const [openQCMenuId, setOpenQCMenuId] = useState(null);
+const [showQCRemarkModal, setShowQCRemarkModal] = useState(false);
+const [pendingQCUpdate, setPendingQCUpdate] = useState(null);
+const [qcRemark, setQcRemark] = useState("");
   const [showTicketOptions, setShowTicketOptions] = useState(false);
   const [selectedCreators, setSelectedCreators] = useState([]);
   const [selectAllCreators, setSelectAllCreators] = useState(false);
@@ -41,6 +84,11 @@ const [creatorStats, setCreatorStats] = useState({
   cities: 0,
   regions: 0,
 });
+
+
+
+
+
 const handleEdit = (creator) => {
  
   setSelectedCreator(creator);
@@ -887,10 +935,10 @@ const tableHeaderClass = `
   px-4
   py-4
   text-left
-  text-xs
+  text-m
   font-bold
   tracking-wider
-  uppercase
+
   text-slate-500
   bg-slate-50
   border-b
@@ -1212,6 +1260,88 @@ const visibleBrandTickets = isBrand
   : brandTickets;
 
 
+  const handleQCStatusChange = (creator, status) => {
+
+  if (QC_REMARK_REQUIRED.includes(status)) {
+    setPendingQCUpdate({
+      creator,
+      status,
+    });
+
+    setQcRemark("");
+    setShowQCRemarkModal(true);
+    setOpenQCMenuId(null);
+
+    return;
+  }
+
+  saveQCStatus(creator, status, creator.qcRemark || "");
+};
+
+
+const saveQCStatus = async (creator, status, remark) => {
+  try {
+    const updateData = {
+      qcStatus: status,
+      qcRemark: remark,
+
+      // Logged-in admin's actual name
+      qcCheckedBy: currentUser?.name || "",
+    };
+
+    // Update verification date ONLY when status is VERIFIED
+    if (status === "VERIFIED") {
+      updateData.qcLastUpdatedAt = new Date().toISOString();
+    }
+
+    const res = await axios.put(
+      `${Config.API_URL}/csv-creators/${creator._id}`,
+      updateData
+    );
+
+    setCreators((prev) =>
+      prev.map((item) =>
+        item._id === creator._id
+          ? {
+              ...item,
+              ...(res.data.creator || {}),
+              qcStatus: status,
+              qcRemark: remark,
+              qcCheckedBy: res.data.creator?.qcCheckedBy || currentUser?.name || "",
+              ...(status === "VERIFIED"
+                ? { qcLastUpdatedAt: updateData.qcLastUpdatedAt }
+                : {}),
+            }
+          : item
+      )
+    );
+
+    setShowQCRemarkModal(false);
+    setPendingQCUpdate(null);
+    setQcRemark("");
+
+  } catch (error) {
+    console.error("QC UPDATE ERROR:", error);
+    alert("Failed to update QC status");
+  }
+};
+
+
+const handleSaveQCRemark = () => {
+
+  if (!qcRemark.trim()) {
+    alert("Please enter a reason for selecting this QC status");
+    return;
+  }
+
+  if (!pendingQCUpdate) return;
+
+  saveQCStatus(
+    pendingQCUpdate.creator,
+    pendingQCUpdate.status,
+    qcRemark.trim()
+  );
+};
   return (
 
 <div className=" csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
@@ -1233,17 +1363,26 @@ const visibleBrandTickets = isBrand
 
 <div className="
   relative
- 
   flex
-  items-center
-  gap-[1vw]
-  flex-nowrap
-  mt-[1.5vw]
+  flex-col
+  min-[1200px]:flex-row
+  items-stretch
+  min-[1200px]:items-center
+  gap-2
+  mt-3
   w-full
+  min-w-0
+  max-w-full
   pointer-events-auto
 ">
 
-<div className="relative w-[20vw] shrink-0 max-[1199px]:w-[25vw] max-[767px]:w-[55vw]">
+<div className="
+  relative
+  w-full
+  min-w-0
+  min-[1200px]:w-[280px]
+  min-[1200px]:shrink-0
+">
 
   {/* Selected ticket */}
   <button
@@ -1258,6 +1397,7 @@ const visibleBrandTickets = isBrand
       max-[1199px]:text-[13px]
       max-[767px]:h-[44px]
       max-[480px]:text-[12px]
+      mt-3
     "
   >
     <span className="min-w-0 flex-1 truncate whitespace-nowrap">
@@ -1304,7 +1444,7 @@ const visibleBrandTickets = isBrand
           setShowTicketOptions(false);
         }}
         className="
-          block w-full px-3 py-2 text-left text-[13px]
+          block w-full px-3 py-2 text-left text-[13px] 
           whitespace-normal break-words
           hover:bg-slate-100
         "
@@ -1343,36 +1483,29 @@ const visibleBrandTickets = isBrand
     assignCreatorsToBrand();
   }}
   className="
-    relative
-   
-    pointer-events-auto
-    shrink-0
-    h-[3vw]
-    min-h-[44px]
-    max-h-[52px]
-    px-[1.5vw]
-    rounded-[0.8vw]
-    bg-emerald-600
-    text-white
-    text-[0.9vw]
-    font-semibold
-    hover:bg-emerald-700
-    whitespace-nowrap
-    cursor-pointer
-
-    max-[1199px]:h-[3.5vw]
-    max-[1199px]:px-[1.8vw]
-    max-[1199px]:text-[1.1vw]
-
-    max-[767px]:h-[9vw]
-    max-[767px]:px-[4vw]
-    max-[767px]:text-[3vw]
-    max-[767px]:rounded-[2vw]
-
-    max-[480px]:h-[11vw]
-    max-[480px]:px-[3vw]
-    max-[480px]:text-[3.5vw]
-  "
+  relative
+  pointer-events-auto
+  w-full
+  min-w-0
+  sm:w-auto
+  sm:shrink-0
+  min-h-[44px]
+  px-3
+  sm:px-5
+  py-2
+  mt-3
+  rounded-xl
+  bg-emerald-600
+  text-white
+  text-sm
+  font-semibold
+  hover:bg-emerald-700
+  whitespace-normal
+  break-words
+  text-center
+  leading-5
+  cursor-pointer
+"
 >
   Assign to This Brand ({selectedCreators.length})
 </button>  )}
@@ -1408,12 +1541,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+           px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+         <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
               <svg
@@ -1464,12 +1599,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+           px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+        <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-500">
               <svg
@@ -1521,12 +1658,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+            px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+         <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-500">
               <svg
@@ -1574,12 +1713,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+           px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+       <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
               <span className="text-sm font-bold">IG</span>
@@ -1621,12 +1762,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+            px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+          <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
               <svg
@@ -1675,12 +1818,14 @@ const visibleBrandTickets = isBrand
             rounded-[15px]
             border border-slate-200
             bg-white
-            px-4
-            py-3
+            px-2
+min-[360px]:px-3
+sm:px-4
+py-3
             shadow-[0_2px_10px_rgba(15,23,42,0.04)]
           "
         >
-          <div className="flex items-center gap-3 h-full">
+         <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
 
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
               <svg
@@ -1722,77 +1867,90 @@ const visibleBrandTickets = isBrand
       </div>
 
 
-{/* DOWNLOAD BUTTONS */}
-{isFiltered && !loading && creators.length > 0 && (
-  <div className="flex flex-wrap items-center justify-end gap-3 mt-3 mr-44">
-    {!["creator", "brand"].includes(
-  String(adminRole || "").toLowerCase()
-) && (
-      <>
-        <button
-          onClick={downloadCSV}
-          className="
-            h-11 px-5 rounded-xl
-            bg-emerald-600 hover:bg-emerald-700
-            text-white text-sm font-semibold
-            transition whitespace-nowrap
-          "
-        >
-          Download CSV
-        </button>
+{/* DOWNLOAD BUTTONS + RESET FILTERS */}
+<div className="
+  flex
+  flex-col
+  min-[440px]:flex-row
+  flex-wrap
+  items-stretch
+  min-[440px]:items-center
+  min-[440px]:justify-end
+  gap-2
+  mt-3
+  w-full
+  min-w-0
+  max-w-full
+">
 
-        <button
-          onClick={downloadMaskedCSV}
-          className="
-            h-11 px-5 rounded-xl
-            bg-slate-700 hover:bg-slate-800
-            text-white text-sm font-semibold
-            transition whitespace-nowrap
-          "
-        >
-          Download Masked CSV
-        </button>
-      </>
-    )}
-  </div>
-)}
+  {isFiltered && !loading && creators.length > 0 && (
+    <>
+      {!["creator", "brand"].includes(
+        String(adminRole || "").toLowerCase()
+      ) && (
+        <>
+          <button
+            type="button"
+            onClick={downloadCSV}
+            className="
+              w-full min-w-0
+              min-[427px]:w-auto
+              min-h-11 px-4 sm:px-5
+              rounded-xl
+              bg-emerald-600 hover:bg-emerald-700
+              text-white text-sm font-semibold
+              transition whitespace-nowrap
+            "
+          >
+            Download CSV
+          </button>
 
-{/* FIXED RESET FILTERS BUTTON - ALWAYS VISIBLE */}
-<button
-  type="button"
-  onClick={resetFilters}
-  
-className="
-  absolute
-  right-11
-  sm:right-11
-  lg:right-15
-  top-[270px]
-  sm:top-[280px]
-  lg:top-[350px]
-  z-50
-  h-11
-  px-3
-  sm:px-4
-  rounded-xl
-  border border-slate-300
-  bg-white
-  text-slate-700
-  text-sm
-  font-semibold
-  hover:bg-slate-50
-  shadow-sm
-  transition
-  whitespace-nowrap
-"
+          <button
+            type="button"
+            onClick={downloadMaskedCSV}
+            className="
+              w-full min-w-0
+              min-[427px]:w-auto
+              min-h-11 px-4 sm:px-5
+              rounded-xl
+              bg-slate-700 hover:bg-slate-800
+              text-white text-sm font-semibold
+              transition whitespace-nowrap
+            "
+          >
+            Download Masked CSV
+          </button>
+        </>
+      )}
+    </>
+  )}
 
->
-  Reset Filters
-</button>
+  {/* RESET FILTERS — ALWAYS VISIBLE */}
+  <button
+    type="button"
+    onClick={resetFilters}
+    className="
+      w-full
+      min-w-0
+      min-[427px]:w-auto
+      min-h-11
+      px-3 sm:px-4
+      rounded-xl
+      border border-slate-300
+      bg-white
+      text-slate-700
+      text-sm font-semibold
+      hover:bg-slate-50
+      shadow-sm
+      transition
+      whitespace-nowrap
+    "
+  >
+    Reset Filters
+  </button>
 
-
-    </div>
-
+</div>
+</div>
   </div>
 </div>
 {/* =========================
@@ -3101,6 +3259,60 @@ sticky top-0 z-30
   Rating
 </th>
 )}
+
+
+{!isBrand && (
+  <th className="
+    sticky top-0 z-30
+    px-4 py-4
+    text-left text-sm font-bold
+    tracking-wider text-slate-500
+    bg-slate-50 border-b border-slate-200
+    whitespace-nowrap
+  ">
+    QC Remark
+  </th>
+)}
+
+{!isBrand && (
+  <>
+   <th className={`${tableHeaderClass} sticky top-0 z-30`}>
+      QC Status
+    </th>
+    <th className={`${tableHeaderClass} sticky top-0 z-30`}>
+      QC Action
+    </th>
+  </>
+)}
+
+{!isBrand && (
+  <th className="
+    sticky top-0 z-30
+    px-4 py-4
+    text-left text-sm font-bold
+    tracking-wider text-slate-500
+    bg-slate-50 border-b border-slate-200
+    whitespace-nowrap
+  ">
+    QC Last Updated
+  </th>
+)}
+
+{!isBrand && (
+  <th className="
+    sticky top-0 z-30
+    px-4 py-4
+    text-left text-sm font-bold
+    tracking-wider text-slate-500
+    bg-slate-50 border-b border-slate-200
+    whitespace-nowrap
+  ">
+    QC Checked By
+  </th>
+)}
+
+
+
 {!isBrand && (
  <th  className="
  sticky top-0 z-30
@@ -3117,7 +3329,7 @@ sticky top-0 z-30
     border-slate-200
     whitespace-nowrap
 ">
-Action
+Edit 
 </th>
 )}
 
@@ -4162,6 +4374,320 @@ key={creator._id}
   )}
 </td>
 )}
+
+{/* ================= QC REMARK ================= */}
+
+{!isBrand && (
+  <td className="
+    px-4 py-5
+    text-sm text-slate-700
+    border-b border-slate-200
+    align-middle
+    min-w-[200px]
+    max-w-[250px]
+  ">
+
+    {creator.qcRemark ? (
+      <div
+        className="
+          text-m text-slate-700
+         
+        
+          rounded-lg
+          px-3 py-2
+          whitespace-normal
+          break-words
+          leading-5
+        "
+        title={creator.qcRemark}
+      >
+        {creator.qcRemark}
+      </div>
+    ) : (
+      <span className="text-m text-slate-700">
+        No Remark
+      </span>
+    )}
+
+  </td>
+)}
+
+{/* ================= QC STATUS ================= */}
+
+{!isBrand && (
+  <td className="
+    px-4 py-5
+    text-sm text-slate-700
+    border-b border-slate-200
+    whitespace-nowrap align-middle
+  ">
+
+    {(() => {
+      const currentStatus =
+        creator.qcStatus || "PENDING_QC";
+
+      const statusColors = {
+        PENDING_QC: "bg-slate-100 text-slate-700",
+        IN_PROGRESS: "bg-blue-100 text-blue-700",
+        VERIFIED: "bg-emerald-100 text-emerald-700",
+        NEEDS_CORRECTION: "bg-amber-100 text-amber-700",
+        REJECTED: "bg-red-100 text-red-700",
+        NEEDS_UPDATE: "bg-orange-100 text-orange-700",
+        ON_HOLD: "bg-gray-200 text-gray-700",
+      };
+
+      return (
+        <span className={`
+          inline-flex items-center
+          px-3 py-2
+          rounded-lg
+          text-xs font-bold
+          ${statusColors[currentStatus] || "bg-slate-100 text-slate-700"}
+        `}>
+          {currentStatus}
+        </span>
+      );
+    })()}
+
+  </td>
+)}
+
+{/* ================= QC ACTION ================= */}
+
+{!isBrand && (
+  <td className="
+    px-4 py-5
+    text-sm text-slate-700
+    border-b border-slate-200
+    whitespace-nowrap align-middle
+  ">
+    <div className="relative w-[210px]">
+
+      {/* DROPDOWN BUTTON */}
+      <button
+        type="button"
+        onClick={() =>
+          setOpenQCMenuId(
+            openQCMenuId === creator._id
+              ? null
+              : creator._id
+          )
+        }
+        className="
+          flex items-center justify-between
+          w-full min-h-[40px]
+          px-3 py-2
+          rounded-lg
+          border border-slate-300
+          bg-white
+          text-xs font-semibold
+          text-slate-700
+         
+          hover:bg-slate-50
+          transition
+        "
+      >
+        <span>Change QC Status</span>
+
+        <svg
+          className="w-4 h-4"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <path
+            d="m6 8 4 4 4-4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {/* DROPDOWN OPTIONS */}
+      {openQCMenuId === creator._id && (
+        <div className="
+          absolute left-0 top-full
+          mt-1 w-[210px]
+          bg-white
+          border border-slate-200
+          rounded-xl
+          shadow-xl
+          z-[9999]
+          py-2
+        ">
+
+          {QC_STATUSES.map((status) => (
+            <div
+              key={status.value}
+              className="
+                flex items-center justify-between
+                gap-2 px-3 py-2
+                hover:bg-slate-50
+                transition
+              "
+            >
+
+              {/* STATUS SELECT */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleQCStatusChange(
+                    creator,
+                    status.value
+                  )
+                }
+                className="
+                  flex-1 min-w-0
+                  text-left
+                  text-xs font-semibold
+                  text-slate-700
+                  hover:text-emerald-700
+                  break-words
+                "
+              >
+                {status.value}
+              </button>
+
+              {/* REMARK ICON + HOVER MEANING */}
+              <div className="relative group shrink-0">
+
+                <span
+                  className="
+                    flex items-center justify-center
+                    w-6 h-6
+                    rounded-full
+                    text-slate-400
+                    hover:text-emerald-600
+                    hover:bg-emerald-50
+                    cursor-help
+                    text-sm font-bold
+                  "
+                >
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path
+                      d="M12 11v5"
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      cx="12"
+                      cy="8"
+                      r="0.7"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+
+                {/* TOOLTIP */}
+                <div className="
+                  invisible opacity-0
+                  group-hover:visible
+                  group-hover:opacity-100
+                  absolute right-full top-1/2
+                  -translate-y-1/2
+                  mr-2
+                  w-[230px]
+                  whitespace-normal
+                  rounded-lg
+                  bg-slate-900
+                  text-white
+                  px-3 py-2
+                  text-xs leading-5
+                  shadow-xl
+                  transition-opacity
+                  duration-200
+                  z-[10000]
+                  pointer-events-none
+                ">
+                  {status.meaning}
+
+                  <span className="
+                    absolute left-full top-1/2
+                    -translate-y-1/2
+                    border-[6px]
+                    border-transparent
+                    border-l-slate-900
+                  " />
+                </div>
+
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+      )}
+
+    </div>
+  </td>
+)}
+
+{/* ================= QC LAST UPDATED ================= */}
+
+{!isBrand && (
+  <td className="
+    px-4 py-5
+    text-sm text-slate-700
+    border-b border-slate-200
+    whitespace-nowrap
+    align-middle
+  ">
+
+    {creator.qcLastUpdatedAt ? (
+      <div className="flex flex-col gap-1">
+
+        <span className="text-m font-semibold text-slate-700">
+          {new Date(creator.qcLastUpdatedAt).toLocaleDateString(
+            "en-IN",
+            {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }
+          )}
+        </span>
+
+        <span className="text-[13px] text-slate-700">
+          {new Date(creator.qcLastUpdatedAt).toLocaleTimeString(
+            "en-IN",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }
+          )}
+        </span>
+
+      </div>
+    ) : (
+      <span className="text-m text-slate-700">
+        Not Verified Yet
+      </span>
+    )}
+
+  </td>
+)}
+{!isBrand && (
+<td className="
+    px-4
+    py-5
+    text-sm
+    text-slate-700
+    border-b
+    border-slate-200
+    whitespace-nowrap
+    align-middle">
+  {creator.qcCheckedBy || "Not Checked Yet"}
+</td>
+)}
+
 
 
 {/* Action */}
@@ -6267,7 +6793,152 @@ key={creator._id}
       </div>
     )}
 
-  
+  {/* ================= QC REMARK MODAL ================= */}
+
+{showQCRemarkModal && pendingQCUpdate && (
+  <div className="
+    fixed inset-0 z-[99999]
+    flex items-center justify-center
+    bg-black/50
+    px-4
+  ">
+
+    <div className="
+      w-full max-w-[450px]
+      bg-white
+      rounded-2xl
+      shadow-2xl
+      p-6
+    ">
+
+      <div className="flex items-center justify-between mb-5">
+
+        <h2 className="text-lg font-bold text-slate-800">
+          QC Remark
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowQCRemarkModal(false);
+            setPendingQCUpdate(null);
+            setQcRemark("");
+          }}
+          className="
+            text-slate-400
+            hover:text-red-500
+            text-2xl
+          "
+        >
+          &times;
+        </button>
+
+      </div>
+
+      {/* SELECTED STATUS */}
+
+      <div className="mb-4">
+
+        <label className="
+          block text-xs font-bold
+          uppercase tracking-wide
+          text-slate-500 mb-2
+        ">
+          Selected QC Status
+        </label>
+
+        <span className="
+          inline-flex
+          px-3 py-2
+          rounded-lg
+          text-xs font-bold
+          bg-amber-100 text-amber-700
+        ">
+          {pendingQCUpdate.status}
+        </span>
+
+      </div>
+
+      {/* REMARK INPUT */}
+
+      <div className="mb-5">
+
+        <label className="
+          block text-sm font-semibold
+          text-slate-700 mb-2
+        ">
+          Reason for selecting this status
+          <span className="text-red-500"> *</span>
+        </label>
+
+        <textarea
+          value={qcRemark}
+          onChange={(e) => setQcRemark(e.target.value)}
+          placeholder="Write the reason here..."
+          rows={4}
+          className="
+            w-full
+            px-4 py-3
+            border border-slate-300
+            rounded-xl
+            text-sm text-slate-700
+            outline-none
+            resize-none
+            focus:border-emerald-500
+            focus:ring-2
+            focus:ring-emerald-100
+          "
+        />
+
+      </div>
+
+      {/* ACTION BUTTONS */}
+
+      <div className="flex justify-end gap-3">
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowQCRemarkModal(false);
+            setPendingQCUpdate(null);
+            setQcRemark("");
+          }}
+          className="
+            px-4 py-2
+            rounded-lg
+            border border-slate-300
+            text-sm font-semibold
+            text-slate-600
+            hover:bg-slate-50
+          "
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSaveQCRemark}
+          disabled={!qcRemark.trim()}
+          className="
+            px-5 py-2
+            rounded-lg
+            bg-emerald-600
+            text-white
+            text-sm font-semibold
+            hover:bg-emerald-700
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
+        >
+          Save Remark
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
 
 
 </div>

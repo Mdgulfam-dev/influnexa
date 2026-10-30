@@ -334,7 +334,7 @@ width: 100%;
 }
 
 .admin-registration-toolbar:has(input[placeholder="INX-00001"]) input[placeholder="Name, Email, Mobile, Role..."] {
-  width: 200px !important;
+  width: 200px;
   font-size: 13px;
   padding-left: 10px;
   padding-right: 10px;
@@ -4406,22 +4406,54 @@ section.admin-content .admin-ticket-workspace .admin-panel {
   box-shadow: none;
 }
 
-
 .admin-sidebar-logout {
-  width:200px;
-  margin: 15px 12px 0;
-  padding: 10px 70px;
+  width: calc(100% - 38px);
+  max-width: 200px;
+  box-sizing: border-box;
+  margin: 1px 19px 0;
+  padding: 10px 16px;
+
   border: 1px solid #0b3f3a;
   border-radius: 8px;
-  background:#0b3f3a;
+  background: #0b3f3a;
   color: #fff;
+
   font-size: 14px;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+@media (max-width: 768px) {
+  .admin-sidebar-logout {
+    width: calc(100% - 16px);
+    margin: 12px 8px 0;
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .admin-sidebar-logout {
+    width: calc(100% - 24px);
+    max-width: none;
+    margin: 15px 2px 0;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Very small screens: 300px and below */
+@media (max-width: 320px) {
+  .admin-sidebar-logout {
+    width: calc(100% - 16px);
+    margin: 12px 8px 0;
+    padding: 10px;
+    font-size: 12px;
+  }
+}
 .admin-sidebar-logout:hover {
   background:#0f766e;
   border-color:#0f766e;
@@ -4735,6 +4767,9 @@ height: 52px;
 
   white-space: normal;
 }
+
+
+
 
 /* ================================
    FILTER SECTION
@@ -8223,12 +8258,46 @@ font-size: 18px;
   
 }
 
-@media (max-width: 900px) {
+
+/* Mobile */
+@media (max-width: 780px) {
+  .admin-row-actions {
+    gap:5px;
+    justify-content: center;
+  }
+
+  .admin-row-actions button:first-child,
+  .admin-row-actions button:last-child {
+    width:30px;
+    height:30px;
+    min-height:30px;
+    min-width:30px;
+    font-size:16px;
+    border-radius:8px;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 360px) {
+  .admin-row-actions {
+    gap: 4px;
+  }
+
+  .admin-row-actions button:first-child,
+  .admin-row-actions button:last-child {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1299px) {
 .admin-row-actions button:last-child {
- background-color: #fef2f2; /* Light red background */
-  color: #ef4444;             /* Red trash icon */
-height: 4vw;
-width: 4vw;
+background-color: #fef2f2; /* Light red background */
+color: #ef4444;             /* Red trash icon */
+height: 3vw;
+width: 3vw;
 border-radius:8x;
 justify-items: center;
 padding: auto;
@@ -8239,8 +8308,8 @@ padding: auto;
   background: white;
   color: black;
   padding: 0;
-  height: 4vw;
-width: 4vw;
+  height: 3vw;
+width: 3vw;
 justify-items: center;
 font-size: medium;
   
@@ -8329,6 +8398,8 @@ font-size: medium;
     position: static;
   }
 }
+
+
 
 @media (max-width: 768px) {
   .admin-stats {
@@ -13992,8 +14063,8 @@ footer .footer-brand-copy small,
   right:-15px;
   bottom:60px;
 
-  width: 250px;
-  height: 250px;
+  width: 245px;
+  height: 270px;
 }
 
 
@@ -18166,6 +18237,7 @@ label,
 
   .admin-history-overlay:has(.admin-user-modal) {
     padding: 8px;
+  
   }
 
   .admin-history-panel.admin-user-modal {
@@ -18173,10 +18245,12 @@ label,
     max-width: 100%;
     max-height: calc(100vh - 16px);
     border-radius: 16px;
+    margin-top:auto;
+    margin-bottom:auto;
   }
 
   .admin-user-modal .admin-history-header {
-    padding: 18px 16px 16px;
+    padding: 10px 16px 16px;
     gap: 12px;
   }
 
@@ -18662,5 +18736,85 @@ body > div[id*="react-select-"][aria-live] {
     transform: none !important;
     width: 100% !important;
     justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 1300px) {
+  .admin-tickets-responsive .admin-blog-list article {
+    padding-bottom: 12px !important;
+  }
+
+  .admin-tickets-responsive .admin-blog-list article > div:nth-child(2) {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .admin-tickets-responsive .admin-blog-list article > .admin-row-actions {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+
+
+
+/* FIX: Candidate filters overflow when sidebar is open */
+.admin-panel .admin-registration-toolbar.admin-candidate-toolbar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  gap: 12px !important;
+  align-items: end !important;
+  box-sizing: border-box !important;
+}
+
+.admin-panel .admin-candidate-toolbar > label {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.admin-panel .admin-candidate-toolbar input,
+.admin-panel .admin-candidate-toolbar select {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.admin-panel .admin-candidate-toolbar > button {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 40px;
+  justify-self: stretch !important;
+  box-sizing: border-box !important;
+}
+
+.admin-panel .admin-candidate-toolbar > span {
+  grid-column: 1 / -1 !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.admin-panel,
+.admin-panel-title-row,
+.admin-candidate-list {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .admin-panel .admin-registration-toolbar.admin-candidate-toolbar {
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }

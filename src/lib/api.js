@@ -227,6 +227,9 @@ export async function loginAdmin({ email, password }) {
 if (data.user?.email) {
   localStorage.setItem("Email", data.user.email);
 }
+if (data.user?.name) {
+  localStorage.setItem("adminName", data.user.name);
+}
 
 if (data.user?.role) {
   sessionStorage.setItem("adminRole", data.user.role.toLowerCase());

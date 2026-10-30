@@ -1725,114 +1725,92 @@ creatorActions[creator._id],
           >
             {/* COUNT */}
 
-            <div
-              className="
-            
-              inline-flex
-                min-w-[12vw]
-                px-[1.30vw]
-                py-[0.6vw]
-                rounded-[0.9vw]
-                bg-emerald-50
-                border
-                
-                border-emerald-100
-              "
-            >
-              <span
-                className="
-                  block
-                  text-[0.7vw]
-                  py-1
-                  -ml-3
-                  font-semibold
-                  text-emerald-700
-                  whitespace-nowrap
-                "
-              >
-                ASSIGNED CREATORS
-              </span>
+           
+{/* RESPONSIVE ASSIGNED CREATORS + ACTIONS */}
+<div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
 
-              <strong
-                className="
-                  block
-                  -mt-[0.2vw]
-                  text-[1.1vw]
-                  font-bold
-                  ml-2
-                  text-slate-900
-                "
-              >
-                {assignedCreators.length.toLocaleString()}
-              </strong>
+  {/* ASSIGNED CREATORS */}
+  <div
+   className="
+  col-span-2 flex w-full min-w-0 items-center justify-between gap-2
+  rounded-xl border border-emerald-100 bg-emerald-50
+  px-18 py-3 
+  sm:col-span-1 sm:w-auto sm:min-w-[200px] sm:justify-start sm:gap-3 sm:px-4
+"
+  >
+    <span
+      className="
+        min-w-0 text-xs font-semibold text-emerald-700
+        whitespace-normal leading-tight
+        sm:whitespace-nowrap sm:text-sm
+      "
+    >
+      ASSIGNED CREATORS
+    </span>
 
-              
-            </div>
+    <strong className="shrink-0 text-lg font-bold text-slate-900 sm:text-xl">
+      {assignedCreators.length.toLocaleString()}
+    </strong>
+  </div>
 
-            {/* DOWNLOAD CSV */}
-            {currentUserRole !== "creator" && (
+  {/* DOWNLOAD CSV */}
+  {currentUserRole !== "creator" && (
+    <button
+      type="button"
+      onClick={downloadCSV}
+      disabled={!assignedCreators.length}
+      className="
+        flex min-h-11 w-full min-w-0 items-center justify-center
+        rounded-xl bg-emerald-600 px-3 py-3
+        text-center text-sm font-semibold leading-snug text-white
+        transition-colors hover:bg-emerald-700
+        disabled:cursor-not-allowed disabled:bg-slate-300
+        cursor-pointer
+        sm:w-auto sm:min-w-[150px] sm:px-5
+      "
+    >
+      <span className="break-words">
+        {selectedCreatorIds.length > 0
+          ? `Download Selected (${selectedCreatorIds.length})`
+          : "Download CSV"}
+      </span>
+    </button>
+  )}
 
-            <button
-              onClick={downloadCSV}
-              disabled={!assignedCreators.length}
-              className="
-                h-11
-                px-5
-                rounded-xl
-                bg-emerald-600
-                hover:bg-emerald-700
-                disabled:bg-slate-300
-                disabled:cursor-not-allowed
-                text-white
-                text-sm
-                font-semibold
-                transition
-                whitespace-nowrap
-                cursor-pointer
-              "
-            >
-              {selectedCreatorIds.length > 0
-                ? `Download Selected (${selectedCreatorIds.length})`
-                : "Download CSV"}
-            </button>
-            )}
+  {/* DELETE CREATOR */}
+  <button
+    type="button"
+    onClick={() => {
+      setDeleteStatus("Pending");
+      setDeleteCreatorId("");
+      setShowDeleteModal(true);
+    }}
+    disabled={
+      !assignedCreators.some((creator) => {
+        const status =
+          creatorActions[String(creator._id)] ||
+          creator.assignedStatus ||
+          creator.status ||
+          "Pending";
 
-<button
-  type="button"
-  onClick={() => {
-    setDeleteStatus("Pending");
-    setDeleteCreatorId("");
-    setShowDeleteModal(true);
-  }}
-  disabled={!assignedCreators.some((creator) => {
-    const status =
-      creatorActions[String(creator._id)] ||
-      creator.assignedStatus ||
-      creator.status ||
-      "Pending";
+        return status !== "Approved";
+      })
+    }
+    className="
+  flex min-h-11 w-full min-w-0 items-center justify-center
+  rounded-xl bg-red-600 px-2 py-3
+  text-center text-xs font-semibold leading-snug text-white
+  transition-colors hover:bg-red-700
+  disabled:cursor-not-allowed disabled:bg-slate-300
+  cursor-pointer
+  sm:w-auto sm:min-w-[150px] sm:px-5 sm:text-sm
+"
+  >
+    Delete Creator
+  </button>
 
-    return status !== "Approved";
-  })}
-  className="
-    h-11
-    px-5
-    rounded-xl
-    bg-red-600
-    hover:bg-red-700
-    disabled:bg-slate-300
-    disabled:cursor-not-allowed
-    text-white
-    text-sm
-    font-semibold
-    transition
-    whitespace-nowrap
-    cursor-pointer
-  "
->
-  Delete Creator
-</button>
-
-          </div>
+</div>
+</div>
         </div>
 
         {/* ===================================================

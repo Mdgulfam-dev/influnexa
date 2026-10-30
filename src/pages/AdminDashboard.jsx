@@ -172,6 +172,55 @@ const influencerDetailFields = [
   ["Campaign", "campaignName"],
 ];
 
+
+const QC_REMARK_REQUIRED = [
+  "NEEDS_CORRECTION",
+  "REJECTED",
+  "NEEDS_UPDATE",
+  "ON_HOLD",
+];
+
+const QC_STATUSES = [
+  {
+    value: "PENDING_QC",
+    meaning: "Creator data has not been checked",
+  },
+  {
+    value: "IN_PROGRESS",
+    meaning: "QC team is checking the profile",
+  },
+  {
+    value: "VERIFIED",
+    meaning: "All required fields have passed QC",
+  },
+  {
+    value: "NEEDS_CORRECTION",
+    meaning: "Some information needs correction",
+  },
+  {
+    value: "REJECTED",
+    meaning: "Creator fails your quality criteria",
+  },
+  {
+    value: "NEEDS_UPDATE",
+    meaning: "Profile information is outdated",
+  },
+  {
+    value: "ON_HOLD",
+    meaning: "QC is blocked pending information",
+  },
+];
+
+const QC_STATUS_COLORS = {
+  PENDING_QC: "bg-slate-100 text-slate-700",
+  IN_PROGRESS: "bg-blue-100 text-blue-700",
+  VERIFIED: "bg-emerald-100 text-emerald-700",
+  NEEDS_CORRECTION: "bg-amber-100 text-amber-700",
+  REJECTED: "bg-red-100 text-red-700",
+  NEEDS_UPDATE: "bg-orange-100 text-orange-700",
+  ON_HOLD: "bg-gray-200 text-gray-700",
+};
+
 const initialBlogForm = {
   title: "",
   category: "",
@@ -1118,7 +1167,11 @@ function RegistrationDataTable({
   statusOptions,
   type,
   onUpdateStatus,
-}) {
+
+  
+})
+
+{
   return (
     <div className="admin-full-data-table-wrap">
      <table
@@ -2098,7 +2151,6 @@ function formatLoginHistoryDateTime(value) {
 
 export default function AdminDashboard() {
 const [visiblePasswords, setVisiblePasswords] = useState({});
-
 const togglePasswordVisibility = (field) => {
   setVisiblePasswords((prev) => ({
     ...prev,
@@ -2417,6 +2469,9 @@ const loadDashboard = async ({ showLoading = true } = {}) => {
 setCurrentUser(dashboard.currentUser);
 console.log("DASHBOARD CURRENT USER:", dashboard.currentUser);
 console.log("DASHBOARD ROLE:", dashboard.currentUser?.role);
+if (dashboard.currentUser?.name) {
+  localStorage.setItem("adminName", dashboard.currentUser.name);
+}
     setData(normalizeDashboardData(dashboard));
     setIsAuthenticated(true);
 
@@ -4278,7 +4333,7 @@ setCampaignForm({
 
 
         {activeTab === "applications" && (
-          <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2></div><form className="admin-registration-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, Email, Mobile, Role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
+          <div className="admin-panel"><div className="admin-panel-title-row"><h2>Job candidates</h2></div><form className="admin-registration-toolbar admin-candidate-toolbar" onSubmit={applyRegistrationSearch}><label>Search<input placeholder="Name, Email, Mobile, Role..." type="search" value={candidateFilters.search} onChange={(event) => updateCandidateFilter("search", event.target.value)} /></label><label>Job ID<input placeholder="INX-00001" value={candidateFilters.jobId} onChange={(event) => updateCandidateFilter("jobId", event.target.value)} /></label><label>Status<select value={candidateFilters.status} onChange={(event) => updateCandidateFilter("status", event.target.value)}><option value="">All statuses</option>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button type="submit">Apply</button><span>{data.pagination.applications.total || 0} matching candidates</span></form><div className="admin-candidate-list">{data.applications.map((application) => <article className={`admin-candidate-card ${expandedCandidates.has(application._id) ? "is-expanded" : ""}`} key={application._id}><div className="admin-candidate-heading"><div><Pill tone={application.status === "Selected" ? "success" : application.status === "Rejected" ? "error" : "default"}>{application.status}</Pill><h3>{application.name}</h3><p>{application.jobTitle} <strong>· {application.jobId}</strong></p></div><div className="candidate-card-actions"><label>Candidate status<select aria-label={`Update ${application.name} status`} value={application.status} onChange={(event) => updateCandidateStatus(application._id, event.target.value)}>{applicationStatuses.map((item) => <option key={item}>{item}</option>)}</select></label><button className="candidate-expand-button" type="button" onClick={() => toggleCandidate(application._id)}>{expandedCandidates.has(application._id) ? "Collapse" : "View details"}</button></div></div>{expandedCandidates.has(application._id) && <dl className="admin-candidate-details"><div><dt>Email</dt><dd><a href={`mailto:${application.email}`}>{application.email}</a></dd></div><div><dt>Mobile number</dt><dd><a href={`tel:${application.phone}`}>{application.phone}</a></dd></div><div><dt>Experience</dt><dd>{application.experience || "Not provided"}</dd></div><div><dt>Passing year</dt><dd>{application.passingYear || "Not provided"}</dd></div><div><dt>Applied on</dt><dd>{formatDate(application.createdAt)}</dd></div><div><dt>Resume</dt><dd>{application.resumeData ? <a href={application.resumeData} download={application.resumeName}>Download {application.resumeName}</a> : "Not uploaded"}</dd></div><div className="wide"><dt>Address</dt><dd>{application.address || "Not provided"}</dd></div><div className="wide"><dt>Cover letter</dt><dd className={expandedCoverLetters.has(application._id) ? "cover-letter-expanded" : "cover-letter-preview"}>{application.coverLetter || "Not provided"}</dd>{application.coverLetter && application.coverLetter.length > 180 && <button className="cover-letter-toggle" type="button" onClick={() => toggleCoverLetter(application._id)}>{expandedCoverLetters.has(application._id) ? "Show less" : "Read full letter"}</button>}</div></dl>}</article>)}{data.applications.length === 0 && <p>No applications yet.</p>}</div><RegistrationPager meta={data.pagination.applications} onPageChange={changeCandidatePage} /></div>
         )}
 
         {activeTab === "testimonials" && (

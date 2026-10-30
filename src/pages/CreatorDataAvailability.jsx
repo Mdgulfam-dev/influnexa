@@ -2330,12 +2330,8 @@ setCreatorsTotal(Number(result.total || 0));
     AVAILABLE CREATORS TABLE
 ===================================================== */}
 
-<section className="mt-6 w-full min-w-0 px-4 sm:px-6">
-  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-    
-
-    
-  </div>
+<section className="mt-6 w-full min-w-0px-4 sm:px-1">
+  
 
   <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="relative isolate max-h-[650px] w-full overflow-auto">
