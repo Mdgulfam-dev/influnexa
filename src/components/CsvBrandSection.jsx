@@ -373,7 +373,8 @@ const [filters, setFilters] = useState({
   status: [],
   contactStatus: [], 
   completedBy: [],
-  category:[]
+  category:[],
+  qcStatus: [],
 });
 
   // ========================================
@@ -479,6 +480,7 @@ const fetchLeadUsers = async () => {
   contactStatus: filters.contactStatus.join(","),
   completedBy: filters.completedBy.join(","),
   category: filters.category.join(","),
+  qcStatus: filters.qcStatus.join(","),
 },
       }
     );

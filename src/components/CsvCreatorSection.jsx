@@ -142,6 +142,8 @@ const handleEdit = (creator) => {
   contactStatus: [],
    age: [],
   completedBy: [],
+    qcStatus: [],
+  
 });
 
 const [filterOptions, setFilterOptions] = useState({
@@ -887,6 +889,7 @@ const resetFilters = () => {
     campaignType:[],
     influencerType: [],
     contactStatus: [],
+    qcStatus: [],
   };
 
   setFilters(emptyFilters);
@@ -2167,6 +2170,21 @@ options:filterOptions.languages
     "35 - 44",
     "45 - 54",
     "55+",
+  ],
+},
+{
+  name: "qcStatus",
+  type: "select",
+  label: "QC Status",
+  placeholder: "Select QC Status",
+  options: [
+    "PENDING_QC",
+    "IN_PROGRESS",
+    "VERIFIED",
+    "NEEDS_CORRECTION",
+    "REJECTED",
+    "NEEDS_UPDATE",
+    "ON_HOLD",
   ],
 },
 
