@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import Config from "../config/Config";
 import { FaSyncAlt } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
 import Select from "react-select";
@@ -172,7 +174,6 @@ const influencerDetailFields = [
   ["Campaign", "campaignName"],
 ];
 
-
 const QC_REMARK_REQUIRED = [
   "NEEDS_CORRECTION",
   "REJECTED",
@@ -183,7 +184,7 @@ const QC_REMARK_REQUIRED = [
 const QC_STATUSES = [
   {
     value: "PENDING_QC",
-    meaning: "Creator data has not been checked",
+    meaning: "Influencer data has not been checked",
   },
   {
     value: "IN_PROGRESS",
@@ -199,7 +200,7 @@ const QC_STATUSES = [
   },
   {
     value: "REJECTED",
-    meaning: "Creator fails your quality criteria",
+    meaning: "Influencer fails your quality criteria",
   },
   {
     value: "NEEDS_UPDATE",
@@ -212,14 +213,15 @@ const QC_STATUSES = [
 ];
 
 const QC_STATUS_COLORS = {
-  PENDING_QC: "bg-slate-100 text-slate-700",
-  IN_PROGRESS: "bg-blue-100 text-blue-700",
-  VERIFIED: "bg-emerald-100 text-emerald-700",
-  NEEDS_CORRECTION: "bg-amber-100 text-amber-700",
-  REJECTED: "bg-red-100 text-red-700",
-  NEEDS_UPDATE: "bg-orange-100 text-orange-700",
-  ON_HOLD: "bg-gray-200 text-gray-700",
+  PENDING_QC: "bg-slate-100 !text-slate-700",
+        IN_PROGRESS: "bg-blue-100 !text-blue-700",
+        VERIFIED: "bg-emerald-100 !text-emerald-700",
+        NEEDS_CORRECTION: "bg-amber-100 !text-amber-700",
+        REJECTED: "bg-red-100 !text-red-700",
+        NEEDS_UPDATE: "bg-orange-100 !text-orange-700",
+        ON_HOLD: "bg-gray-200 !text-gray-700",
 };
+
 
 const initialBlogForm = {
   title: "",
@@ -1159,6 +1161,9 @@ function registrationStatusTone(status) {
   return "default";
 }
 
+
+
+
 function RegistrationDataTable({
   fields,
   items,
@@ -1167,11 +1172,15 @@ function RegistrationDataTable({
   statusOptions,
   type,
   onUpdateStatus,
+   currentUser,
+ 
+  handleQCStatusChange,
 
   
-})
+}){
+    const [openQCRecordId, setOpenQCRecordId] = useState(null);
 
-{
+
   return (
     <div className="admin-full-data-table-wrap">
      <table
@@ -1188,6 +1197,11 @@ function RegistrationDataTable({
             {fields.map(([label, key]) => (
               <th key={key}>{label}</th>
             ))}
+             <th>QC Remark</th>
+    <th>QC Status</th>
+    <th>QC Action</th>
+    <th>QC Last Updated</th>
+    <th>QC Checked By</th>
             <th className="admin-actions-column">Actions</th>
           </tr>
         </thead>
@@ -1222,6 +1236,136 @@ function RegistrationDataTable({
                   )}
                 </td> 
               ))}
+              {/* QC REMARK */}
+    <td className="px-4 py-5 min-w-[200px] max-w-[250px]">
+      {record.qcRemark || "No Remark"}
+    </td>
+
+    {/* QC STATUS */}
+    <td className="px-4 py-5 whitespace-nowrap">
+      {(() => {
+        const status = record.qcStatus || "PENDING_QC";
+
+        return (
+          <span
+            className={` inline-flex px-3 py-2 rounded-2xl text-xs font-bold ${
+              QC_STATUS_COLORS[status] ||
+              "bg-slate-100 text-slate-700"
+            }`}
+          >
+            {status}
+          </span>
+        );
+      })()}
+    </td>
+
+{/* QC ACTION - SAME UI AS CSV CREATOR */}
+<td className="qc-action-cell px-4 py-5 whitespace-nowrap">
+ <details
+  className="qc-dropdown relative"
+  open={openQCRecordId === record._id}
+  onToggle={(event) => {
+    if (event.currentTarget.open) {
+      setOpenQCRecordId(record._id);
+    } else {
+      setOpenQCRecordId((current) =>
+        current === record._id ? null : current
+      );
+    }
+  }}
+>
+    <summary className="flex min-h-[40px] w-[210px] cursor-pointer list-none items-center justify-between rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm [&::-webkit-details-marker]:hidden">
+      <span>Change QC Status</span>
+
+      <svg
+        className="h-4 w-4 transition-transform"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      >
+        <path
+          d="m6 8 4 4 4-4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </summary>
+
+    <div className="qc-dropdown-menu">
+      {QC_STATUSES.map((status) => (
+        <div key={status.value} className="flex items-center gap-2">
+
+          {/* STATUS OPTION */}
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              handleQCStatusChange(record, status.value);
+setOpenQCRecordId(null);
+              event.currentTarget
+                .closest("details")
+                ?.removeAttribute("open");
+            }}
+            className="flex-1 min-w-0 rounded-lg px-2 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-indigo-50"
+          >
+            {status.value}
+          </button>
+
+          {/* REMARK INFORMATION ICON */}
+          <span className="group relative flex h-4 w-4 shrink-0 cursor-help items-center justify-center rounded-full border border-slate-300 text-[9px] font-bold text-slate-500">
+            i
+
+            {/* TOOLTIP */}
+     <div className="
+                  invisible opacity-0
+                  group-hover:visible
+                  group-hover:opacity-100
+                  absolute right-full top-1/2
+                  -translate-y-1/2
+                  mr-2
+                  w-[230px]
+                  whitespace-normal
+                  rounded-lg
+                  bg-slate-900
+                  text-white
+                  px-3 py-2
+                  text-xs leading-5
+                  shadow-xl
+                  transition-opacity
+                  duration-200
+                  z-[10000]
+                  pointer-events-none
+                ">
+                  {status.meaning}
+
+                  <span className="
+                    absolute left-full top-1/2
+                    -translate-y-1/2
+                    border-[6px]
+                    border-transparent
+                    border-l-slate-900
+                  " />
+                </div>
+          </span>
+        </div>
+      ))}
+    </div>
+  </details>
+</td>
+    {/* QC LAST UPDATED */}
+    <td className="px-4 py-5 whitespace-nowrap">
+      {record.qcLastUpdatedAt
+        ? new Date(record.qcLastUpdatedAt).toLocaleString("en-IN")
+        : "Not Verified Yet"}
+    </td>
+
+    {/* QC CHECKED BY */}
+    <td className="px-4 py-5 whitespace-nowrap">
+      {record.qcCheckedBy || "Not Checked Yet"}
+    </td>
 
               <td className="admin-actions-column">
                 <RegistrationStatusButtons
@@ -2225,6 +2369,99 @@ const [brandForm, setBrandForm] = useState({
     : "overview";
 });
 
+const [showQCRemarkModal, setShowQCRemarkModal] = useState(false);
+const [pendingQCUpdate, setPendingQCUpdate] = useState(null);
+const [qcRemark, setQcRemark] = useState("");
+const [qcSaving, setQcSaving] = useState(false);
+
+const handleQCStatusChange = (creator, status) => {
+  if (QC_REMARK_REQUIRED.includes(status)) {
+    setPendingQCUpdate({ creator, status });
+    setQcRemark("");
+    setShowQCRemarkModal(true);
+    return;
+  }
+
+  saveInfluencerQCStatus(
+    creator,
+    status,
+    creator.qcRemark || ""
+  );
+};
+
+const saveInfluencerQCStatus = async (record, status, remark) => {
+  try {
+    setQcSaving(true);
+
+    // Use the same storage as your existing admin authentication
+    const token =
+      sessionStorage.getItem("influnexa_admin_token") ||
+      localStorage.getItem("influnexa_admin_token");
+
+    if (!token) {
+      alert("Admin session expired. Please log in again.");
+      return;
+    }
+
+    const response = await axios.patch(
+      `${Config.API_URL}/admin/influencers/${record._id}/qc`,
+      {
+        qcStatus: status,
+        qcRemark: remark,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-token": token,
+        },
+      }
+    );
+
+    const updatedRecord = response.data.influencer;
+
+    setInfluencerTable((previous) => ({
+      ...previous,
+      items: previous.items.map((item) =>
+        item._id === record._id
+          ? {
+              ...item,
+              ...updatedRecord,
+            }
+          : item
+      ),
+    }));
+
+    setShowQCRemarkModal(false);
+    setPendingQCUpdate(null);
+    setQcRemark("");
+
+  } catch (error) {
+    console.error("Influencer QC update failed:", error);
+    console.error("Backend response:", error.response?.data);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to update QC status"
+    );
+
+  } finally {
+    setQcSaving(false);
+  }
+};
+const handleSaveQCRemark = () => {
+  if (!qcRemark.trim()) {
+    alert("Please enter a reason for selecting this QC status");
+    return;
+  }
+
+  if (!pendingQCUpdate) return;
+
+  saveInfluencerQCStatus(
+    pendingQCUpdate.creator,
+    pendingQCUpdate.status,
+    qcRemark.trim()
+  );
+};
 
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [editingBlogId, setEditingBlogId] = useState("");
@@ -2970,7 +3207,7 @@ useEffect(() => {
     [ "brands",
     "upload-csv",
     "csv-brands",
-    "upload-csv-brands","creator-network", "lead-workflow"].includes(activeTab)
+    "upload-csv-brands","creator-network", "lead-workflow", "brand-registration",].includes(activeTab)
   ) {
     setActiveTab("overview");
     window.history.replaceState(null, "", "#overview");
@@ -3047,6 +3284,7 @@ if (currentUserRole === "creator") {
         "testimonials",
         "jobs",
         "applications",
+        "brand-registration",
       ].includes(id)
   );
 }
@@ -3797,7 +4035,18 @@ setCampaignForm({
               statusOptions={influencerStatuses}
               type="influencers"
             />
-            <RegistrationDataTable fields={influencerDetailFields} items={influencerTable.items} emptyMessage="No influencer registrations match these filters." statusOptions={influencerStatuses} type="influencers" onUpdateStatus={updateStatus} cursorHistory={influencerTable.history} />
+           <RegistrationDataTable
+  fields={influencerDetailFields}
+  items={influencerTable.items}
+  emptyMessage="No influencer registrations match these filters."
+  statusOptions={influencerStatuses}
+  type="influencers"
+  onUpdateStatus={updateStatus}
+  cursorHistory={influencerTable.history}
+  currentUser={currentUser}
+  
+  handleQCStatusChange={handleQCStatusChange}
+/>
             <RegistrationPager cursorHistory={influencerTable.history} hasMore={influencerTable.hasMore} onPrevious={previousInfluencerPage} onNext={nextInfluencerPage} />
           </div>
         )}
@@ -5287,6 +5536,57 @@ setCampaignForm({
         </div>
       )}
 
+    </div>
+  </div>
+)}
+
+{showQCRemarkModal && pendingQCUpdate && (
+  <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <h2 className="text-lg font-bold text-slate-800 mb-4">
+        QC Remark
+      </h2>
+
+      <p className="text-sm text-slate-600 mb-3">
+        Selected status:{" "}
+        <strong>{pendingQCUpdate.status}</strong>
+      </p>
+
+      <label className="block text-sm font-semibold text-slate-700 mb-2">
+        Reason for selecting this status *
+      </label>
+
+      <textarea
+        value={qcRemark}
+        onChange={(event) => setQcRemark(event.target.value)}
+        placeholder="Write the reason here..."
+        rows={4}
+        className="w-full rounded-xl border border-slate-300 p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-100"
+      />
+
+      <div className="flex justify-end gap-3 mt-4">
+        <button
+          type="button"
+          disabled={qcSaving}
+          onClick={() => {
+            setShowQCRemarkModal(false);
+            setPendingQCUpdate(null);
+            setQcRemark("");
+          }}
+          className="px-4 py-2 rounded-lg border border-slate-300 text-sm"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          disabled={qcSaving || !qcRemark.trim()}
+          onClick={handleSaveQCRemark}
+          className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold disabled:opacity-50"
+        >
+          {qcSaving ? "Saving..." : "Save Remark"}
+        </button>
+      </div>
     </div>
   </div>
 )}

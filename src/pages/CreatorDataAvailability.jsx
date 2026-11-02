@@ -1764,7 +1764,7 @@ setCreatorsTotal(Number(result.total || 0));
 {/* =================================================
     INSTAGRAM FOLLOWERS RANGE
 ================================================= */}
-
+{!hideUserFilters && (
 <label>
   Instagram Followers Range
 
@@ -1809,6 +1809,7 @@ setCreatorsTotal(Number(result.total || 0));
     }}
   />
 </label>
+)}
 
 
 
@@ -2342,7 +2343,9 @@ setCreatorsTotal(Number(result.total || 0));
               "SL No",
               "Full Name",
               "Instagram Username",
-              "Instagram Profile Link",
+               ...(!hideUserFilters
+    ? ["Instagram Profile Link"]
+    : []),
               "Instagram Follower Range",
               "Categories",
               "Influencer Type",
@@ -2455,7 +2458,7 @@ setCreatorsTotal(Number(result.total || 0));
 ">
                     {displayValue(creator.instagramUsername)}
                   </td>
-
+{!hideUserFilters && (
                   <td className="border-b  border-slate-100 px-4 py-3 text-blue-500">
                     {instagramUrl ? (
                       <a
@@ -2468,6 +2471,7 @@ setCreatorsTotal(Number(result.total || 0));
                       </a>
                     ) : "-"}
                   </td>
+)}
 
                   <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-sm text-slate-700">
   {displayValue(

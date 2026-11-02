@@ -918,11 +918,11 @@ const inputClass = `
   bg-white
 
   text-[#0f172a]
-  text-[13px]
+  text-[14px]
   font-[850]
 
   placeholder:text-[#94a3b8]
-  placeholder:text-[13px]
+  placeholder:text-[14px]
   placeholder:font-semibold
   placeholder:opacity-100
 
@@ -1041,7 +1041,7 @@ const selectStyles = {
     ...base,
 
     color: "#94a3b8",
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: 550,
 
     whiteSpace: "nowrap",
@@ -1091,7 +1091,7 @@ const selectStyles = {
 
     color: "#475569",
 
-    fontSize: "13px",
+    fontSize: "14px",
 
     padding: "5px 7px",
 
@@ -1213,7 +1213,7 @@ const selectStyles = {
   option: (base, state) => ({
     ...base,
 
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: 600,
 
     whiteSpace: "normal",
@@ -2202,7 +2202,7 @@ options:filterOptions.languages
   gap-[6px]
   min-w-0
   text-slate-500
-  text-[13px]
+  text-sm
   font-[950]
   tracking-[0.06em]
 ">

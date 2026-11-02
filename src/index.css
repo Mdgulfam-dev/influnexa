@@ -4626,6 +4626,8 @@ section.admin-content .admin-ticket-workspace .admin-panel {
 .admin-registration-table td small { margin-top: 4px; color: #64748b; font-size: 12px; }
 .admin-registration-table select { width: 100%; min-width: 112px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; padding: 8px; }
 
+
+
 .admin-full-data-table-wrap {  position: relative;
   z-index: 1;
 
@@ -4755,10 +4757,123 @@ height: 52px;
 
   box-sizing: border-box;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
+}
+/* QC Dropdown - Registration Table */
+
+.admin-full-data-table td.qc-action-cell {
+  position: relative;
+  overflow: visible !important;
 }
 
+.admin-full-data-table td.qc-action-cell .qc-dropdown {
+  position: relative;
+  display: inline-block;
+  width: 210px;
+}
+
+/* Dropdown button */
+.admin-full-data-table td.qc-action-cell .qc-dropdown summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 210px;
+  min-height: 40px;
+  box-sizing: border-box;
+  list-style: none;
+  cursor: pointer;
+}
+
+.admin-full-data-table td.qc-action-cell .qc-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 9999;
+
+  width: 210px;
+  min-width: 210px;
+  max-width: 210px;
+  box-sizing: border-box;
+
+  /* No scrolling */
+  max-height: none;
+  overflow: visible;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+}
+/* Each dropdown option */
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+
+  width: 100%;
+  min-height: 36px;
+  padding: 2px 4px;
+  box-sizing: border-box;
+}
+
+/* Status text */
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu button {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  width: auto;
+
+  padding: 8px 6px;
+  border-radius: 7px;
+
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Hover */
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu button:hover {
+  background: #eef2ff;
+}
+
+/* Information icon */
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu .group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+}
+
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu .group > span:first-child {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  color: white;
+}
+
+/* Tooltip */
+.admin-full-data-table td.qc-action-cell .qc-dropdown-menu .group > span:last-child {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  z-index: 10000;
+  width: 190px;
+  box-sizing: border-box;
+}
 /* Actions */
 .admin-full-data-table .admin-actions-column {
   width: 180px;
@@ -18427,7 +18542,6 @@ body > div[id*="react-select-"][aria-live] {
 .influencer-filter-select .influencer-select__control {
   outline: none !important;
 }
-
 
 
 /* ==========================================
