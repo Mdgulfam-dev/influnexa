@@ -1958,6 +1958,68 @@ onChange={(selected) => {
   />
 </label>
 
+<label>
+  QC Status
+
+  <Select
+    className="influencer-filter-select"
+    classNamePrefix="influencer-select"
+    styles={compactFilterStyles}
+    isMulti
+    isSearchable
+    isClearable
+    closeMenuOnSelect={false}
+    hideSelectedOptions={true}
+    placeholder="All QC Statuses"
+
+    options={QC_STATUSES.map((status) => ({
+      value: status.value,
+      label:
+        status.value === "PENDING_QC"
+          ? "PENDING_QC"
+          : status.value.replaceAll("_", " "),
+    }))}
+
+    value={QC_STATUSES
+      .map((status) => ({
+        value: status.value,
+        label:
+          status.value === "PENDING_QC"
+            ? "PENDING_QC"
+            : status.value.replaceAll("_", " "),
+      }))
+      .filter((option) =>
+        (Array.isArray(filters.qcStatus)
+          ? filters.qcStatus
+          : filters.qcStatus
+            ? [filters.qcStatus]
+            : []
+        ).includes(option.value)
+      )}
+
+    onChange={(selected) =>
+      onFilterChange(
+        "qcStatus",
+        selected ? selected.map((item) => item.value) : []
+      )
+    }
+
+    maxMenuHeight={150}
+    menuPlacement="auto"
+    menuPosition="absolute"
+    closeMenuOnScroll={false}
+    blurInputOnSelect={false}
+    screenReaderStatus={() => ""}
+    ariaLiveMessages={{
+      guidance: () => "",
+      onChange: () => "",
+      onFocus: () => "",
+      onFilter: () => "",
+    }}
+    noOptionsMessage={() => "No QC statuses available"}
+  />
+</label>
+
 
      </>
        )}
@@ -2480,7 +2542,7 @@ const handleSaveQCRemark = () => {
 gender: "",
 age: "",
 youtubeSubscribersRange: "",
-youtubeAverageViews: "",});
+youtubeAverageViews: "",  qcStatus: "",});
   const [brandQuery, setBrandQuery] = useState({ search: "", status: "", country: "", industry: "", from: "", to: "" });
   const [influencerQuery, setInfluencerQuery] = useState({ search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "", influencerType: "", followerMin: "", followerMax: "", followerRange: "",from: "", to: "" });
   const [brandTable, setBrandTable] = useState({ items: [], hasMore: false, nextCursor: null, history: [] });
@@ -2958,7 +3020,7 @@ useEffect(() => {
     }
     if (activeTab === "influencers") {
       const cleared = { search: "", status: "", country: "", state: "", location: "", language: "", platform: "", category: "", campaignType: "",
-  influencerType: "", followerMin: "", followerMax: "",followerRange: "", from: "", to: "" };
+  influencerType: "", followerMin: "", followerMax: "",followerRange: "", from: "", to: "", qcStatus: "",};
       setInfluencerFilters(cleared);
       setInfluencerQuery(cleared);
     }

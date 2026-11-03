@@ -21,6 +21,10 @@ const isBrandRole = adminRole === "brand"
  const currentUserRole = (
   sessionStorage.getItem("adminRole") || ""
 ).trim().toLowerCase();
+
+
+const [customInstagramFollowers, setCustomInstagramFollowers] =
+  useState("");
 const [showDeleteModal, setShowDeleteModal] = useState(false);
 const [deleteStatus, setDeleteStatus] = useState("Pending");
 const [deleteCreatorId, setDeleteCreatorId] = useState("");
@@ -131,6 +135,7 @@ const updateCreatorFilter = (name, selectedOptions) => {
 };
 
 const resetCreatorFilters = () => {
+  setCustomInstagramFollowers("");
   setCreatorFilters(initialCreatorFilters);
 };
 
@@ -1063,6 +1068,57 @@ const handleDeleteAssignedCreator = async () => {
     );
   };
 
+
+  const parseFollowerCount = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const normalized = String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/,/g, "");
+
+  const match = normalized.match(/^(\d+(?:\.\d+)?)\s*([km]?)$/);
+
+  if (!match) return null;
+
+  const number = Number(match[1]);
+
+  const multiplier =
+    match[2] === "k" ? 1000 :
+    match[2] === "m" ? 1000000 : 1;
+
+  return number * multiplier;
+};
+
+const parseFollowerRange = (value) => {
+  const input = value.trim();
+
+  if (!input) return null;
+
+  const parts = input.split("-");
+
+  if (parts.length === 1) {
+    const exact = parseFollowerCount(parts[0]);
+
+    return exact === null
+      ? null
+      : { min: exact, max: exact };
+  }
+
+  if (parts.length !== 2) return null;
+
+  const min = parseFollowerCount(parts[0]);
+  const max = parseFollowerCount(parts[1]);
+
+  if (min === null || max === null || min > max) {
+    return null;
+  }
+
+  return { min, max };
+};
+
   /* =========================================================
      SEARCH
   ========================================================= */
@@ -1103,7 +1159,28 @@ const filteredCreators = useMemo(() => {
         );
 
     if (!matchesSearch) return false;
+// CUSTOM INSTAGRAM FOLLOWER FILTER
+const customRange = parseFollowerRange(
+  customInstagramFollowers
+);
 
+if (customInstagramFollowers.trim()) {
+  if (!customRange) return false;
+
+  // Read from the exactFollowers collection field
+  const followers = parseFollowerCount(
+    creator.exactFollowers
+  );
+
+  if (followers === null) return false;
+
+  if (
+    followers < customRange.min ||
+    followers > customRange.max
+  ) {
+    return false;
+  }
+}
     const matchesMultiFilter = (selected, values) => {
       if (!selected.length) return true;
 
@@ -1196,7 +1273,7 @@ const filteredCreators = useMemo(() => {
 
     return true;
   });
-}, [assignedCreators, creatorSearch, creatorFilters]);
+}, [assignedCreators, creatorSearch, creatorFilters,customInstagramFollowers]);
   /* =========================================================
      CREATOR SELECTION
   ========================================================= */
@@ -1678,7 +1755,7 @@ creatorActions[creator._id],
 
             <div
               className="
-                text-[0.7vw]
+                text-xs
                 font-bold
                 tracking-[0.18em]
                 text-emerald-600
@@ -1690,7 +1767,7 @@ creatorActions[creator._id],
             <h1
               className="
                 mt-[0.5vw]
-                text-[1.75vw]
+                text-sm
                 font-bold
                 text-slate-900
                 break-words
@@ -1704,7 +1781,7 @@ creatorActions[creator._id],
             <p
               className="
                 mt-[0.35vw]
-                text-[0.95vw]
+                text-sm
                 text-slate-500
                 break-words
               "
@@ -1917,7 +1994,29 @@ creatorActions[creator._id],
   </div>
 
   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <label className="min-w-0 text-sm font-semibold text-slate-600">
+  <span className="mb-1.5 block">
+    Custom Instagram Followers
+  </span>
+
+  <input
+    type="text"
+    value={customInstagramFollowers}
+    onChange={(e) =>
+      setCustomInstagramFollowers(e.target.value)
+    }
+    placeholder="e.g. 3456-56789 or 3456"
+    className="
+      w-full min-w-0 rounded-xl border border-slate-300
+      bg-white px-3 py-3.5 text-sm font-normal text-slate-700
+      outline-none transition
+    
+    "
+  />
+
+</label>
     {[
+
       {
         name: "instagramFollowersRange",
         label: "Instagram Follower Range",
@@ -1988,7 +2087,7 @@ creatorActions[creator._id],
     ].map((filter) => (
       <label
         key={filter.name}
-        className="min-w-0 text-xs font-semibold text-slate-600"
+        className="min-w-0 text-sm font-semibold text-slate-600"
       >
         <span className="mb-1.5 block">{filter.label}</span>
 
@@ -2045,7 +2144,7 @@ creatorActions[creator._id],
             className="
               min-w-[225vw]
               w-max
-              text-[0.9vw]
+              text-sm
               border-separate
               border-spacing-0
             "

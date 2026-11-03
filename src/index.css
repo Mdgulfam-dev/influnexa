@@ -4914,6 +4914,40 @@ height: 52px;
   box-sizing: border-box;
 }
 
+
+/* ================================
+   TABLET RESPONSIVE FIX
+================================ */
+
+@media (min-width: 601px) and (max-width: 1290px) {
+
+  .admin-registration-toolbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+    row-gap: 14px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-registration-toolbar > label {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin-registration-toolbar .influencer-filter-select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin-registration-toolbar .influencer-select__control {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+}
+
 .admin-registration-toolbar input,
 .admin-registration-toolbar select {
   width: 100%;
@@ -14676,7 +14710,7 @@ footer .footer-brand-copy small,
    700px and below
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 830px) {
 
   .services-section {
     padding: 55px 14px 45px;
@@ -15409,7 +15443,7 @@ footer .footer-brand-copy small,
    700px and below
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
 
   .services-section {
     padding: 55px 14px 45px;

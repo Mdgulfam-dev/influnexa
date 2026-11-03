@@ -105,130 +105,130 @@ const industries = [
   "Airlines Aviation",
 ];
 
-/*
-  Images are loaded automatically.
-  You do NOT need to download or import images.
+// /*
+//   Images are loaded automatically.
+//   You do NOT need to download or import images.
 
- /* =========================================================
-   INDUSTRY IMAGE PROMPTS
-   ========================================================= */
-const industryImageKeywords = {
-  "Fashion": "fashion",
-  "Beauty and Makeup": "makeup",
-  "Personal Care": "skincare",
-  "UGC Creators": "creator",
-  "Tech Reviews": "laptop",
-  "Body Care": "Bodycare",
-  "Skin Care": "Facewash",
-  "LifeStyle": "Nature",
-  "Food": "Biriyani",
-  "Housewife": "Ladies",
-  "Podcasters": "microphone",
-  "Cooking and Recipes": "cooking",
-  "Health & Wellness": "Health",
-  "Gym": "gym",
-  "Fitness": "fitness",
-  "Moms": "mother",
-  "Pets": "Dog",
-  "Travel & Adventure": "travel",
-  "Celebrity": "Celebrity",
-  "Film, OTT and TV Series": "cinema",
-  "Memes": "Funny",
-  "Models": "model",
-  "Yoga": "yoga",
-  "Hair Care": "hair",
-  "Student": "student",
-  "Family/Parenting": "family",
-  "Home & Decor": "interior",
-  "Baby Care": "baby",
-  "Education": "education",
-  "Dogs": "dog",
-  "Diet & Nutrition": "nutrition",
-  "Dermatologist": "dermatologist",
-  "Doctors": "doctor",
-  "Crypto and NFTs": "bitcoin",
-  "Personal Finance": "money",
-  "Luxury Goods": "luxury",
-  "Motivation": "success",
-  "Working class": "worker",
-  "Ethnic Wear": "saree",
-  "Stock Market": "stocks",
-  "Comedy": "comedian",
-  "Forex": "forex",
-  "Esports": "esports",
-  "Finance": "finance",
-  "Dance": "dancer",
-  "Cat": "Cat",
-  "Crypto & NFT": "nft",
-  "Sports": "sports",
-  "Software Development": "coding",
-  "Vegan": "vegan",
-  "Dentists": "dentist",
-  "Gadgets": "smartphone",
-  "Electronics and Technology": "electronics",
-  "Entertainment": "entertainment",
-  "Higher Education": "university",
-  "Entrepreneurship": "entrepreneur",
-  "DIY": "crafts",
-  "Footwear": "shoes",
-  "Gaming": "gaming",
-  "Home & Garden": "garden",
-  "Home & Kitchen": "kitchen",
-  "Athletes": "athlete",
-  "Automotive": "automobile",
-  "Mental Health Care": "meditation",
-  "Motorcycles": "motorcycle",
-  "Religious": "worship",
-  "Seniority Old Age": "elderly",
-  "Sexual Wellness": "wellness",
-  "Sneakers": "sneakers",
-  "Music": "music",
-  "Arts and Crafts": "painting",
-  "Business Making Money": "business",
-  "Coffee Tea Beverages": "coffee",
-  "Computer Software": "computer",
-  "Nails": "manicure",
-  "Veterinary": "veterinarian",
-  "Fan Accounts": "fans",
-  "Lingeries": "lingerie",
-  "Architecture & Interior": "architecture",
-  "Banking": "bank",
-  "Cars": "car",
-  "Hospitality": "hotel",
-  "Love & Romance": "couple",
-  "Medical Practice": "clinic",
-  "Photography": "camera",
-  "Plus Size Fashion": "fashion",
-  "Professional Training & Coaching": "coaching",
-  "Public Safety": "police",
-  "Wine and Spirits": "wine",
-  "Farming": "farmer",
-  "Animals": "wildlife",
-  "Automation & Robotics": "robot",
-  "Quotes & Texts": "books",
-  "Politics": "parliament",
-  "Activism & Social Causes": "activism",
-  "Books and Movies": "movies",
-  "Gambling & Casinos": "casino",
-  "Recreational Facilities": "recreation",
-  "Alternative Medicine": "herbs",
-  "Tobacco": "tobacco",
-  "Airlines Aviation": "airplane",
-};
+//  /* =========================================================
+//    INDUSTRY IMAGE PROMPTS
+//    ========================================================= */
+// const industryImageKeywords = {
+//   "Fashion": "fashion",
+//   "Beauty and Makeup": "makeup",
+//   "Personal Care": "skincare",
+//   "UGC Creators": "creator",
+//   "Tech Reviews": "laptop",
+//   "Body Care": "Bodycare",
+//   "Skin Care": "Facewash",
+//   "LifeStyle": "Nature",
+//   "Food": "Biriyani",
+//   "Housewife": "Ladies",
+//   "Podcasters": "microphone",
+//   "Cooking and Recipes": "cooking",
+//   "Health & Wellness": "Health",
+//   "Gym": "gym",
+//   "Fitness": "fitness",
+//   "Moms": "mother",
+//   "Pets": "Dog",
+//   "Travel & Adventure": "travel",
+//   "Celebrity": "Celebrity",
+//   "Film, OTT and TV Series": "cinema",
+//   "Memes": "Funny",
+//   "Models": "model",
+//   "Yoga": "yoga",
+//   "Hair Care": "hair",
+//   "Student": "student",
+//   "Family/Parenting": "family",
+//   "Home & Decor": "interior",
+//   "Baby Care": "baby",
+//   "Education": "education",
+//   "Dogs": "dog",
+//   "Diet & Nutrition": "nutrition",
+//   "Dermatologist": "dermatologist",
+//   "Doctors": "doctor",
+//   "Crypto and NFTs": "bitcoin",
+//   "Personal Finance": "money",
+//   "Luxury Goods": "luxury",
+//   "Motivation": "success",
+//   "Working class": "worker",
+//   "Ethnic Wear": "saree",
+//   "Stock Market": "stocks",
+//   "Comedy": "comedian",
+//   "Forex": "forex",
+//   "Esports": "esports",
+//   "Finance": "finance",
+//   "Dance": "dancer",
+//   "Cat": "Cat",
+//   "Crypto & NFT": "nft",
+//   "Sports": "sports",
+//   "Software Development": "coding",
+//   "Vegan": "vegan",
+//   "Dentists": "dentist",
+//   "Gadgets": "smartphone",
+//   "Electronics and Technology": "electronics",
+//   "Entertainment": "entertainment",
+//   "Higher Education": "university",
+//   "Entrepreneurship": "entrepreneur",
+//   "DIY": "crafts",
+//   "Footwear": "shoes",
+//   "Gaming": "gaming",
+//   "Home & Garden": "garden",
+//   "Home & Kitchen": "kitchen",
+//   "Athletes": "athlete",
+//   "Automotive": "automobile",
+//   "Mental Health Care": "meditation",
+//   "Motorcycles": "motorcycle",
+//   "Religious": "worship",
+//   "Seniority Old Age": "elderly",
+//   "Sexual Wellness": "wellness",
+//   "Sneakers": "sneakers",
+//   "Music": "music",
+//   "Arts and Crafts": "painting",
+//   "Business Making Money": "business",
+//   "Coffee Tea Beverages": "coffee",
+//   "Computer Software": "computer",
+//   "Nails": "manicure",
+//   "Veterinary": "veterinarian",
+//   "Fan Accounts": "fans",
+//   "Lingeries": "lingerie",
+//   "Architecture & Interior": "architecture",
+//   "Banking": "bank",
+//   "Cars": "car",
+//   "Hospitality": "hotel",
+//   "Love & Romance": "couple",
+//   "Medical Practice": "clinic",
+//   "Photography": "camera",
+//   "Plus Size Fashion": "fashion",
+//   "Professional Training & Coaching": "coaching",
+//   "Public Safety": "police",
+//   "Wine and Spirits": "wine",
+//   "Farming": "farmer",
+//   "Animals": "wildlife",
+//   "Automation & Robotics": "robot",
+//   "Quotes & Texts": "books",
+//   "Politics": "parliament",
+//   "Activism & Social Causes": "activism",
+//   "Books and Movies": "movies",
+//   "Gambling & Casinos": "casino",
+//   "Recreational Facilities": "recreation",
+//   "Alternative Medicine": "herbs",
+//   "Tobacco": "tobacco",
+//   "Airlines Aviation": "airplane",
+// };
 
-/* =========================================================
-   AUTOMATIC INDUSTRY IMAGE
-   ========================================================= */
+// /* =========================================================
+//    AUTOMATIC INDUSTRY IMAGE
+//    ========================================================= */
 
-const getIndustryImage = (industry, index) => {
-  const keywords =
-    industryImageKeywords[industry] ||
-    `${industry} lifestyle`;
+// const getIndustryImage = (industry, index) => {
+//   const keywords =
+//     industryImageKeywords[industry] ||
+//     `${industry} lifestyle`;
 
-  return `https://loremflickr.com/900/600/${encodeURIComponent(
-    keywords
-  )}?lock=${index + 100}`;
-};
+//   return `https://loremflickr.com/900/600/${encodeURIComponent(
+//     keywords
+//   )}?lock=${index + 100}`;
+// };
 
 
 const getDescription = (industry) => {
@@ -356,7 +356,7 @@ export default function Industries() {
               >
 
                 {/* IMAGE */}
-                <div className="all-industry-image">
+                {/* <div className="all-industry-image">
 
                     <img
                      src={getIndustryImage(industry, index)}
@@ -374,7 +374,7 @@ export default function Industries() {
                     {String(index + 1).padStart(2, "0")}
                   </div>
 
-                </div>
+                </div> */}
 
                 {/* CONTENT */}
                 <div className="all-industry-content">
