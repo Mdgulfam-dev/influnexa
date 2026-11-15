@@ -2258,6 +2258,15 @@ onClick={() => {
           collaborations, campaigns, and related
           communications.
           <span className="ml-1 text-red-500">*</span>
+  <a
+  href="/term-page-creator"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{ color: "#2563EB" }}
+  className="ml-1 font-semibold underline decoration-blue-600 underline-offset-4 hover:text-blue-800"
+>
+  Terms & Conditions
+</a>
         </span>
       </label>
 

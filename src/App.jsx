@@ -12,6 +12,7 @@ import ShareExperience from "./pages/ShareExperience";
 import CreateBrandTicket from "./pages/CreateBrandTicket"
 import AssignedTicketCreators from "./pages/AssignedTicketCreators";
 import CreatorNetwork from "./pages/CreatorNetwork";
+import TermPageCreator from "./pages/TermPageCreator";
 function App() {
 
     const [theme, setTheme] = useState(() => {
@@ -69,6 +70,10 @@ if (path === "/admin/tickets/creators") {
 
   if (path === "/blog" || path.startsWith("/blog/")) {
     return <Blog />;
+  }
+
+  if(path === "/term-page-creator"){
+    return <TermPageCreator/>
   }
   if (path === "/industries") {
   return  <Industries

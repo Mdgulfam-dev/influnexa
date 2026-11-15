@@ -7,6 +7,10 @@ import Select from "react-select";
 import { MdEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+
+import Papa from "papaparse";
+import { saveAs } from "file-saver";
+
 import {
   createBlogPost,
   createAdminUser,
@@ -2571,6 +2575,124 @@ const currentUserRole = (
   const canManageUsers = currentUserRole === "owner" || currentUserRole === "admin";
 
 
+const downloadInfluencerCSV = async () => {
+  try {
+    let allItems = [];
+    let after = null;
+    let hasMore = true;
+
+    // Fetch every page using the currently applied filters
+    while (hasMore) {
+      const result = await getAdminRegistrations("influencers", {
+        ...influencerQuery,
+        limit: registrationPageSize,
+        after,
+      });
+
+      const pageItems = result.items || [];
+      allItems.push(...pageItems);
+
+      const nextCursor = result.pagination?.nextCursor;
+
+      hasMore = Boolean(result.pagination?.hasMore && nextCursor);
+
+      if (!nextCursor || pageItems.length === 0) break;
+
+      after = nextCursor;
+    }
+
+    if (!allItems.length) {
+      alert("No influencer data available to download.");
+      return;
+    }
+
+  
+const formattedData = allItems.map((item, index) => ({
+  "Full Name": item.fullName || "",
+  "Instagram Username": item.instagramUsername || "",
+  "Instagram Profile Link": item.instagramProfileLink || "",
+  "Instagram Follower Range": item.instagramFollowersRange || "",
+  "Exact Followers": item.exactFollowers ?? "",
+  "Instagram Average Views": item.instagramAverageViews ?? "",
+  "Phone Number": item.phoneNumber || "",
+  "WhatsApp Number": item.whatsappNumber || "",
+  "Email": item.email || "",
+  "Categories": Array.isArray(item.categories) ? item.categories.join(", ") : "",
+  "Engagement Rate": item.engagementRate || "",
+  "Campaign Type": Array.isArray(item.campaignType) ? item.campaignType.join(", ") : "",
+  "Influencer Type": item.influencerType || "",
+  "Gender": item.gender || "",
+  "Date of Birth": item.dateOfBirth || "",
+  "Languages": Array.isArray(item.languages) ? item.languages.join(", ") : "",
+  "Audience Country": item.audienceCountry || "",
+  "Past Work With Brands": item.pastWorkWithBrands || "",
+  "Full Address": item.fullAddress || "",
+  "Landmark": item.landmark || "",
+  "City": item.city || "",
+  "State": item.state || "",
+  "Country": item.country || "",
+  "Pincode": item.pincode || "",
+  "Youtube Username": item.youtubeUsername || "",
+  "Youtube Channel Link": item.youtubeChannelLink || "",
+  "Youtube Subscribers Range": item.youtubeSubscribersRange || "",
+  "Youtube Average Views": item.youtubeAverageViews ?? "",
+  "Commercials For 1 Instagram Reel": item.commercialsFor1InstagramReel ?? "",
+  "Profile Photo URL": item.photoLink || "",
+  "Commercials For 1 Instagram Story": item.commercialsFor1InstagramStory ?? "",
+  "Commercials For 1 Instagram Post": item.commercialsFor1InstagramPost ?? "",
+  "Commercials For 1 Dedicated YouTube Video": item.commercialsFor1DedicatedYouTubeVideo ?? "",
+  "Commercials For 1 Integrated YouTube Video": item.commercialsFor1IntegratedYouTubeVideo ?? "",
+  "Commercials For 1 Dedicated YouTube Shorts Video": item.commercialsFor1DedicatedYouTubeShortsVideo ?? "",
+  "Commercials For 1 Integrated YouTube Shorts Video": item.commercialsFor1IntegratedYouTubeShortsVideo ?? "",
+  "LinkedIn Username": item.linkedinUsername || "",
+  "LinkedIn Profile Link": item.linkedinProfileLink || "",
+  "LinkedIn Followers Range": item.linkedinFollowersRange || "",
+  "LinkedIn Average Views": item.linkedinAverageViews ?? "",
+  "Commercials For 1 LinkedIn Post": item.commercialsFor1LinkedInPost ?? "",
+  "Commercials For 1 LinkedIn Reel": item.commercialsFor1LinkedInReel ?? "",
+  "Facebook Username": item.facebookUsername || "",
+  "Facebook Profile Link": item.facebookProfileLink || "",
+  "Facebook Followers Range": item.facebookFollowersRange || "",
+  "Facebook Average Views": item.facebookAverageViews ?? "",
+  "Commercials For 1 Facebook Post": item.commercialsFor1FacebookPost ?? "",
+  "Commercials For 1 Facebook Reel": item.commercialsFor1FacebookReel ?? "",
+  "What Kind Of Deal Do You Participate In": item.whatKindOfDealDoYouParticipateIn || "",
+  "Speaking Video Link": item.speakingVideoLink || "",
+  "Are you a TV/Film/OTT celebrity": item.areYouATvMoviesOttCelebrity || "",
+  "What all platforms are you available on": Array.isArray(item.whatAllPlatformsAreYouAvailableOn) ? item.whatAllPlatformsAreYouAvailableOn.join(", ") : "",
+  "Type Of Celebrity": item.typeOfCeleb || "",
+  "How many Amazon reviews you do per month": item.howManyAmazonReviewsYouDoPerMonth ?? "",
+  "Platform": item.platform || "",
+  "Status": item.status || "",
+  "Timestamp": item.timestamp || "",
+  "Updated At": item.updatedAt || "",
+  "Bio": item.bio || "",
+  "InflunexaUserId": item.InflunexaUserId || "",
+  "Campaign": item.campaignName || "",
+  "QC Remark": item.qcRemark || "",
+  "QC Status": item.qcStatus || "",
+  "QC Checked By": item.qcCheckedBy || "",
+}));
+
+
+    const csv = Papa.unparse(formattedData, {
+      header: true,
+      skipEmptyLines: true,
+    });
+
+    const blob = new Blob(["\uFEFF" + csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    saveAs(blob, "Influencer_Registrations.csv");
+  } catch (error) {
+    console.error("INFLUENCER DOWNLOAD ERROR:", error);
+    alert("Failed to download influencer data.");
+  }
+};
+
+
+
 useEffect(() => {
   if (!status.message) return;
 
@@ -4085,10 +4207,29 @@ setCampaignForm({
 
         {activeTab === "influencers" && (
           <div className="admin-panel">
-            <div className="admin-panel-title-row">
-              <h2>Influencer registrations</h2>
-              
-            </div>
+            
+<div className="admin-panel-title-row flex flex-wrap items-center justify-between gap-3">
+  <h2>Influencer registrations</h2>
+
+ {["admin", "owner"].includes(currentUserRole) && (
+    <button
+      type="button"
+      onClick={downloadInfluencerCSV}
+      disabled={!influencerTable.items?.length}
+      className="
+        min-h-11 px-5
+        rounded-xl
+        bg-emerald-600 hover:bg-emerald-700
+        disabled:opacity-50 disabled:cursor-not-allowed
+        text-white text-sm font-semibold
+        transition whitespace-nowrap
+      "
+    >
+      Download CSV
+    </button>
+  )}
+</div>
+
             <RegistrationToolbar
               filters={influencerFilters}
               onFilterChange={updateInfluencerFilter}

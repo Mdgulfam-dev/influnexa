@@ -9,236 +9,42 @@ import { io } from "socket.io-client";
 import Select from "react-select";
 import { getBrandTickets } from "../lib/api";
 
-const QC_REMARK_REQUIRED = [
-  "NEEDS_CORRECTION",
-  "REJECTED",
-  "NEEDS_UPDATE",
-  "ON_HOLD",
-];
-
-const QC_STATUSES = [
-  {
-    value: "PENDING_QC",
-    meaning: "Creator data has not been checked",
-  },
-  {
-    value: "IN_PROGRESS",
-    meaning: "QC team is checking the profile",
-  },
-  {
-    value: "VERIFIED",
-    meaning: "All required fields have passed QC",
-  },
-  {
-    value: "NEEDS_CORRECTION",
-    meaning: "Some information needs correction",
-  },
-  {
-    value: "REJECTED",
-    meaning: "Creator fails your quality criteria",
-  },
- 
-  {
-    value: "NEEDS_UPDATE",
-    meaning: "Profile information is outdated",
-  },
-  {
-    value: "ON_HOLD",
-    meaning: "QC is blocked pending information",
-  },
-];
+const QC_REMARK_REQUIRED = [ "NEEDS_CORRECTION","REJECTED", "NEEDS_UPDATE", "ON_HOLD",];
+const QC_STATUSES = [{ value: "PENDING_QC", meaning: "Creator data has not been checked" }, { value: "IN_PROGRESS", meaning: "QC team is checking the profile" }, { value: "VERIFIED", meaning: "All required fields have passed QC" }, { value: "NEEDS_CORRECTION", meaning: "Some information needs correction" }, { value: "REJECTED", meaning: "Creator fails your quality criteria" }, { value: "NEEDS_UPDATE", meaning: "Profile information is outdated" }, { value: "ON_HOLD", meaning: "QC is blocked pending information" }];
 
 
 function CsvCreatorSection({adminRole,currentUser }) {
 
- const isBrand = String(adminRole || "").toLowerCase() === "brand";
-const [openQCMenuId, setOpenQCMenuId] = useState(null);
-const [showQCRemarkModal, setShowQCRemarkModal] = useState(false);
-const [pendingQCUpdate, setPendingQCUpdate] = useState(null);
-const [qcRemark, setQcRemark] = useState("");
-  const [showTicketOptions, setShowTicketOptions] = useState(false);
-  const [selectedCreators, setSelectedCreators] = useState([]);
-  const [selectAllCreators, setSelectAllCreators] = useState(false);
- const [brandTickets, setBrandTickets] = useState([]);
-const [selectedBrandTicket, setSelectedBrandTicket] = useState("");
-const [copiedEmail, setCopiedEmail] = useState(null);
-const [copiedPhone, setCopiedPhone] = useState(null);
-  const [creators, setCreators] = useState([]);
-  const [filterTimeout,setFilterTimeout] = useState(null);
-  const [isFiltered,setIsFiltered] = useState(false);
-  const [selectedCreator, setSelectedCreator] = useState(null);
-const [showEdit, setShowEdit] = useState(false);
-const [expandedBios, setExpandedBios] = useState({});
-const [expandedCategories, setExpandedCategories] = useState(null);
-const [expandedCampaignTypes, setExpandedCampaignTypes] = useState({});
+const isBrand = String(adminRole || "").toLowerCase() === "brand"; const [openQCMenuId, setOpenQCMenuId] = useState(null); const [showQCRemarkModal, setShowQCRemarkModal] = useState(false); const [pendingQCUpdate, setPendingQCUpdate] = useState(null); 
+const [qcRemark, setQcRemark] = useState(""); const [showTicketOptions, setShowTicketOptions] = useState(false); const [selectedCreators, setSelectedCreators] = useState([]); const [selectAllCreators, setSelectAllCreators] = useState(false); 
+const [brandTickets, setBrandTickets] = useState([]); const [selectedBrandTicket, setSelectedBrandTicket] = useState(""); const [copiedEmail, setCopiedEmail] = useState(null); const [copiedPhone, setCopiedPhone] = useState(null); 
+const [creators, setCreators] = useState([]); const [filterTimeout, setFilterTimeout] = useState(null);
+const [isFiltered, setIsFiltered] = useState(false); const [selectedCreator, setSelectedCreator] = useState(null); const [showEdit, setShowEdit] = useState(false); const [expandedBios, setExpandedBios] = useState({}); 
+const [expandedCategories, setExpandedCategories] = useState(null); const [expandedCampaignTypes, setExpandedCampaignTypes] = useState({}); const [copiedWhatsapp, setCopiedWhatsapp] = useState(null); 
+const [page, setPage] = useState(1); const [limit] = useState(100); const [totalPages, setTotalPages] = useState(1); const [totalRecords, setTotalRecords] = useState(0); 
+const [creatorStats, setCreatorStats] = useState({ instagram: 0, youtube: 0, mixed: 0, cities: 0, regions: 0 });
 
-const [copiedWhatsapp, setCopiedWhatsapp] = useState(null);
-const [page, setPage] = useState(1);
-const [limit] = useState(100);
-const [totalPages, setTotalPages] = useState(1);
-const [totalRecords, setTotalRecords] = useState(0);
-const [creatorStats, setCreatorStats] = useState({
-  instagram: 0,
-  youtube: 0,
-  mixed: 0,
-  cities: 0,
-  regions: 0,
+const handleEdit = (creator) => { setSelectedCreator(creator); setShowEdit(true);};
+
+const [loading, setLoading] = useState(false);
+const [filters, setFilters] = useState({ fullName: "", email: "", phoneNumber: "", instagramUsername: "", instagramFollowersRange: [], exactFollowers: "", categories: [], gender: [], dateOfBirth: "", pincode: "", city: "", state: [], country: [], youtubeUsername: "", youtubeSubscribersRange: [], typeOfCeleb: [], platform: [], languages: [], InflunexaUserId: "", campaignType: [], influencerType: [], contactStatus: [], age: [], completedBy: [], qcStatus: [],
 });
+const [filterOptions, setFilterOptions] = useState({ gender: [], state: [], country: [], categories: [], languages: [], campaignType: [], typeOfCeleb: [], platform: [], youtubeSubscribersRange: [], instagramFollowersRange: [{ label: "Under 1K", value: "Under 1K" }, { label: "1K - 10K", value: "1K - 10K" }, { label: "10K - 50K", value: "10K - 50K" }, { label: "50K - 100K", value: "50K - 100K" }, { label: "100K - 500K", value: "100K - 500K" }, { label: "500K - 1M", value: "500K - 1M" }, { label: "1M - 5M", value: "1M - 5M" }, { label: "5M+", value: "5M+" }] });
 
-
-
-
-
-const handleEdit = (creator) => {
- 
-  setSelectedCreator(creator);
-  setShowEdit(true);
-};
-
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-
-   // Personal
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-
-  // Instagram
-  instagramUsername: "",
-  instagramFollowersRange:[],
-
-  exactFollowers:"",
-
-  // Category
-  categories: [],
-
-  // Personal
-  gender: [],
-
-  dateOfBirth:"",
-  pincode:"",
-
-  // Location
-  city: "",
-  state: [],
-  country: [],
-
-  // YouTube
-  youtubeUsername: "",
-  youtubeSubscribersRange: [],
-
-  // Celebrity
-  typeOfCeleb: [],
-
-  // Platform
-  platform: [],
-
-  // Languages
-  languages: [],
-
-  InflunexaUserId: "",
-  campaignType:[],
-  influencerType: [],
-  contactStatus: [],
-   age: [],
-  completedBy: [],
-    qcStatus: [],
-  
-});
-
-const [filterOptions, setFilterOptions] = useState({
-  gender: [],
-  state: [],
-  country: [],
-  categories: [],
-  languages: [],
-  campaignType: [],
-  typeOfCeleb: [],
-  platform: [],
-  youtubeSubscribersRange: [],
-  instagramFollowersRange: [
-  { label: "Under 1K", value: "Under 1K" },
-  { label: "1K - 10K", value: "1K - 10K" },
-  { label: "10K - 50K", value: "10K - 50K" },
-  { label: "50K - 100K", value: "50K - 100K" },
-  { label: "100K - 500K", value: "100K - 500K" },
-  { label: "500K - 1M", value: "500K - 1M" },
-  { label: "1M - 5M", value: "1M - 5M" },
-  { label: "5M+", value: "5M+" },
-],
-});
-
-
-const brandAllowedFilters = [
-  "fullName",
- 
-  "instagramFollowersRange",
-  "instagramUsername",
-  "categories",
-  "gender",
-  "city",
-  "state",
-  "country",
-  "youtubeSubscribersRange",
-  "languages",
-  "influencerType",
-];
-
+const brandAllowedFilters = ["fullName", "instagramFollowersRange", "instagramUsername", "categories", "gender", "city", "state", "country", "youtubeSubscribersRange", "languages", "influencerType"];
 
 const fetchFilterOptions = async () => {
-  try {
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators/filter-options`
-    );
-
-    setFilterOptions((prev) => ({
-  ...prev,
-  ...res.data.options,
-}));
-
-  } catch (err) {
-    console.log(err);
-  }
+  try { const res = await axios.get(`${Config.API_URL}/csv-creators/filter-options`); setFilterOptions((prev) => ({ ...prev, ...res.data.options })); } catch (err) { console.log(err); }
 };
-
-useEffect(() => {
-  fetchFilterOptions();
-}, []);
-
+useEffect(() => { fetchFilterOptions(); }, []);
 
 const updateCsvCreator = async () => {
-  try {
-    const adminEmail = localStorage.getItem("Email");
-    const res = await axios.put(
-      `${Config.API_URL}/csv-creators/${selectedCreator._id}`,
-      
-      {
-      ...selectedCreator,
-      updatedBy:adminEmail,
-    updatedAt: new Date(),
-  }
-    );
-     console.log("SERVER UPDATED BY:", adminEmail);
-
-    alert("Creator updated successfully");
-
-    // update UI without refresh
-    setCreators((prev) =>
-      prev.map((creator) =>
-        creator._id === selectedCreator._id
-          ? res.data.creator
-          : creator
-      )
-    );
-
-    setShowEdit(false);
-
-  } catch (error) {
-    console.log(error);
-    alert("Update failed");
-  }
+  try { const adminEmail = localStorage.getItem("Email"); const res = await axios.put(`${Config.API_URL}/csv-creators/${selectedCreator._id}`, 
+    { ...selectedCreator, updatedBy: adminEmail, updatedAt: new Date() }); console.log("SERVER UPDATED BY:", adminEmail); 
+    alert("Creator updated successfully"); 
+    setCreators((prev) => prev.map((creator) => creator._id === selectedCreator._id ? res.data.creator : creator)); setShowEdit(false);
+  } catch (error) { console.log(error); alert("Update failed"); }
 };
-
 
 useEffect(() => {
   const fetchBrandTickets = async () => {
@@ -256,61 +62,13 @@ useEffect(() => {
   // =========================
   // GET CSV CREATORS
   // =========================
-  const fetchCreators = async (currentFilters = filters) => {
-  try {
-    setLoading(true);
- setCreators([]);
-    // Remove empty filters
-    // Remove empty filters and convert arrays to comma-separated strings
-const params = {};
-
-Object.entries(currentFilters).forEach(([key, value]) => {
-
-  if (Array.isArray(value)) {
-
-    if (value.length > 0) {
-      params[key] = value.join(",");
-    }
-
-  } else if (
-    value !== "" &&
-    value !== null &&
-    value !== undefined
-  ) {
-
-    params[key] = value;
-
-  }
-
-});
-
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators`,
-      {
-        params: {
-      ...params,
-      page,
-      limit,
-    },
-      }
-    );
-
-    setCreators(res.data.data || []);
-    setTotalPages(res.data.totalPages);
-    setTotalRecords(res.data.total || 0);
-    setCreatorStats({
-  instagram: res.data.stats?.instagram || 0,
-  youtube: res.data.stats?.youtube || 0,
-  mixed: res.data.stats?.mixed || 0,
-  cities: res.data.stats?.cities || 0,
-  regions: res.data.stats?.regions || 0,
-});
-
-  } catch (error) {
-    console.log("CSV FETCH ERROR", error);
-  } finally {
-    setLoading(false);
-  }
+ const fetchCreators = async (currentFilters = filters) => {
+  try { setLoading(true); setCreators([]); const params = {};
+   Object.entries(currentFilters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) 
+    params[key] = Array.isArray(value) ? value.join(",") : value; });
+    const res = await axios.get(`${Config.API_URL}/csv-creators`, { params: { ...params, page, limit } }); setCreators(res.data.data || []); setTotalPages(res.data.totalPages); setTotalRecords(res.data.total || 0);
+    setCreatorStats({ instagram: res.data.stats?.instagram || 0, youtube: res.data.stats?.youtube || 0, mixed: res.data.stats?.mixed || 0, cities: res.data.stats?.cities || 0, regions: res.data.stats?.regions || 0 });
+  } catch (error) { console.log("CSV FETCH ERROR", error); } finally { setLoading(false); }
 };
 
 useEffect(() => {
@@ -318,210 +76,45 @@ useEffect(() => {
 
 }, [page]);
 
-  useEffect(() => {
-
-  const socket = io(Config.API_URL);
-
-  socket.on("connect", () => {
-    console.log("Socket Connected:", socket.id);
-  });
-
-  // New CSV Creator Uploaded
-  socket.on("new-csv-creator", () => {
-    console.log("New CSV Creator");
-    fetchCreators();
-  });
-
-  // CSV Creator Updated
-  socket.on("update-csv-creator", () => {
-    console.log("CSV Creator Updated");
-    fetchCreators();
-  });
-
-  // Single CSV Creator Deleted
-  socket.on("delete-csv-creator", () => {
-    console.log("CSV Creator Deleted");
-    fetchCreators();
-  });
-
-  // All CSV Creators Deleted
-  socket.on("delete-all-csv-creators", () => {
-    console.log("All CSV Creators Deleted");
-    setCreators([]);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Socket Disconnected");
-  });
-
-  return () => {
-    socket.disconnect();
-  };
+useEffect(() => {
+  const socket = io(Config.API_URL); socket.on("connect", () => console.log("Socket Connected:", socket.id)); 
+  socket.on("new-csv-creator", () => { console.log("New CSV Creator"); fetchCreators(); }); 
+  socket.on("update-csv-creator", () => { console.log("CSV Creator Updated"); fetchCreators(); }); 
+  socket.on("delete-csv-creator", () => { console.log("CSV Creator Deleted"); fetchCreators(); }); 
+  socket.on("delete-all-csv-creators", () => { console.log("All CSV Creators Deleted"); setCreators([]); }); 
+  socket.on("disconnect", () => console.log("Socket Disconnected"));
+  return () => socket.disconnect();
 }, []);
 
 
   // =========================
   // DELETE CREATOR
   // =========================
-  const deleteCreator = async(id)=>{
-
-    const confirmDelete =
-      window.confirm(
-        "Delete this CSV creator?"
-      );
-
-
-    if(!confirmDelete)
-      return;
-
-
-    try{
-
-
-      await axios.delete(
-        `${Config.API_URL}/csv-creators/${id}`
-      );
-
-
-      fetchCreators();
-
-
-    }
-    catch(error){
-
-      console.log(
-        "DELETE ERROR",
-        error
-      );
-
-    }
-
-  };
+const deleteCreator = async (id) => {
+  if (!window.confirm("Delete this CSV creator?")) return;
+  try { await axios.delete(`${Config.API_URL}/csv-creators/${id}`); fetchCreators(); } catch (error) { console.log("DELETE ERROR", error); }
+};
 
 // =========================
 // CREATOR SELECTION
 // =========================
 
-const toggleCreatorSelection = (id) => {
-  setSelectedCreators((prev) =>
-    prev.includes(id)
-      ? prev.filter((creatorId) => creatorId !== id)
-      : [...prev, id]
-  );
-};
+const toggleCreatorSelection = (id) => { setSelectedCreators((prev) => prev.includes(id) ? prev.filter((creatorId) => creatorId !== id) : [...prev, id]); };
 const toggleSelectAll = async () => {
-  if (selectAllCreators) {
-    // Unselect all
-    setSelectAllCreators(false);
-    setSelectedCreators([]);
-    return;
-  }
-
+  if (selectAllCreators) { setSelectAllCreators(false); setSelectedCreators([]); return; }
   try {
-    // Build the SAME filters currently applied
-    const params = {};
-
-    Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          params[key] = value.join(",");
-        }
-      } else if (
-        value !== "" &&
-        value !== null &&
-        value !== undefined
-      ) {
-        params[key] = value;
-      }
-    });
-
-    // Get ALL creators matching the filters
-    params.download = true;
-
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators`,
-      {
-        params,
-      }
-    );
-
-    const allFilteredCreators = res.data.data || [];
-
-    // Select ALL filtered creator IDs
-    const allIds = allFilteredCreators.map(
-      (creator) => creator._id
-    );
-
-    setSelectedCreators(allIds);
-    setSelectAllCreators(true);
-
-  } catch (error) {
-    console.error("SELECT ALL ERROR:", error);
-    alert("Failed to select all filtered creators.");
-  }
+    const params = {}; Object.entries(filters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) params[key] = Array.isArray(value) ? value.join(",") : value; }); params.download = true;
+    const res = await axios.get(`${Config.API_URL}/csv-creators`, { params }); const allFilteredCreators = res.data.data || []; const allIds = allFilteredCreators.map((creator) => creator._id);
+    setSelectedCreators(allIds); setSelectAllCreators(true);
+  } catch (error) { console.error("SELECT ALL ERROR:", error); alert("Failed to select all filtered creators."); }
 };
-
 
 const getCreatorsForDownload = async () => {
-  // If creators are selected, download only those creators
-  if (selectedCreators.length > 0) {
-    const selectedIds = new Set(selectedCreators.map(String));
-
-    const params = {};
-
-    Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          params[key] = value.join(",");
-        }
-      } else if (
-        value !== "" &&
-        value !== null &&
-        value !== undefined
-      ) {
-        params[key] = value;
-      }
-    });
-
-    params.download = true;
-
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators`,
-      { params }
-    );
-
-    return (res.data.data || []).filter((creator) =>
-      selectedIds.has(String(creator._id))
-    );
-  }
-
-  // No selection: preserve the existing filtered-download logic
-  const params = {};
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      if (value.length > 0) {
-        params[key] = value.join(",");
-      }
-    } else if (
-      value !== "" &&
-      value !== null &&
-      value !== undefined
-    ) {
-      params[key] = value;
-    }
-  });
-
-  params.download = true;
-
-  const res = await axios.get(
-    `${Config.API_URL}/csv-creators`,
-    { params }
-  );
-
+  if (selectedCreators.length > 0) { const selectedIds = new Set(selectedCreators.map(String)); const params = {}; Object.entries(filters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) params[key] = Array.isArray(value) ? value.join(",") : value; }); params.download = true; const res = await axios.get(`${Config.API_URL}/csv-creators`, { params }); return (res.data.data || []).filter((creator) => selectedIds.has(String(creator._id))); }
+  const params = {}; Object.entries(filters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) params[key] = Array.isArray(value) ? value.join(",") : value; }); params.download = true;
+  const res = await axios.get(`${Config.API_URL}/csv-creators`, { params });
   return res.data.data || [];
 };
-
 
 // =========================
 // DOWNLOAD FILTERED CSV
@@ -529,196 +122,20 @@ const getCreatorsForDownload = async () => {
 
 const downloadCSV = async () => {
   try {
-
-    const params = {};
-
-    // Send all current filters
-    Object.entries(filters).forEach(([key, value]) => {
-
-      if (Array.isArray(value)) {
-
-        if (value.length > 0) {
-          params[key] = value.join(",");
-        }
-
-      } else if (
-        value !== "" &&
-        value !== null &&
-        value !== undefined
-      ) {
-
-        params[key] = value;
-
-      }
-
-    });
-
-    // Tell backend to return ALL matching records
-    params.download = true;
-
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators`,
-      {
-        params,
-      }
-    );
-
-   const allCreators = await getCreatorsForDownload();
-
-const formattedData = allCreators.map((creator) => ({
-  "Timestamp": creator.timestamp || "",
-
-  "Instagram Username": creator.instagramUsername || "",
-
-  "Instagram Profile Link": creator.instagramProfileLink || "",
-
-  "Instagram Followers Range": creator.instagramFollowersRange || "",
-
-  "Exact Followers": creator.exactFollowers || "",
-
-  "Categories": (creator.categories || []).join(","),
-
-  "Phone Number": creator.phoneNumber || "",
-
-  "Whatsapp Number": creator.whatsappNumber || "",
-
-  "Full Name": creator.fullName || "",
-
-  "Email": creator.email || "",
-
-  "Gender": creator.gender || "",
-
-  "Date of Birth": creator.dateOfBirth || "",
-
-  "Campaign type": (creator.campaignType || []).join(","),
-
-  "What kind of deal do you participate in":
-    creator.whatKindOfDealDoYouParticipateIn || "",
-
-  "Languages": (creator.languages || []).join(","),
-
-  "Speaking Video Link": creator.speakingVideoLink || "",
-
-  "Full Address": creator.fullAddress || "",
-
-  "Landmark": creator.landmark || "",
-
-  "City": creator.city || "",
-
-  "State": creator.state || "",
-
-  "Country": creator.country || "",
-
-  "Pincode": creator.pincode || "",
-
-  "Photo Link": creator.photoLink || "",
-
-  "YouTube Username": creator.youtubeUsername || "",
-
-  "YouTube Channel Link": creator.youtubeChannelLink || "",
-
-  "YouTube Subscribers Range": creator.youtubeSubscribersRange || "",
-
-  "Commercials For 1 Instagram Reel":
-    creator.commercialsFor1InstagramReel || "",
-
-  "Commercials For 1 Instagram Story":
-    creator.commercialsFor1InstagramStory || "",
-
-  "Commercials For 1 Instagram Post":
-    creator.commercialsFor1InstagramPost || "",
-
-  "Commercials For 1 Dedicated YouTube Video":
-    creator.commercialsFor1DedicatedYouTubeVideo || "",
-
-  "Commercials For 1 Integrated YouTube Video":
-    creator.commercialsFor1IntegratedYouTubeVideo || "",
-
-  "Commercials For 1 Dedicated YouTube Shorts Video":
-    creator.commercialsFor1DedicatedYouTubeShortsVideo || "",
-
-  "Commercials For 1 Integrated YouTube Shorts Video":
-    creator.commercialsFor1IntegratedYouTubeShortsVideo || "",
-
-  "Bio": creator.bio || "",
-
-  "Are you a TV/movies/OTT celebrity":
-    creator.areYouATvMoviesOttCelebrity || "",
-
-  "Type of Celeb": creator.typeOfCeleb || "",
-
-  "What all platforms are you avilable on":
-    (creator.whatAllPlatformsAreYouAvailableOn || []).join(","),
-
-  "How many Amazon reviews you do per month":
-    creator.howManyAmazonReviewsYouDoPerMonth || "",
-
- 
-
-  
-
- "Platform":
-  creator.instagramProfileLink && creator.youtubeChannelLink
-    ? "Instagram, YouTube"
-    : creator.instagramProfileLink
-      ? "Instagram"
-      : creator.youtubeChannelLink
-        ? "YouTube"
-        : "",
-
-  "InflunexaUserId": creator.InflunexaUserId || "",
-}));
-
-
-    if (allCreators.length === 0) {
-      alert("No filtered data available to download.");
-      return;
-    }
-
-    const csv = Papa.unparse(formattedData, {
-  header: true,
-  skipEmptyLines: true,
-});  
-
-
-
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8;",
-    });
-
-    saveAs(blob, "Filtered_Creators.csv");
-
-  } catch (error) {
-    console.log(error);
-    alert("Failed to download CSV");
-  }
+    const params = {}; Object.entries(filters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) params[key] = Array.isArray(value) ? value.join(",") : value; }); params.download = true;
+    const res = await axios.get(`${Config.API_URL}/csv-creators`, { params }); const allCreators = await getCreatorsForDownload();
+    const formattedData = allCreators.map((creator) => ({ "Timestamp": creator.timestamp || "", "Instagram Username": creator.instagramUsername || "", "Instagram Profile Link": creator.instagramProfileLink || "", "Instagram Followers Range": creator.instagramFollowersRange || "", "Exact Followers": creator.exactFollowers || "", "Categories": (creator.categories || []).join(","), "Phone Number": creator.phoneNumber || "", "Whatsapp Number": creator.whatsappNumber || "", "Full Name": creator.fullName || "", "Email": creator.email || "", 
+      "Gender": creator.gender || "", "Date of Birth": creator.dateOfBirth || "", "Campaign type": (creator.campaignType || []).join(","), "What kind of deal do you participate in": creator.whatKindOfDealDoYouParticipateIn || "", 
+      "Languages": (creator.languages || []).join(","), "Speaking Video Link": creator.speakingVideoLink || "", "Full Address": creator.fullAddress || "", "Landmark": creator.landmark || "", "City": creator.city || "", "State": creator.state || "", 
+      "Country": creator.country || "", "Pincode": creator.pincode || "", "Photo Link": creator.photoLink || "", "YouTube Username": creator.youtubeUsername || "", "YouTube Channel Link": creator.youtubeChannelLink || "", "YouTube Subscribers Range": creator.youtubeSubscribersRange || "", "Commercials For 1 Instagram Reel": creator.commercialsFor1InstagramReel || "", "Commercials For 1 Instagram Story": creator.commercialsFor1InstagramStory || "", "Commercials For 1 Instagram Post": creator.commercialsFor1InstagramPost || "", "Commercials For 1 Dedicated YouTube Video": creator.commercialsFor1DedicatedYouTubeVideo || "", "Commercials For 1 Integrated YouTube Video": creator.commercialsFor1IntegratedYouTubeVideo || "", "Commercials For 1 Dedicated YouTube Shorts Video": creator.commercialsFor1DedicatedYouTubeShortsVideo || "", "Commercials For 1 Integrated YouTube Shorts Video": creator.commercialsFor1IntegratedYouTubeShortsVideo || "", "Bio": creator.bio || "", "Are you a TV/movies/OTT celebrity": creator.areYouATvMoviesOttCelebrity || "", "Type of Celeb": creator.typeOfCeleb || "", "What all platforms are you avilable on": (creator.whatAllPlatformsAreYouAvailableOn || []).join(","), "How many Amazon reviews you do per month": creator.howManyAmazonReviewsYouDoPerMonth || "", "Platform": creator.instagramProfileLink && creator.youtubeChannelLink ? "Instagram, YouTube" : creator.instagramProfileLink ? "Instagram" : creator.youtubeChannelLink ? "YouTube" : "", "InflunexaUserId": creator.InflunexaUserId || "" }));
+    if (allCreators.length === 0) { alert("No filtered data available to download."); return; }
+    const csv = Papa.unparse(formattedData, { header: true, skipEmptyLines: true }); const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" }); saveAs(blob, "Filtered_Creators.csv");
+  } catch (error) { console.log(error); alert("Failed to download CSV"); }
 };
 
-
 const assignCreatorsToBrand = async () => {
-  try {
-    const token = sessionStorage.getItem("influnexa_admin_token");
-
-    await axios.post(
-      `${Config.API_URL}/admin/brand-ticket-creators`,
-      {
-        brandTicketId: selectedBrandTicket,
-        creatorIds: selectedCreators,
-      },
-      {
-        headers: {
-          "x-admin-token": token,
-        },
-      }
-    );
-
-    alert("Creators assigned successfully");
-    setSelectedCreators([]);
-    setSelectAllCreators(false);
-  } catch (error) {
-    console.error(error);
-    alert("Failed to assign creators");
-  }
+  try { const token = sessionStorage.getItem("influnexa_admin_token"); await axios.post(`${Config.API_URL}/admin/brand-ticket-creators`, { brandTicketId: selectedBrandTicket, creatorIds: selectedCreators }, { headers: { "x-admin-token": token } }); alert("Creators assigned successfully"); setSelectedCreators([]); setSelectAllCreators(false);
+  } catch (error) { console.error(error); alert("Failed to assign creators"); }
 };
 // =========================
 // DOWNLOAD MASKED CSV
@@ -726,626 +143,58 @@ const assignCreatorsToBrand = async () => {
 
 const downloadMaskedCSV = async () => {
   try {
-
-    const params = {};
-
-    // Send all selected filters
-    Object.entries(filters).forEach(([key, value]) => {
-
-      if (Array.isArray(value)) {
-
-        if (value.length > 0) {
-          params[key] = value.join(",");
-        }
-
-      } else if (
-        value !== "" &&
-        value !== null &&
-        value !== undefined
-      ) {
-
-        params[key] = value;
-
-      }
-
-    });
-
-    // Fetch all filtered records
-    params.download = true;
-
-    const res = await axios.get(
-      `${Config.API_URL}/csv-creators`,
-      {
-        params,
-      }
-    );
-
-   const allCreators = await getCreatorsForDownload();
-
-    if (allCreators.length === 0) {
-      alert("No filtered data available to download.");
-      return;
-    }
-
-        const maskedCreators = allCreators.map((creator) => ({
-      "Instagram Username": creator.instagramUsername || "",
-
-      "Instagram Profile Link": creator.instagramProfileLink || "",
-
-      "Exact Followers": creator.exactFollowers || "",
-
-      "Categories": Array.isArray(creator.categories)
-        ? creator.categories.join(", ")
-        : creator.categories || "",
-
-      "Full Name": creator.fullName || "",
-
-      "Gender": creator.gender || "",
-
-      "Date of Birth": creator.dateOfBirth || "",
-
-      "Campaign type": Array.isArray(creator.campaignType)
-        ? creator.campaignType.join(", ")
-        : creator.campaignType || "",
-
-      "Languages": Array.isArray(creator.languages)
-        ? creator.languages.join(", ")
-        : creator.languages || "",
-
-      "Full Address": creator.fullAddress
-        ? "********"
-        : "",
-
-      "Landmark": creator.landmark || "",
-
-      "City": creator.city || "",
-
-      "State": creator.state || "",
-
-      "Country": creator.country || "",
-
-      "Pincode": creator.pincode
-        ? "*****"
-        : "",
-    }));
-    const csv = Papa.unparse(maskedCreators, {
-      header: true,
-      skipEmptyLines: true,
-    });
-
-    const blob = new Blob(
-      [csv],
-      {
-        type: "text/csv;charset=utf-8;",
-      }
-    );
-
+    const params = {}; Object.entries(filters).forEach(([key, value]) => { if (Array.isArray(value) ? value.length > 0 : value !== "" && value !== null && value !== undefined) params[key] = Array.isArray(value) ? value.join(",") : value; }); params.download = true;
+    const res = await axios.get(`${Config.API_URL}/csv-creators`, { params }); const allCreators = await getCreatorsForDownload();
+    if (allCreators.length === 0) { alert("No filtered data available to download."); return; }
+    const maskedCreators = allCreators.map((creator) => ({ "Instagram Username": creator.instagramUsername || "", "Instagram Profile Link": creator.instagramProfileLink || "", "Exact Followers": creator.exactFollowers || "", "Categories": Array.isArray(creator.categories) ? creator.categories.join(", ") : creator.categories || "", "Full Name": creator.fullName || "", "Gender": creator.gender || "", "Date of Birth": creator.dateOfBirth || "", "Campaign type": Array.isArray(creator.campaignType) ? creator.campaignType.join(", ") : creator.campaignType || "", "Languages": Array.isArray(creator.languages) ? creator.languages.join(", ") : creator.languages || "", "Full Address": creator.fullAddress ? "********" : "", "Landmark": creator.landmark || "", "City": creator.city || "", "State": creator.state || "", "Country": creator.country || "", "Pincode": creator.pincode ? "*****" : "" }));
+    const csv = Papa.unparse(maskedCreators, { header: true, skipEmptyLines: true }); const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, "filtered_masked_creators.csv");
-
-  } catch (error) {
-
-    console.log(error);
-    alert("Failed to download masked CSV");
-
-  }
+  } catch (error) { console.log(error); alert("Failed to download masked CSV"); }
 };
 
 
-
-const handleFilterChange = (e) => {
-  const { name, value } = e.target;
-
-  const updatedFilters = {
-    ...filters,
-    [name]: value,
-  };
-
-  setFilters(updatedFilters);
-
-  const filtered = Object.values(updatedFilters).some(
-    (v) => String(v).trim() !== ""
-  );
-
-  setIsFiltered(filtered);
-
-  if (filterTimeout) {
-    clearTimeout(filterTimeout);
-  }
-
-  const timeout = setTimeout(() => {
-    setPage(1);
-    fetchCreators(updatedFilters);
-  }, 500);
-
-  setFilterTimeout(timeout);
-};
-
+const handleFilterChange = (e) => { const { name, value } = e.target; const updatedFilters = { ...filters, [name]: value }; setFilters(updatedFilters); setIsFiltered(Object.values(updatedFilters).some((v) => String(v).trim() !== "")); if (filterTimeout) clearTimeout(filterTimeout); const timeout = setTimeout(() => { setPage(1); fetchCreators(updatedFilters); }, 500); setFilterTimeout(timeout); };
 // RESET FILTER
 const resetFilters = () => {
-  if (filterTimeout) {
-    clearTimeout(filterTimeout);
-  }
-
-  const emptyFilters = {
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    instagramUsername: "",
-    instagramFollowersRange: [],
-    exactFollowers: "",
-    categories: [],
-    gender: [],
-    dateOfBirth: "",
-    pincode: "",
-    city: "",
-    state: [],
-    country: [],
-    youtubeUsername: "",
-    youtubeSubscribersRange: [],
-    typeOfCeleb: [],
-    platform: [],
-    languages: [],
-    InflunexaUserId: "",
-    campaignType:[],
-    influencerType: [],
-    contactStatus: [],
-    qcStatus: [],
-  };
-
-  setFilters(emptyFilters);
-  setIsFiltered(false);
-setPage(1);
-setSelectedCreators([]);
-setSelectAllCreators(false);
-
+  if (filterTimeout) clearTimeout(filterTimeout);
+  const emptyFilters = { fullName: "", email: "", phoneNumber: "", instagramUsername: "", instagramFollowersRange: [], exactFollowers: "", categories: [], gender: [], dateOfBirth: "", pincode: "", city: "", state: [], country: [], youtubeUsername: "", youtubeSubscribersRange: [], typeOfCeleb: [], platform: [], languages: [], InflunexaUserId: "", campaignType: [], influencerType: [], contactStatus: [], qcStatus: [] };
+  setFilters(emptyFilters); setIsFiltered(false); setPage(1); setSelectedCreators([]); setSelectAllCreators(false);
   fetchCreators(emptyFilters);
 };
 
-
-const inputClass = `
-  box-border
-  w-full
-  h-[46px]
-  min-h-[46px]
-  max-h-[46px]
-  px-[12px]
-  py-[10px]
-
-  border
-  border-slate-300
-  rounded-[14px]
-
-  bg-white
-
-  text-[#0f172a]
-  text-[14px]
-  font-[850]
-
-  placeholder:text-[#94a3b8]
-  placeholder:text-[14px]
-  placeholder:font-semibold
-  placeholder:opacity-100
-
-  outline-none
-  transition
-
-  focus:border-[#cbd5e1]
-  focus:ring-2
-  focus:ring-[rgba(226,232,240,0.55)]
-`;
-
-const tableHeaderClass = `
-  px-4
-  py-4
-  text-left
-  text-m
-  font-bold
-  tracking-wider
-
-  text-slate-500
-  bg-slate-50
-  border-b
-  border-slate-200
-  whitespace-nowrap
-`;
-
-const tableCellClass = `
-  px-4
-  py-5
-  text-sm
-  text-slate-700
-  border-b
-  border-slate-200
-  whitespace-nowrap
-  align-middle
-`;
-
+const inputClass = `box-border w-full h-[46px] min-h-[46px] max-h-[46px] px-[12px] py-[10px] border border-slate-300 rounded-[14px] bg-white text-[#0f172a] text-[14px] font-[850] placeholder:text-[#94a3b8] placeholder:text-[14px] placeholder:font-semibold placeholder:opacity-100 outline-none transition focus:border-[#cbd5e1] focus:ring-2 focus:ring-[rgba(226,232,240,0.55)]`;
+const tableHeaderClass = `px-4 py-4 text-left text-m font-bold tracking-wider text-slate-500 bg-slate-50 border-b border-slate-200 whitespace-nowrap`;
+const tableCellClass = `px-4 py-5 text-sm text-slate-700 border-b border-slate-200 whitespace-nowrap align-middle`;
 const selectStyles = {
-  control: (base, state) => ({
-    ...base,
-
-    boxSizing: "border-box",
-    width: "100%",
-    minWidth: 0,
-    maxWidth: "100%",
-
-    minHeight: "46px",
-    height: "46px",
-    maxHeight: "46px",
-
-    borderRadius: "14px",
-    border: "1px solid #cbd5e1",
-    backgroundColor: "#ffffff",
-
-    color: "#0f172a",
-    fontSize: "13px",
-    fontWeight: 850,
-
-    boxShadow: state.isFocused
-      ? "0 0 0 2px rgba(226,232,240,0.55)"
-      : "none",
-
-    outline: "none",
-
-    alignItems: "center",
-
-    // IMPORTANT
-    overflow: "hidden",
-
-    "&:hover": {
-      borderColor: "#cbd5e1",
-    },
-  }),
-
-  valueContainer: (base) => ({
-    ...base,
-
-    boxSizing: "border-box",
-
-    height: "44px",
-    minHeight: "44px",
-    maxHeight: "44px",
-
-    padding: "2px 9px",
-
-    display: "flex",
-    flexWrap: "nowrap",
-    alignItems: "center",
-
-    // IMPORTANT
-    minWidth: 0,
-    maxWidth: "100%",
-
-    overflowX: "auto",
-    overflowY: "hidden",
-
-    flex: "1 1 0%",
-
-    scrollbarWidth: "thin",
-
-    "&::-webkit-scrollbar": {
-      height: "4px",
-    },
-
-    "&::-webkit-scrollbar-track": {
-      background: "transparent",
-    },
-
-    "&::-webkit-scrollbar-thumb": {
-      background: "#cbd5e1",
-      borderRadius: "10px",
-    },
-  }),
-
-  placeholder: (base) => ({
-    ...base,
-
-    color: "#94a3b8",
-    fontSize: "14px",
-    fontWeight: 550,
-
-    whiteSpace: "nowrap",
-
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  }),
-
-  input: (base) => ({
-    ...base,
-
-    margin: "0",
-    padding: "0",
-
-    minWidth: "2px",
-    width: "2px",
-
-    height: "20px",
-
-    flexShrink: 0,
-  }),
-
-  multiValue: (base) => ({
-    ...base,
-
-    backgroundColor: "#f1f5f9",
-
-    borderRadius: "7px",
-
-    margin: "2px 3px 2px 0",
-
-    height: "30px",
-
-    // IMPORTANT
-    width: "max-content",
-    minWidth: "max-content",
-    maxWidth: "none",
-
-    flexShrink: 0,
-
-    display: "flex",
-    alignItems: "center",
-  }),
-
-  multiValueLabel: (base) => ({
-    ...base,
-
-    color: "#475569",
-
-    fontSize: "14px",
-
-    padding: "5px 7px",
-
-    whiteSpace: "nowrap",
-
-    overflow: "visible",
-  }),
-
-  multiValueRemove: (base) => ({
-    ...base,
-
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-
-    width: "26px",
-    height: "30px",
-
-    padding: "0",
-
-    color: "#64748b",
-
-    cursor: "pointer",
-
-    flexShrink: 0,
-
-    "&:hover": {
-      backgroundColor: "#e2e8f0",
-      color: "#334155",
-    },
-  }),
-
-  indicatorsContainer: (base) => ({
-    ...base,
-
-    height: "44px",
-
-    display: "flex",
-    alignItems: "center",
-
-    flexShrink: 0,
-
-    backgroundColor: "#ffffff",
-  }),
-
-  clearIndicator: (base) => ({
-    ...base,
-
-    padding: "6px",
-    color: "#94a3b8",
-
-    "&:hover": {
-      color: "#64748b",
-    },
-  }),
-
-  dropdownIndicator: (base) => ({
-    ...base,
-
-    padding: "8px",
-    color: "#94a3b8",
-
-    "&:hover": {
-      color: "#64748b",
-    },
-  }),
-
-  indicatorSeparator: () => ({
-    display: "none",
-  }),
-
-  // DROPDOWN OPTIONS
-  menu: (base) => ({
-    ...base,
-
-    width: "100%",
-    minWidth: "100%",
-    maxWidth: "100%",
-
-    zIndex: 9999,
-
-    borderRadius: "12px",
-
-    border: "1px solid #e2e8f0",
-
-    boxShadow: "0 8px 20px rgba(15,23,42,0.08)",
-
-    overflow: "hidden",
-  }),
-
-  menuList: (base) => ({
-    ...base,
-
-    // IMPORTANT:
-    // Options become vertically scrollable
-    maxHeight: "250px",
-
-    overflowY: "auto",
-    overflowX: "hidden",
-
-    padding: "6px 0",
-
-    scrollbarWidth: "thin",
-
-    "&::-webkit-scrollbar": {
-      width: "6px",
-    },
-
-    "&::-webkit-scrollbar-track": {
-      background: "#f8fafc",
-    },
-
-    "&::-webkit-scrollbar-thumb": {
-      background: "#cbd5e1",
-      borderRadius: "10px",
-    },
-  }),
-
-  option: (base, state) => ({
-    ...base,
-
-    fontSize: "14px",
-    fontWeight: 600,
-
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-
-    padding: "9px 12px",
-
-    backgroundColor: state.isSelected
-      ? "#f0fdf4"
-      : state.isFocused
-        ? "#f8fafc"
-        : "#ffffff",
-
-    color: state.isSelected
-      ? "#047857"
-      : "#334155",
-
-    cursor: "pointer",
-
-    "&:active": {
-      backgroundColor: "#f0fdf4",
-    },
-  }),
-
-  menuPortal: (base) => ({
-    ...base,
-
-    zIndex: 99999,
-  }),
+  control: (base, state) => ({ ...base, boxSizing: "border-box", width: "100%", minWidth: 0, maxWidth: "100%", minHeight: "46px", height: "46px", maxHeight: "46px", borderRadius: "14px", border: "1px solid #cbd5e1", backgroundColor: "#ffffff", color: "#0f172a", fontSize: "13px", fontWeight: 850, boxShadow: state.isFocused ? "0 0 0 2px rgba(226,232,240,0.55)" : "none", outline: "none", alignItems: "center", overflow: "hidden", "&:hover": { borderColor: "#cbd5e1" } }),
+  valueContainer: (base) => ({ ...base, boxSizing: "border-box", height: "44px", minHeight: "44px", maxHeight: "44px", padding: "2px 9px", display: "flex", flexWrap: "nowrap", alignItems: "center", minWidth: 0, maxWidth: "100%", overflowX: "auto", overflowY: "hidden", flex: "1 1 0%", scrollbarWidth: "thin", "&::-webkit-scrollbar": { height: "4px" }, "&::-webkit-scrollbar-track": { background: "transparent" }, "&::-webkit-scrollbar-thumb": { background: "#cbd5e1", borderRadius: "10px" } }),
+  placeholder: (base) => ({ ...base, color: "#94a3b8", fontSize: "14px", fontWeight: 550, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }),
+  input: (base) => ({ ...base, margin: "0", padding: "0", minWidth: "2px", width: "2px", height: "20px", flexShrink: 0 }),
+  multiValue: (base) => ({ ...base, backgroundColor: "#f1f5f9", borderRadius: "7px", margin: "2px 3px 2px 0", height: "30px", width: "max-content", minWidth: "max-content", maxWidth: "none", flexShrink: 0, display: "flex", alignItems: "center" }),
+  multiValueLabel: (base) => ({ ...base, color: "#475569", fontSize: "14px", padding: "5px 7px", whiteSpace: "nowrap", overflow: "visible" }),
+  multiValueRemove: (base) => ({ ...base, display: "flex", alignItems: "center", justifyContent: "center", width: "26px", height: "30px", padding: "0", color: "#64748b", cursor: "pointer", flexShrink: 0, "&:hover": { backgroundColor: "#e2e8f0", color: "#334155" } }),
+  indicatorsContainer: (base) => ({ ...base, height: "44px", display: "flex", alignItems: "center", flexShrink: 0, backgroundColor: "#ffffff" }),
+  clearIndicator: (base) => ({ ...base, padding: "6px", color: "#94a3b8", "&:hover": { color: "#64748b" } }),
+  dropdownIndicator: (base) => ({ ...base, padding: "8px", color: "#94a3b8", "&:hover": { color: "#64748b" } }),
+  indicatorSeparator: () => ({ display: "none" }),
+  menu: (base) => ({ ...base, width: "100%", minWidth: "100%", maxWidth: "100%", zIndex: 9999, borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 8px 20px rgba(15,23,42,0.08)", overflow: "hidden" }),
+  menuList: (base) => ({ ...base, maxHeight: "250px", overflowY: "auto", overflowX: "hidden", padding: "6px 0", scrollbarWidth: "thin", "&::-webkit-scrollbar": { width: "6px" }, "&::-webkit-scrollbar-track": { background: "#f8fafc" }, "&::-webkit-scrollbar-thumb": { background: "#cbd5e1", borderRadius: "10px" } }),
+  option: (base, state) => ({ ...base, fontSize: "14px", fontWeight: 600, whiteSpace: "normal", wordBreak: "break-word", padding: "9px 12px", backgroundColor: state.isSelected ? "#f0fdf4" : state.isFocused ? "#f8fafc" : "#ffffff", color: state.isSelected ? "#047857" : "#334155", cursor: "pointer", "&:active": { backgroundColor: "#f0fdf4" } }),
+  menuPortal: (base) => ({ ...base, zIndex: 99999 }),
 };
 
-const visibleBrandTickets = isBrand
-  ? brandTickets.filter((ticket) => {
-      const loggedInBrandName = String(currentUser?.name || "")
-        .trim()
-        .toLowerCase();
+const visibleBrandTickets = isBrand ? brandTickets.filter(ticket => String(currentUser?.name || "").trim().toLowerCase() !== "" && String(ticket.brandName || "").trim().toLowerCase() === String(currentUser?.name || "").trim().toLowerCase()) : brandTickets;
+  const handleQCStatusChange = (creator, status) => { if (QC_REMARK_REQUIRED.includes(status)) { setPendingQCUpdate({ creator, status }); setQcRemark(""); setShowQCRemarkModal(true); setOpenQCMenuId(null); return; } saveQCStatus(creator, status, creator.qcRemark || ""); };
+const saveQCStatus = async (creator, status, remark) => { try {
+const updateData = { qcStatus: status, qcRemark: remark, qcCheckedBy: currentUser?.name || "" }; if (status === "VERIFIED") updateData.qcLastUpdatedAt = new Date().toISOString();
+const res = await axios.put(`${Config.API_URL}/csv-creators/${creator._id}`, updateData); setCreators(prev => prev.map(item => item._id === creator._id ? { ...item, ...(res.data.creator || {}), qcStatus: status, qcRemark: remark, qcCheckedBy: res.data.creator?.qcCheckedBy || currentUser?.name || "", ...(status === "VERIFIED" ? { qcLastUpdatedAt: updateData.qcLastUpdatedAt } : {}) } : item));
+setShowQCRemarkModal(false); setPendingQCUpdate(null); setQcRemark(""); } catch (error) { console.error("QC UPDATE ERROR:", error); alert("Failed to update QC status"); } };
 
-      const ticketBrandName = String(ticket.brandName || "")
-        .trim()
-        .toLowerCase();
-
-      return (
-        loggedInBrandName !== "" &&
-        ticketBrandName === loggedInBrandName
-      );
-    })
-  : brandTickets;
+const handleSaveQCRemark = () => { if (!qcRemark.trim()) { alert("Please enter a reason for selecting this QC status"); return; } if (!pendingQCUpdate) return;
+saveQCStatus(pendingQCUpdate.creator, pendingQCUpdate.status, qcRemark.trim()); };
 
 
-  const handleQCStatusChange = (creator, status) => {
-
-  if (QC_REMARK_REQUIRED.includes(status)) {
-    setPendingQCUpdate({
-      creator,
-      status,
-    });
-
-    setQcRemark("");
-    setShowQCRemarkModal(true);
-    setOpenQCMenuId(null);
-
-    return;
-  }
-
-  saveQCStatus(creator, status, creator.qcRemark || "");
-};
-
-
-const saveQCStatus = async (creator, status, remark) => {
-  try {
-    const updateData = {
-      qcStatus: status,
-      qcRemark: remark,
-
-      // Logged-in admin's actual name
-      qcCheckedBy: currentUser?.name || "",
-    };
-
-    // Update verification date ONLY when status is VERIFIED
-    if (status === "VERIFIED") {
-      updateData.qcLastUpdatedAt = new Date().toISOString();
-    }
-
-    const res = await axios.put(
-      `${Config.API_URL}/csv-creators/${creator._id}`,
-      updateData
-    );
-
-    setCreators((prev) =>
-      prev.map((item) =>
-        item._id === creator._id
-          ? {
-              ...item,
-              ...(res.data.creator || {}),
-              qcStatus: status,
-              qcRemark: remark,
-              qcCheckedBy: res.data.creator?.qcCheckedBy || currentUser?.name || "",
-              ...(status === "VERIFIED"
-                ? { qcLastUpdatedAt: updateData.qcLastUpdatedAt }
-                : {}),
-            }
-          : item
-      )
-    );
-
-    setShowQCRemarkModal(false);
-    setPendingQCUpdate(null);
-    setQcRemark("");
-
-  } catch (error) {
-    console.error("QC UPDATE ERROR:", error);
-    alert("Failed to update QC status");
-  }
-};
-
-
-const handleSaveQCRemark = () => {
-
-  if (!qcRemark.trim()) {
-    alert("Please enter a reason for selecting this QC status");
-    return;
-  }
-
-  if (!pendingQCUpdate) return;
-
-  saveQCStatus(
-    pendingQCUpdate.creator,
-    pendingQCUpdate.status,
-    qcRemark.trim()
-  );
-};
-  return (
+return (
 
 <div className=" csv-creator-section bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden">
 {/* =========================
