@@ -4208,14 +4208,11 @@ key={creator._id}
           value={Array.isArray(selectedCreator?.categories)
             ? selectedCreator.categories.join(", ")
             : selectedCreator?.categories || ""}
-          onChange={(e) =>
-            setSelectedCreator({
-              ...selectedCreator,
-              categories: e.target.value
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean),
-            })
+         onChange={(e) =>
+  setSelectedCreator({
+    ...selectedCreator,
+    categories: e.target.value,
+  })
           }
         />
       </div>
@@ -4262,14 +4259,11 @@ key={creator._id}
           value={Array.isArray(selectedCreator?.campaignType)
             ? selectedCreator.campaignType.join(", ")
             : selectedCreator?.campaignType || ""}
-          onChange={(e) =>
-            setSelectedCreator({
-              ...selectedCreator,
-              campaignType: e.target.value
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean),
-            })
+        onChange={(e) =>
+  setSelectedCreator({
+    ...selectedCreator,
+    campaignType: e.target.value,
+  })
           }
         />
       </div>
@@ -4350,14 +4344,11 @@ key={creator._id}
           value={Array.isArray(selectedCreator?.languages)
             ? selectedCreator.languages.join(", ")
             : selectedCreator?.languages || ""}
-          onChange={(e) =>
-            setSelectedCreator({
-              ...selectedCreator,
-              languages: e.target.value
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean),
-            })
+         onChange={(e) =>
+  setSelectedCreator({
+    ...selectedCreator,
+    languages: e.target.value,
+  })
           }
         />
       </div>
@@ -5354,15 +5345,11 @@ key={creator._id}
               ? selectedCreator.whatAllPlatformsAreYouAvailableOn.join(", ")
               : selectedCreator?.whatAllPlatformsAreYouAvailableOn || ""
           }
-          onChange={(e) =>
-            setSelectedCreator({
-              ...selectedCreator,
-              whatAllPlatformsAreYouAvailableOn:
-                e.target.value
-                  .split(",")
-                  .map((item) => item.trim())
-                  .filter(Boolean),
-            })
+         onChange={(e) =>
+    setSelectedCreator({
+      ...selectedCreator,
+      whatAllPlatformsAreYouAvailableOn: e.target.value,
+    })
           }
         />
       </div>
